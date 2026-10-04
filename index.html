@@ -342,9 +342,13 @@ var TRK={};try{TRK=JSON.parse($("trk").textContent||"{}")}catch(e){}
 async function key(id,ign){var b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(id.trim().toUpperCase()+"|"+ign.trim().toLowerCase()));return Array.from(new Uint8Array(b)).map(function(v){return("0"+v.toString(16)).slice(-2)}).join("")}
 function getMine(){try{return JSON.parse(localStorage.getItem("echo_orders")||"[]")}catch(e){return[]}}
 function saveMine(o){try{var a=getMine();a.unshift(o);localStorage.setItem("echo_orders",JSON.stringify(a.slice(0,30)))}catch(e){}}
-function statusHtml(t){if(t&&t.s=="cancelled")return'<span class="bd dg">'+(t.by=="c"?"Cancelled at your request":"Cancelled by owner")+'</span><p style="margin:8px 0 0">'+(t.r?"Reason: "+esc(t.r)+". ":"")+'If you think this is a mistake, <a href="'+DISCORD+'">contact us on Discord</a>.</p>';if(!t)return'<span class="bd">Waiting for payment check</span><p class="sub" style="margin:8px 0 0">Staff add your order after they verify the payment. Make sure you sent the order message in a Discord ticket.</p>';
+function statusHtml(t){
+if(t&&t.s=="cancelled")return'<span class="bd dg">'+(t.by=="c"?"Cancelled at your request":"Cancelled by owner")+'</span><p style="margin:8px 0 0">'+(t.r?"Reason: "+esc(t.r)+". ":"")+'If you think this is a mistake, <a href="'+DISCORD+'">contact us on Discord</a>.</p>';
+if(!t)return'<span class="bd">Waiting for payment check</span><p class="sub" style="margin:8px 0 0">Waiting for the sales team to verify your order.</p>';
 if(t.s=="delivered")return'<span class="bd d">Delivered ✓</span><p style="margin:8px 0 0">Your order has been delivered in game. <b>Did not receive it?</b> Contact us on Discord with your sale ID and we will fix it.</p><div class="row"><a class="buy" href="'+DISCORD+'" style="text-align:center;text-decoration:none">Contact on Discord</a></div>';
-return'<span class="bd">Payment verified</span><p class="sub" style="margin:8px 0 0">Your items are being prepared. Delivery message will show here.</p>'}
+if(t.s=="paid")return'<span class="bd ok">Paid ✓</span><p class="sub" style="margin:8px 0 0">Payment verified by the sales team. Your order is now being prepared for delivery.</p>';
+return'<span class="bd">Pending</span><p class="sub" style="margin:8px 0 0">Your order is waiting for the sales team to accept and verify the payment.</p>';
+}
 function extra(o,t){if(!o)return"";
 if(t&&t.s=="cancelled")return'<div class="row"><button class="buy gh" data-rm="'+esc(o.id)+'">Remove from my list</button></div>';
 if(!t)return o.cx?'<p class="sub" style="margin:8px 0 0"><b>Cancel requested.</b> Send the copied message in your Discord ticket so staff can confirm it.</p>':'<div class="row"><button class="buy dg" data-cx="'+esc(o.id)+'">Cancel order</button></div><p class="sub" style="margin:8px 0 0">Reminder: cancel before the sales team accepts your payment. After that it cannot be cancelled.</p>';
