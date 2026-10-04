@@ -319,7 +319,7 @@ $("paid").onclick=async function(){
 
     copy(msg,"Order saved and copied");
     $("sid3").textContent=sale;
-    saveMine({id:sale,ign:$("ign").value.trim(),items:serverItems,total:serverTotal,ts:Date.now()});
+    saveMine({id:sale,ign:$("ign").value.trim(),items:serverItems,total:serverTotal,cancel_token:data.cancel_token||"",ts:Date.now()});
     show("v3");
     cart={};
     sale=null;
@@ -350,7 +350,29 @@ if(t&&t.s=="cancelled")return'<div class="row"><button class="buy gh" data-rm="'
 if(!t)return o.cx?'<p class="sub" style="margin:8px 0 0"><b>Cancel requested.</b> Send the copied message in your Discord ticket so staff can confirm it.</p>':'<div class="row"><button class="buy dg" data-cx="'+esc(o.id)+'">Cancel order</button></div><p class="sub" style="margin:8px 0 0">Reminder: cancel before the sales team accepts your payment. After that it cannot be cancelled.</p>';
 return'<p class="sub" style="margin:8px 0 0">Accepted orders cannot be cancelled. No returns or refunds after delivery.</p>'}
 function ordHtml(id,items,t,rm){return'<div class="ord"><div class="sid">'+esc(id)+'</div><div class="lines">'+items.map(function(i){return'<div><span>'+esc(i.raw||i.name||i.n)+((i.qty||i.q)>1||(!i.raw&&(i.qty||i.q))?' × '+(i.qty||i.q):'')+'</span></div>'}).join("")+'</div>'+statusHtml(t)+extra(rm,t)+(false?'<div class="row"><button class="buy gh" data-rm="'+esc(id)+'">Remove from my list</button></div>':'')+'</div>'}
-async function drawMine(){var a=getMine(),h="";for(var i=0;i<a.length;i++){var t=TRK[await key(a[i].id,a[i].ign)];h+=ordHtml(a[i].id,a[i].items,t,a[i])}$("myl").innerHTML=h}
+async function fetchMineStatus(o){
+  if(!o||!o.cancel_token)return null;
+  try{
+    var r=await fetch("/api/order-status",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      cache:"no-store",
+      body:JSON.stringify({payment_reference:o.id,player_name:o.ign,cancel_token:o.cancel_token})
+    });
+    var d=await r.json();
+    if(!r.ok||!d.ok||!d.order)return null;
+    return {s:String(d.order.payment_status||"pending").toLowerCase(),paid_at:d.order.paid_at};
+  }catch(e){return null}
+}
+async function drawMine(){
+  var a=getMine(),h="";
+  for(var i=0;i<a.length;i++){
+    var t=await fetchMineStatus(a[i]);
+    if(!t)t=TRK[await key(a[i].id,a[i].ign)]||null;
+    h+=ordHtml(a[i].id,a[i].items,t,a[i]);
+  }
+  $("myl").innerHTML=h;
+}
 $("tk").onclick=async function(){var id=$("ts").value.trim(),p=$("tp").value.trim();if(!id||!p){toast("Enter sale ID and username");return}
 var t=TRK[await key(id,p)];$("trkres").innerHTML=t?ordHtml(id.toUpperCase(),t.i,t):'<div class="ord">'+statusHtml(null)+'<p class="sub" style="margin:8px 0 0">Check the sale ID and username. Support: <a href="'+DISCORD+'" style="color:var(--ac2)">Discord</a>.</p></div>'};
 drawMine();
@@ -532,10 +554,37 @@ function go(v){if($("dlg").open)$("dlg").close();document.body.dataset.v=v;["sho
 var xo=null;
 document.addEventListener("click",function(e){var b=e.target.closest("[data-cx]");if(b){xo=getMine().filter(function(o){return o.id==b.dataset.cx})[0];if(!xo)return;$("xinfo").textContent=xo.id;$("xrs").value="";$("xdlg").showModal()}});
 $("xno").onclick=function(){$("xdlg").close();xo=null};
-$("xyes").onclick=function(){if(!xo)return;var why=$("xrs").value.trim();
-copy("CANCEL REQUEST\nSale ID: "+xo.id+"\nPlayer: "+xo.ign+(why?"\nReason: "+why:"")+"\nPlease cancel my order before it is accepted.","Cancel message copied. Paste it in your Discord ticket");
-try{localStorage.setItem("echo_orders",JSON.stringify(getMine().map(function(o){if(o.id==xo.id)o.cx=1;return o})))}catch(er){}
-$("xdlg").close();xo=null;drawMine()};
+$("xyes").onclick=async function(){
+  if(!xo)return;
+  var why=$("xrs").value.trim(),button=$("xyes"),order=xo;
+  if(!order.cancel_token){toast("This order cannot be cancelled from this device.");return}
+  button.disabled=true;button.textContent="Cancelling…";
+  try{
+    var response=await fetch("/api/order",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      cache:"no-store",
+      body:JSON.stringify({
+        action:"cancel",
+        payment_reference:order.id,
+        player_name:order.ign,
+        cancel_token:order.cancel_token,
+        reason:why
+      })
+    });
+    var data={};try{data=await response.json()}catch(e){}
+    if(!response.ok||!data.ok)throw new Error(data.error||"Could not cancel the order.");
+    try{
+      localStorage.setItem("echo_orders",JSON.stringify(getMine().map(function(o){if(o.id==order.id)o.cx=1;return o})));
+    }catch(er){}
+    toast("Order cancelled successfully.");
+    $("xdlg").close();xo=null;drawMine();
+  }catch(e){
+    toast(e&&e.message?e.message:"Could not cancel the order.");
+  }finally{
+    button.disabled=false;button.textContent="Cancel order";
+  }
+};
 document.addEventListener("click",function(e){var x=e.target.closest("[data-rm]");if(x){try{localStorage.setItem("echo_orders",JSON.stringify(getMine().filter(function(o){return o.id!=x.dataset.rm})))}catch(er){}drawMine()}});
 document.addEventListener("click",function(e){var a=e.target.closest("[data-go]");if(a){e.preventDefault();go(a.dataset.go)}});
 go(location.hash=="#/terms"?"terms":location.hash=="#/orders"?"orders":location.hash=="#/sales"?"sales":"shop");
