@@ -407,11 +407,16 @@ function renderAdminOrders(orders){
   }).join("");
 }
 async function loadAdminOrders(password){
-  var functionUrl=window.ECHO_ADMIN_FUNCTION_URL;
-  if(!functionUrl){
-    throw new Error("Admin function URL is not configured.");
+  var configResponse=await fetch("/api/admin-function-url",{
+    method:"GET",
+    cache:"no-store"
+  });
+  var config={};
+  try{config=await configResponse.json()}catch(e){}
+  if(!configResponse.ok||!config.url){
+    throw new Error(config.error||"Admin function URL is not configured.");
   }
-  var response=await fetch(functionUrl,{
+  var response=await fetch(config.url,{
     method:"POST",
     headers:{
       "Content-Type":"application/json",
@@ -490,10 +495,6 @@ async function refreshAdminOrders(password){
 (function(){
   document.body.setAttribute("data-own","1");
   $("admin").style.display="block";
-  // This is a public configuration value, not a secret. Replace YOUR_PROJECT_REF
-  // with the Supabase project ref after deploying the Edge Function.
-  window.ECHO_ADMIN_FUNCTION_URL="https://YOUR_PROJECT_REF.supabase.co/functions/v1/admin-orders";
-
   async function unlock(){
     var button=$("unl"),password=$( "pw").value;
     if(!password){showAdminError("Enter the admin password.");return}
