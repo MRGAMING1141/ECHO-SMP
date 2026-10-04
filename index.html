@@ -118,7 +118,7 @@ th{background:var(--sf);color:var(--mu)}
 <div class="wrap">
 <h1>Echo SMP</h1>
 <p>Monthly ranks, keys and claim blocks. Prices just dropped.</p>
-<div class="ip"><div><small>Server IP (Bedrock)</small><b>play.echocore.fun</b><small>Port 19132</small></div><button id="cp">Copy IP</button></div>
+<div class="ip"><div><small>Java Edition</small><b>play.echocore.fun</b><small>Port 19132</small></div><button id="cpJava">Copy Java</button></div><div class="ip" style="margin-top:10px"><div><small>Bedrock Edition</small><b>play.echocore.fun</b><small>Port 19132</small></div><button id="cpBedrock">Copy Bedrock</button></div>
 </div>
 </header>
 <nav><div class="wrap"><a href="#/" data-go="shop" id="nv-shop" class="">Shop</a><a href="#/orders" data-go="orders" id="nv-orders" class="on">My orders</a><a href="#/terms" data-go="terms" id="nv-terms" class="">Terms</a><a href="#/sales" data-go="sales" id="navadm" class="">Sales log</a></div></nav>
@@ -250,7 +250,7 @@ h='';DATA.claims.forEach(function(c){h+=card(c[0],c[1],"","One-time purchase.","
 
 var tt;function toast(m){var t=$("toast");t.textContent=m;t.className="on";clearTimeout(tt);tt=setTimeout(function(){t.className=""},2800)}
 function copy(s,m){try{navigator.clipboard.writeText(s).then(function(){toast(m)},function(){toast("Copy failed. Long-press the text to copy.")})}catch(e){toast("Copy failed. Long-press the text to copy.")}}
-$("cp").onclick=function(){copy("play.echocore.fun:19132","IP copied. Add it as a Bedrock server.")};
+$("cpJava").onclick=function(){copy("play.echocore.fun:19132","Java server address copied.")};$("cpBedrock").onclick=function(){copy("play.echocore.fun:19132","Bedrock server address copied.")};
 
 var cart={},sale=null;
 function total(){var t=0,c=0;for(var k in cart){t+=cart[k].p*cart[k].q;c+=cart[k].q}return[t,c]}
