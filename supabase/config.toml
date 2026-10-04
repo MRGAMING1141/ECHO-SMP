@@ -1,0 +1,5 @@
+# Supabase Edge Function configuration for Echo SMP.
+# The function performs its own password authentication, so the platform JWT
+# check must be disabled. Do not remove the in-function authentication.
+[functions.admin-orders]
+verify_jwt = false
