@@ -119,12 +119,52 @@ export default {
       apikey: secretKey,
       Authorization: `Bearer ${secretKey}`,
       Accept: "application/json",
+      "Content-Type": "application/json",
     };
 
-    const url =
-      `${supabaseUrl}/rest/v1/${TABLE}?select=${encodeURIComponent(SELECT)}&order=created_at.desc`;
-
     try {
+      const body = await request.json().catch(() => ({}));
+
+      if (body?.action === "update_status") {
+        const orderId = typeof body.order_id === "string" ? body.order_id.trim() : "";
+        const nextStatus = typeof body.status === "string" ? body.status.trim().toLowerCase() : "";
+
+        if (!orderId || !["paid", "delivered"].includes(nextStatus)) {
+          return json({ error: "Invalid status update." }, 400, origin);
+        }
+
+        const filterStatus = nextStatus === "paid" ? "pending" : "paid";
+        const patch: Record<string, unknown> = { payment_status: nextStatus };
+        if (nextStatus === "paid") patch.paid_at = new Date().toISOString();
+
+        const updateUrl =
+          `${supabaseUrl}/rest/v1/${TABLE}?id=eq.${encodeURIComponent(orderId)}&payment_status=eq.${filterStatus}&select=${encodeURIComponent(SELECT)}`;
+
+        const updateResponse = await fetch(updateUrl, {
+          method: "PATCH",
+          headers: { ...headers, Prefer: "return=representation" },
+          body: JSON.stringify(patch),
+        });
+
+        if (!updateResponse.ok) {
+          return json({ error: "Could not update the order status." }, 502, origin);
+        }
+
+        const updated = await updateResponse.json();
+        if (!Array.isArray(updated) || !updated.length) {
+          return json({
+            error: nextStatus === "paid"
+              ? "Order is no longer pending."
+              : "Order must be paid before it can be delivered.",
+          }, 409, origin);
+        }
+
+        return json({ ok: true, order: updated[0] }, 200, origin);
+      }
+
+      const url =
+        `${supabaseUrl}/rest/v1/${TABLE}?select=${encodeURIComponent(SELECT)}&order=created_at.desc`;
+
       const response = await fetch(url, { headers });
 
       if (!response.ok) {
