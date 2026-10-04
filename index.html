@@ -423,6 +423,11 @@ function renderAdminOrders(orders){
       "<td>₹"+adminEscape(r.total_amount)+" "+adminEscape(r.currency||"")+"</td>"+
       "<td>"+adminStatus(r.payment_status)+
         (r.paid_at?"<br><small>Paid: "+adminDate(r.paid_at)+"</small>":"")+
+        (String(r.payment_status||"pending").toLowerCase()==="pending"
+          ? '<div style="margin-top:8px"><button class="st ok" data-admin-status="paid" data-admin-id="'+adminEscape(r.id)+'">Paid</button></div>'
+          : String(r.payment_status||"").toLowerCase()==="paid"
+            ? '<div style="margin-top:8px"><button class="st ok" data-admin-status="delivered" data-admin-id="'+adminEscape(r.id)+'">Delivered</button></div>'
+            : "")+
       "</td>"+
       "<td>"+adminEscape(r.payment_method||"—")+"</td>"+
     "</tr>";
@@ -491,6 +496,38 @@ function setupAdminBody(){
     refreshAdminOrders(window.__echoAdminPassword);
   };
 }
+async function updateAdminStatus(orderId,status,button){
+  if(!window.__echoAdminPassword)return;
+  button.disabled=true;
+  button.textContent=status==="paid"?"Saving…":"Delivering…";
+  try{
+    var configResponse=await fetch("/api/admin-function-url",{cache:"no-store"});
+    var config=await configResponse.json();
+    if(!configResponse.ok||!config.url)throw new Error(config.error||"Admin function URL is not configured.");
+    var response=await fetch(config.url,{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "Authorization":"Bearer "+window.__echoAdminPassword
+      },
+      body:JSON.stringify({action:"update_status",order_id:orderId,status:status}),
+      cache:"no-store"
+    });
+    var data={};try{data=await response.json()}catch(e){}
+    if(!response.ok||!data.ok)throw new Error(data.error||"Could not update order status.");
+    toast(status==="paid"?"Order marked as paid.":"Order marked as delivered.");
+    await refreshAdminOrders(window.__echoAdminPassword);
+  }catch(e){
+    toast(e&&e.message?e.message:"Could not update order status.");
+    button.disabled=false;
+    button.textContent=status==="paid"?"Paid":"Delivered";
+  }
+}
+document.addEventListener("click",function(e){
+  var b=e.target.closest("[data-admin-status]");
+  if(!b)return;
+  updateAdminStatus(b.dataset.adminId,b.dataset.adminStatus,b);
+});
 async function refreshAdminOrders(password){
   var state=document.getElementById("adminState");
   var error=document.getElementById("adminError");
