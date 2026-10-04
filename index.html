@@ -433,7 +433,7 @@ async function loadAdminOrders(password){
   return Array.isArray(data.orders)?data.orders:[];
 }
 function showAdminError(message){
-  var n=document.getElementById("adminError");
+  var n=document.getElementById("lockAdminError");
   if(n){
     n.hidden=false;
     n.textContent=message;
@@ -500,7 +500,7 @@ async function refreshAdminOrders(password){
     if(!password){showAdminError("Enter the admin password.");return}
     button.disabled=true;
     button.textContent="Checking…";
-    $("lock").querySelector(".row").insertAdjacentHTML("afterend",'<p id="adminError" class="sub" style="margin:10px 0 0"></p>');
+    $("lock").querySelector(".row").insertAdjacentHTML("afterend",'<p id="lockAdminError" class="sub" style="margin:10px 0 0"></p>');
     var error=document.getElementById("adminError");
     if(error)error.hidden=true;
     try{
