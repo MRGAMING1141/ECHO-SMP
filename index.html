@@ -355,55 +355,178 @@ $("tk").onclick=async function(){var id=$("ts").value.trim(),p=$("tp").value.tri
 var t=TRK[await key(id,p)];$("trkres").innerHTML=t?ordHtml(id.toUpperCase(),t.i,t):'<div class="ord">'+statusHtml(null)+'<p class="sub" style="margin:8px 0 0">Check the sale ID and username. Support: <a href="'+DISCORD+'" style="color:var(--ac2)">Discord</a>.</p></div>'};
 drawMine();
 var rows=[];
-function drawSales(){$("nosales").hidden=rows.length>0;
-$("sales").innerHTML=rows.map(function(r){return'<tr><td><b>'+esc(r.id)+'</b></td><td>'+esc(new Date(r.ts).toLocaleString())+'</td><td>'+esc(r.ign)+(r.discord?'<br><small>'+esc(r.discord)+'</small>':'')+(r.payer?'<br><small>Paid by: <b>'+esc(r.payer)+'</b></small>':'')+'</td><td>'+r.items.map(function(i){return i.raw?esc(i.raw):esc(i.name)+' × '+i.qty+' (₹'+i.price*i.qty+')'}).join('<br>')+'</td><td>₹'+r.total+'</td><td><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="st'+(r.status!="pending"?' ok':'')+'" data-s="'+esc(r.id)+'">'+(r.status!="pending"?"Paid ✓":"Mark paid")+'</button><button class="st'+(r.status=="delivered"?' ok':'')+'" data-dv="'+esc(r.id)+'">'+(r.status=="delivered"?"Delivered ✓":"Delivered")+'</button><button class="st dg" data-del="'+esc(r.id)+'">Delete</button></div></td></tr>'}).join("")}
-var pend=null;
-$("cno").onclick=function(){$("cdlg").close();pend=null};
-$("cyes").onclick=async function(){var r=pend;if(!r||!db)return;var why=$("crs").value.trim();
-try{TRK[await key(r.id,r.ign)]={s:"cancelled",r:why,t:Date.now(),i:r.items.map(function(x){return x.raw?{raw:x.raw}:{n:x.name,q:x.qty}})};
-await db.collection("sales").doc(r.id).delete();$("cdlg").close();toast("Order cancelled. Customer will see it");sched()}catch(e){toast("Could not cancel")}pend=null};
-$("omb").onclick=function(){var m=$("om").value,g=function(r){var x=m.match(r);return x?x[1].trim():""};
-var id=g(/Sale ID:\s*(\S+)/i).toUpperCase(),ign=g(/Player:\s*(.+)/i),it=g(/Items:\s*(.+)/i),tot=g(/Total:\s*\D*(\d+)/i);
-if(!id||!ign||!it){toast("Message needs Sale ID, Player and Items lines");return}
-if(rows.some(function(x){return x.id.toUpperCase()==id})){toast("This sale is already in the log");return}
-db.collection("sales").doc(id).set({id:id,ts:Date.now(),ign:ign,discord:g(/Discord:\s*(.+)/i),payer:g(/Paid by:\s*(.+)/i),items:[{raw:it,qty:1,price:0}],total:+tot||0,status:"pending"}).then(function(){$("om").value="";toast("Sale added to log")},function(){toast("Could not save")})};
-$("cmb").onclick=async function(){if(!db){toast("Sign in as owner");return}var m=$("cm").value,g=function(r){var x=m.match(r);return x?x[1].trim():""};
-var id=g(/Sale ID:\s*(\S+)/i).toUpperCase(),ign=g(/Player:\s*(.+)/i),why=g(/Reason:\s*(.+)/i);
-if(!id||!ign){toast("Message needs Sale ID and Player lines");return}
-var r=rows.filter(function(x){return x.id.toUpperCase()==id})[0];
-if(r&&r.status!="pending"){toast("Already accepted. Cannot cancel");return}
-try{TRK[await key(id,ign)]={s:"cancelled",by:"c",r:why,t:Date.now(),i:r?r.items.map(function(x){return x.raw?{raw:x.raw}:{n:x.name,q:x.qty}}):[]};
-if(r)await db.collection("sales").doc(r.id).delete();$("cm").value="";toast("Sale cancelled and removed");sched()}catch(e){toast("Could not cancel")}};
-var pt;function sched(){clearTimeout(pt);pt=setTimeout(pub,1800)}
-async function pub(){try{if(!window.claude||!claude.use){toast("Saved on this device. Customers see updates only when you open this page on claude.ai signed in as owner.");return}var art=await claude.use("artifact");if(!art)return;var o={};for(var k in TRK)if(TRK[k].s=="cancelled")o[k]=TRK[k];
-for(var i=0;i<rows.length;i++){var r=rows[i];if(r.status=="pending")continue;o[await key(r.id,r.ign)]={s:r.status,t:r.ts,i:r.items.map(function(x){return x.raw?{raw:x.raw}:{n:x.name,q:x.qty}})}}
-var c=document.documentElement.cloneNode(true);c.querySelector("#trk").textContent=JSON.stringify(o);
-["g-ranks","g-keys","g-claims","lines","sales","myl","trkres","sid","sid3"].forEach(function(i){var n=c.querySelector("#"+i);if(n)n.innerHTML=""});
-c.querySelector("#admin").removeAttribute("style");c.querySelector("body").removeAttribute("data-v");c.querySelector("body").removeAttribute("data-own");c.querySelector("#navadm").setAttribute("hidden","");c.querySelector("#lock").removeAttribute("hidden");c.querySelector("#body").setAttribute("hidden","");
-c.querySelector("#v1").removeAttribute("hidden");c.querySelector("#v2").setAttribute("hidden","");c.querySelector("#v3").setAttribute("hidden","");
-c.querySelector("#qr").textContent="Payment QR will appear here";c.querySelector("#dlg").removeAttribute("open");c.querySelector("#bar").className="";c.querySelector("#toast").className="";c.querySelector("#toast").textContent="";c.querySelector("#cdlg").removeAttribute("open");c.querySelector("#xdlg").removeAttribute("open");c.querySelector("#crs").setAttribute("value","");
-await art.publish("<!DOCTYPE html>\n"+c.outerHTML)}catch(e){toast("Could not update tracking")}}
-document.addEventListener("click",function(e){if(!db)return;
-var b=e.target.closest("[data-s],[data-dv],[data-del]");if(!b)return;
-var id=b.dataset.s||b.dataset.dv||b.dataset.del,r=rows.filter(function(x){return x.id==id})[0];if(!r)return;var d=db.collection("sales").doc(id);
-if(b.dataset.del){pend=r;$("cinfo").textContent=r.id+" · "+r.ign;$("crs").value="";$("cdlg").showModal();return}
-var ns=b.dataset.s?(r.status=="pending"?"paid":"pending"):(r.status=="delivered"?"paid":"delivered");
-d.update({status:ns}).then(function(){if(ns=="delivered")toast("Marked delivered. Customer sees it in My orders");sched()},function(){toast("Could not update")})});
-$("add").onclick=function(){if(!db)return;var id=$("aid").value.trim()||newId(),p=$("ap").value.trim(),it=$("ai").value.trim();
-if(!p||!it){toast("Enter player and items");return}
-db.collection("sales").doc(id).set({id:id,ts:Date.now(),ign:p,discord:"",items:[{raw:it,qty:1,price:0}],total:+$("at").value||0,status:"pending"}).then(function(){["aid","ap","ai","at"].forEach(function(i){$(i).value=""});toast("Sale saved")},function(){toast("Could not save")})};
-$("exp").onclick=async function(){var d;try{d=window.claude&&await claude.use("downloads")}catch(e){}
-var q=function(v){return'"'+String(v).replace(/"/g,'""')+'"'};
-var c="Sale ID,Date,Player,Discord,Paid by,Items,Total,Status\n"+rows.map(function(r){return[r.id,new Date(r.ts).toISOString(),r.ign,r.discord,r.payer||"",r.items.map(function(i){return i.raw||i.name+" x"+i.qty}).join("; "),r.total,r.status].map(q).join(",")}).join("\n");
-try{if(d){await d.save({filename:"echo-smp-sales.csv",data:c})}else{var u=URL.createObjectURL(new Blob([c],{type:"text/csv"})),l=document.createElement("a");l.href=u;l.download="echo-smp-sales.csv";document.body.appendChild(l);l.click();l.remove()}}catch(e){toast("Could not export")}};
-function why(m){var n=document.getElementById("nmsg");if(n)n.textContent=m}
-(function(){document.body.setAttribute("data-own","1");$("admin").style.display="block";
-var HASH="03ab8334ecfe0b6c27c0390aaf0bf7f9972e6f20cb30551ebf97e933ed2a38f9";
-async function unlock(){var b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode($("pw").value));
-var x=Array.from(new Uint8Array(b)).map(function(v){return("0"+v.toString(16)).slice(-2)}).join("");
-if(x!==HASH){toast("Wrong password");$("pw").value="";return}
-$("pw").value="";$("lock").hidden=true;$("body").hidden=false;refresh()}
-$("unl").onclick=unlock;$("pw").onkeydown=function(e){if(e.key==="Enter")unlock()}})();
+function adminEscape(value){
+  return String(value==null?"":value).replace(/[&<>"']/g,function(c){
+    return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
+  });
+}
+function adminItems(items){
+  if(!Array.isArray(items))return "—";
+  return items.map(function(i){
+    if(!i||typeof i!=="object")return adminEscape(String(i));
+    var name=i.name||i.raw||i.n||"Item";
+    var qty=Number(i.qty||i.q||1);
+    var unit=Number(i.unit_price||i.price||0);
+    var line=adminEscape(name);
+    if(Number.isFinite(qty)&&qty>1)line+=" × "+adminEscape(qty);
+    if(Number.isFinite(unit)&&unit>0)line+=" <small>(₹"+adminEscape(unit)+")</small>";
+    return line;
+  }).join("<br>");
+}
+function adminStatus(value){
+  var s=String(value||"pending").toLowerCase();
+  var cls=s==="paid"||s==="delivered"||s==="verified"?"ok":"";
+  return '<span class="bd '+cls+'">'+adminEscape(s)+'</span>';
+}
+function adminDate(value){
+  if(!value)return "—";
+  var d=new Date(value);
+  return Number.isNaN(d.getTime())?"—":adminEscape(d.toLocaleString());
+}
+function renderAdminOrders(orders){
+  rows=Array.isArray(orders)?orders:[];
+  var tbody=document.getElementById("sales");
+  var empty=document.getElementById("nosales");
+  if(!tbody||!empty)return;
+  empty.textContent=rows.length?"":"No orders found in sales_log.";
+  empty.hidden=rows.length>0;
+  tbody.innerHTML=rows.map(function(r){
+    return "<tr>"+
+      "<td><b>"+adminEscape(r.payment_reference||r.id||"—")+"</b></td>"+
+      "<td>"+adminDate(r.created_at)+"</td>"+
+      "<td>"+adminEscape(r.player_name||"—")+
+        (r.discord_username?"<br><small>"+adminEscape(r.discord_username)+"</small>":"")+
+      "</td>"+
+      "<td>"+adminItems(r.items)+"</td>"+
+      "<td>₹"+adminEscape(r.total_amount)+" "+adminEscape(r.currency||"")+"</td>"+
+      "<td>"+adminStatus(r.payment_status)+
+        (r.paid_at?"<br><small>Paid: "+adminDate(r.paid_at)+"</small>":"")+
+      "</td>"+
+      "<td>"+adminEscape(r.payment_method||"—")+"</td>"+
+    "</tr>";
+  }).join("");
+}
+async function loadAdminOrders(password){
+  var functionUrl=window.ECHO_ADMIN_FUNCTION_URL;
+  if(!functionUrl){
+    throw new Error("Admin function URL is not configured.");
+  }
+  var response=await fetch(functionUrl,{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      "Authorization":"Bearer "+password
+    },
+    body:"{}",
+    cache:"no-store"
+  });
+  var data={};
+  try{data=await response.json()}catch(e){}
+  if(!response.ok||!data.ok){
+    throw new Error(data.error||"Could not load the sales log.");
+  }
+  return Array.isArray(data.orders)?data.orders:[];
+}
+function showAdminError(message){
+  var n=document.getElementById("adminError");
+  if(n){
+    n.hidden=false;
+    n.textContent=message;
+  }
+}
+function showAdminLoading(){
+  var n=document.getElementById("adminState");
+  if(n){
+    n.hidden=false;
+    n.textContent="Loading orders…";
+  }
+}
+function setupAdminBody(){
+  var body=document.getElementById("body");
+  if(!body)return;
+  body.innerHTML=
+    '<div class="card" style="margin-bottom:14px">'+
+      '<div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap">'+
+        '<div><div class="n">Orders from Supabase</div><p class="d" style="margin:4px 0 0">Read-only view of public.sales_log. RLS remains enabled; the browser never receives a Supabase database key.</p></div>'+
+        '<button class="buy gh" id="refreshAdmin" type="button">Refresh</button>'+
+      '</div>'+
+    '</div>'+
+    '<div id="adminState" class="empty">Loading orders…</div>'+
+    '<div id="adminError" class="empty" hidden></div>'+
+    '<div class="tw" id="adminTable" hidden>'+
+      '<table><thead><tr>'+
+        '<th>Sale ID</th><th>Date</th><th>Player / Discord</th><th>Items</th>'+
+        '<th>Total</th><th>Payment status</th><th>Method</th>'+
+      '</tr></thead><tbody id="sales"></tbody></table>'+
+    '</div>'+
+    '<p class="sub" id="nosales" hidden style="margin-top:12px">No orders found in sales_log.</p>';
+  document.getElementById("refreshAdmin").onclick=function(){
+    refreshAdminOrders(window.__echoAdminPassword);
+  };
+}
+async function refreshAdminOrders(password){
+  var state=document.getElementById("adminState");
+  var error=document.getElementById("adminError");
+  var table=document.getElementById("adminTable");
+  if(state){state.hidden=false;state.textContent="Loading orders…";}
+  if(error)error.hidden=true;
+  if(table)table.hidden=true;
+  try{
+    var orders=await loadAdminOrders(password);
+    renderAdminOrders(orders);
+    if(state){
+      state.hidden=orders.length>0;
+      state.textContent=orders.length?"": "No orders found.";
+    }
+    if(table)table.hidden=orders.length===0;
+  }catch(e){
+    if(state)state.hidden=true;
+    if(error){
+      error.hidden=false;
+      error.textContent=e&&e.message?e.message:"Could not load the sales log.";
+    }
+  }
+}
+(function(){
+  document.body.setAttribute("data-own","1");
+  $("admin").style.display="block";
+  // This is a public configuration value, not a secret. Replace YOUR_PROJECT_REF
+  // with the Supabase project ref after deploying the Edge Function.
+  window.ECHO_ADMIN_FUNCTION_URL="https://YOUR_PROJECT_REF.supabase.co/functions/v1/admin-orders";
+
+  async function unlock(){
+    var button=$("unl"),password=$( "pw").value;
+    if(!password){showAdminError("Enter the admin password.");return}
+    button.disabled=true;
+    button.textContent="Checking…";
+    $("lock").querySelector(".row").insertAdjacentHTML("afterend",'<p id="adminError" class="sub" style="margin:10px 0 0"></p>');
+    var error=document.getElementById("adminError");
+    if(error)error.hidden=true;
+    try{
+      showAdminLoading();
+      setupAdminBody();
+      await loadAdminOrders(password);
+      window.__echoAdminPassword=password;
+      $("pw").value="";
+      $("lock").hidden=true;
+      $("body").hidden=false;
+      await refreshAdminOrders(window.__echoAdminPassword);
+    }catch(e){
+      $("pw").value="";
+      window.__echoAdminPassword=null;
+      $("body").hidden=true;
+      if(error){
+        error.hidden=false;
+        error.textContent=e&&e.message?e.message:"Incorrect password or admin service unavailable.";
+      }
+    }finally{
+      button.disabled=false;
+      button.textContent="Unlock";
+    }
+  }
+  $("unl").onclick=unlock;
+  $("pw").onkeydown=function(e){if(e.key==="Enter")unlock()};
+})();
 function go(v){if($("dlg").open)$("dlg").close();document.body.dataset.v=v;["shop","orders","terms"].forEach(function(k){$("nv-"+k).className=k==v?"on":""});$("navadm").className=v=="sales"?"on":"";window.scrollTo(0,0);try{history.replaceState(null,"","#/"+(v=="shop"?"":v))}catch(e){}}
 var xo=null;
 document.addEventListener("click",function(e){var b=e.target.closest("[data-cx]");if(b){xo=getMine().filter(function(o){return o.id==b.dataset.cx})[0];if(!xo)return;$("xinfo").textContent=xo.id;$("xrs").value="";$("xdlg").showModal()}});
