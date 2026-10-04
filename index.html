@@ -250,7 +250,7 @@ h='';DATA.claims.forEach(function(c){h+=card(c[0],c[1],"","One-time purchase.","
 
 var tt;function toast(m){var t=$("toast");t.textContent=m;t.className="on";clearTimeout(tt);tt=setTimeout(function(){t.className=""},2800)}
 function copy(s,m){try{navigator.clipboard.writeText(s).then(function(){toast(m)},function(){toast("Copy failed. Long-press the text to copy.")})}catch(e){toast("Copy failed. Long-press the text to copy.")}}
-$("cpJava").onclick=function(){copy("play.echocore.fun:19132","Java server address copied.")};$("cpBedrock").onclick=function(){copy("play.echocore.fun:19132","Bedrock server address copied.")};
+$("cpJava").onclick=function(){copy("play.echocore.fun:19132","Java server address copied.")};$("cpBedrock").onclick=function(){copy("play.echocore.fun","Bedrock server address copied.")};
 
 var cart={},sale=null;
 function total(){var t=0,c=0;for(var k in cart){t+=cart[k].p*cart[k].q;c+=cart[k].q}return[t,c]}
