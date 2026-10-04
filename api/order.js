@@ -124,6 +124,12 @@ module.exports = async function handler(req, res) {
   try {
     const body = typeof req.body === "string" ? JSON.parse(req.body) : (req.body || {});
 
+    const headers = {
+      apikey: serviceRoleKey,
+      Authorization: `Bearer ${serviceRoleKey}`,
+      "Content-Type": "application/json",
+    };
+
     if (body.action === "cancel") {
       const playerName = cleanText(body.player_name, 32);
       const paymentReference = cleanText(body.payment_reference, 40);
@@ -188,12 +194,6 @@ module.exports = async function handler(req, res) {
     }
 
     const order = calculateOrder(body.items);
-
-    const headers = {
-      apikey: serviceRoleKey,
-      Authorization: `Bearer ${serviceRoleKey}`,
-      "Content-Type": "application/json",
-    };
 
     // Make retries of the same browser submission harmless when the reference
     // already exists. The table itself is unchanged; this is application-level
