@@ -280,12 +280,58 @@ var db={collection:function(){return{doc:function(id){return{
 set:function(o){return lop(function(){var a=ldb().filter(function(x){return x.id!=id});a.push(o);lsave(a)})},
 update:function(p){return lop(function(){lsave(ldb().map(function(x){if(x.id==id)for(var k in p)x[k]=p[k];return x}))})},
 delete:function(){return lop(function(){lsave(ldb().filter(function(x){return x.id!=id}))})}}}}}};
-$("paid").onclick=function(){var s=total(),items=[];for(var k in cart)items.push({name:k,qty:cart[k].q,price:cart[k].p});
-var rec={id:sale,ts:Date.now(),ign:$("ign").value.trim(),discord:$("dc").value.trim(),payer:$("pn").value.trim(),items:items,total:s[0],status:"pending"};
-var msg="Sale ID: "+rec.id+"\nPlayer: "+rec.ign+(rec.discord?"\nDiscord: "+rec.discord:"")+"\nPaid by: "+rec.payer+"\nItems: "+items.map(function(i){return i.name+" x"+i.qty+" (₹"+i.price*i.qty+")"}).join(", ")+"\nTotal: ₹"+rec.total+"\nPaid via QR";
-copy(msg,"Order copied");try{db.collection("sales").doc(rec.id).set(rec).catch(function(){})}catch(e){}
+$("paid").onclick=async function(){
+  var button=$("paid");
+  if(button.disabled)return;
+  var s=total(),items=[];
+  for(var k in cart)items.push({name:k,qty:cart[k].q});
+  if(!items.length){toast("Your cart is empty");return}
 
-$("sid3").textContent=rec.id;saveMine({id:rec.id,ign:rec.ign,items:items,total:rec.total,ts:rec.ts});show("v3");cart={};sale=null;render();drawMine()};
+  button.disabled=true;
+  button.textContent="Saving order…";
+
+  var saleId=sale||newId();
+  try{
+    var response=await fetch("/api/order",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        player_name:$("ign").value.trim(),
+        discord_username:$("dc").value.trim(),
+        items:items,
+        payment_reference:saleId
+      })
+    });
+    var data={};
+    try{data=await response.json()}catch(e){}
+    if(!response.ok||!data.ok)throw new Error(data.error||"Could not save your order.");
+
+    sale=data.payment_reference||saleId;
+    var serverItems=data.items||items;
+    var serverTotal=Number(data.total_amount);
+    if(!Number.isSafeInteger(serverTotal)||serverTotal<=0)throw new Error("Invalid total returned by order service.");
+
+    var msg="Sale ID: "+sale+"\\nPlayer: "+$("ign").value.trim()+
+      ($("dc").value.trim()?"\\nDiscord: "+$("dc").value.trim():"")+
+      "\\nPaid by: "+$("pn").value.trim()+
+      "\\nItems: "+serverItems.map(function(i){return i.name+" x"+i.qty+" (₹"+(i.unit_price*i.qty)+")"}).join(", ")+
+      "\\nTotal: ₹"+serverTotal+"\\nPaid via QR";
+
+    copy(msg,"Order saved and copied");
+    $("sid3").textContent=sale;
+    saveMine({id:sale,ign:$("ign").value.trim(),items:serverItems,total:serverTotal,ts:Date.now()});
+    show("v3");
+    cart={};
+    sale=null;
+    render();
+    drawMine();
+  }catch(e){
+    toast(e&&e.message?e.message:"Could not save your order. Please try again.");
+  }finally{
+    button.disabled=false;
+    button.textContent="I have paid";
+  }
+};
 $("done").onclick=function(){$("dlg").close()};
 $("dlg").addEventListener("close",function(){});
 
