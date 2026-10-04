@@ -2,6 +2,8 @@
 // The Supabase service-role key is read only from Vercel environment variables.
 // It is never bundled into browser code.
 
+const crypto = require("crypto");
+
 const CATALOG = Object.freeze({
   "Master": 69,
   "Elite": 99,
@@ -38,6 +40,20 @@ function send(res, status, body, origin) {
 
 function cleanText(value, max) {
   return typeof value === "string" ? value.trim().slice(0, max) : "";
+}
+
+function cancelToken(paymentReference, playerName) {
+  const secret = process.env.ORDER_CANCEL_SECRET || process.env.SUPABASE_SERVICE_ROLE_KEY || "";
+  if (!secret) return "";
+  return crypto
+    .createHmac("sha256", secret)
+    .update(paymentReference + "|" + playerName.toLowerCase())
+    .digest("hex");
+}
+
+function safeTokenEqual(a, b) {
+  if (typeof a !== "string" || typeof b !== "string" || a.length !== b.length) return false;
+  return crypto.timingSafeEqual(Buffer.from(a), Buffer.from(b));
 }
 
 function calculateOrder(items) {
@@ -107,6 +123,56 @@ module.exports = async function handler(req, res) {
 
   try {
     const body = typeof req.body === "string" ? JSON.parse(req.body) : (req.body || {});
+
+    if (body.action === "cancel") {
+      const playerName = cleanText(body.player_name, 32);
+      const paymentReference = cleanText(body.payment_reference, 40);
+      const suppliedToken = cleanText(body.cancel_token, 128);
+
+      if (!/^[A-Za-z0-9_ .-]{1,32}$/.test(playerName) ||
+          !/^ECHO-[0-9]{6}-[A-Z0-9]{4}$/.test(paymentReference) ||
+          !suppliedToken) {
+        return send(res, 400, { error: "Invalid cancellation request." }, origin);
+      }
+
+      const expectedToken = cancelToken(paymentReference, playerName);
+      if (!expectedToken || !safeTokenEqual(expectedToken, suppliedToken)) {
+        return send(res, 403, { error: "Cancellation authorization failed." }, origin);
+      }
+
+      const cancelResponse = await fetch(
+        `${supabaseUrl}/rest/v1/sales_log?payment_reference=eq.${encodeURIComponent(paymentReference)}&player_name=eq.${encodeURIComponent(playerName)}&payment_status=eq.pending`,
+        {
+          method: "PATCH",
+          headers: {
+            ...headers,
+            Prefer: "return=representation",
+          },
+          body: JSON.stringify({ payment_status: "cancelled" }),
+        }
+      );
+
+      const cancelText = await cancelResponse.text();
+      if (!cancelResponse.ok) {
+        console.error("Supabase cancellation failed:", cancelText);
+        return send(res, 502, { error: "Could not cancel your order." }, origin);
+      }
+
+      let cancelledRows = [];
+      try { cancelledRows = JSON.parse(cancelText); } catch {}
+
+      if (!Array.isArray(cancelledRows) || !cancelledRows.length) {
+        return send(res, 409, {
+          error: "This order has already been accepted or cancelled.",
+        }, origin);
+      }
+
+      return send(res, 200, {
+        ok: true,
+        payment_reference: paymentReference,
+        payment_status: "cancelled",
+      }, origin);
+    }
     const playerName = cleanText(body.player_name, 32);
     const discordUsername = cleanText(body.discord_username, 80);
     const paymentReference = cleanText(body.payment_reference, 40);
@@ -153,6 +219,7 @@ module.exports = async function handler(req, res) {
         total_amount: order.total,
         currency: "INR",
         items: order.items,
+        cancel_token: cancelToken(paymentReference, playerName),
       }, origin);
     }
 
@@ -197,6 +264,7 @@ module.exports = async function handler(req, res) {
       total_amount: order.total,
       currency: "INR",
       items: order.items,
+      cancel_token: cancelToken(paymentReference, playerName),
     }, origin);
   } catch (error) {
     console.error("Order endpoint error:", error);
