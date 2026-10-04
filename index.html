@@ -87,6 +87,29 @@ th{background:var(--sf);color:var(--mu)}
 .st.ok{background:var(--ac2);color:#fff;border-color:var(--ac2)}
 #toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom,0px));transform:translate(-50%,200px);background:var(--tx);color:var(--bg);padding:12px 18px;border-radius:12px;font-weight:600;transition:transform .25s;max-width:90vw;text-align:center;z-index:20}
 #toast.on{transform:translate(-50%,0)}
+
+/* Echo Shop V2 upgrades */
+.searchbox{display:flex;gap:10px;margin:18px 0 12px}
+.searchbox input{flex:1}
+.filters{display:flex;gap:8px;overflow-x:auto;padding:4px 0 14px}
+.filter{border:1px solid var(--ln);background:var(--sf);color:var(--tx);border-radius:999px;padding:8px 14px;cursor:pointer;white-space:nowrap}
+.filter.on{background:var(--ac);color:#1a0a07;border-color:var(--ac)}
+.badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:4px}
+.badge{font-size:.72rem;font-weight:700;border:1px solid var(--ln);border-radius:999px;padding:3px 8px;color:var(--mu)}
+.badge.hot{color:#fff;background:var(--ac2);border-color:var(--ac2)}
+.badge.best{color:#1a0a07;background:var(--ac);border-color:var(--ac)}
+.card .actions{display:flex;gap:8px;margin-top:auto}
+.card .actions .buy{flex:1}
+.wish{border:2px solid var(--ln);background:transparent;color:var(--tx);border-radius:10px;padding:8px 11px;cursor:pointer}
+.wish.on{border-color:var(--ac);color:var(--ac)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0}
+.stat{background:var(--sf);border:1px solid var(--ln);border-radius:12px;padding:12px;text-align:center}
+.stat b{display:block;font-family:Unbounded;font-size:1.15rem}
+.stat span{font-size:.75rem;color:var(--mu)}
+.flash{border:2px solid var(--ac);border-radius:14px;padding:14px;background:linear-gradient(110deg,var(--sf),var(--bg));margin:14px 0}
+.flash strong{color:var(--ac)}
+.empty{text-align:center;padding:28px;color:var(--mu);border:1px dashed var(--ln);border-radius:14px}
+@media(max-width:600px){.stats{grid-template-columns:repeat(2,1fr)}.searchbox{position:sticky;top:48px;z-index:4;background:var(--bg);padding:8px 0}.card{padding:15px}}
 </style>
 </head>
 <body>
@@ -100,6 +123,30 @@ th{background:var(--sf);color:var(--mu)}
 </header>
 <nav><div class="wrap"><a href="#/" data-go="shop" id="nv-shop" class="">Shop</a><a href="#/orders" data-go="orders" id="nv-orders" class="on">My orders</a><a href="#/terms" data-go="terms" id="nv-terms" class="">Terms</a><a href="#/sales" data-go="sales" id="navadm" class="">Sales log</a></div></nav>
 <main class="wrap">
+<section class="v-shop" style="padding-top:24px">
+  <div class="searchbox">
+    <input id="search" placeholder="🔎 Search ranks, keys, claims..." autocomplete="off">
+    <button class="buy" id="clearSearch">Clear</button>
+  </div>
+  <div class="filters">
+    <button class="filter on" data-filter="all">All</button>
+    <button class="filter" data-filter="ranks">🏆 Ranks</button>
+    <button class="filter" data-filter="keys">🔑 Keys</button>
+    <button class="filter" data-filter="claims">🛡️ Claims</button>
+    <button class="filter" data-filter="fav">❤️ Favorites</button>
+  </div>
+  <div class="stats">
+    <div class="stat"><b id="statProducts">0</b><span>Products</span></div>
+    <div class="stat"><b id="statFav">0</b><span>Favorites</span></div>
+    <div class="stat"><b id="statOrders">0</b><span>My Orders</span></div>
+    <div class="stat"><b>Discord</b><span>Support</span></div>
+  </div>
+  <div id="noRes" class="empty" style="display:none">No products match. Try another search or filter.</div>
+  <div class="flash">
+    <strong>⚡ ECHO DEALS</strong> — Add your favorite products to wishlist and find them faster next time.
+  </div>
+</section>
+
 <section id="ranks" class="v-shop"><h2>Monthly ranks</h2><p class="sub">Each rank lasts one month. Founder is permanent.</p><div class="grid" id="g-ranks"></div></section>
 <section id="keys" class="v-shop"><h2>Keys</h2><p class="sub">Pick a bundle and open crates in game.</p><div class="grid" id="g-keys"></div>
 <div class="note"><b>Tip:</b> the Common Crate can give you any key when you spin it, so it is one of the best value picks.</div></section>
@@ -137,7 +184,7 @@ th{background:var(--sf);color:var(--mu)}
 <div class="tw"><table><thead><tr><th>Sale ID</th><th>Date</th><th>Player</th><th>Items</th><th>Total</th><th>Status</th></tr></thead><tbody id="sales"></tbody></table></div>
 <p class="sub" id="nosales" style="margin-top:12px">No sales yet.</p></div></section>
 </main>
-<script id="trk" type="application/json">{"07394f613c39c4edb2f4d56a0b0cc25991ca24d49b10dfb2417c73105a8bf76f":{"s":"cancelled","r":"Testing","t":1791110286154,"i":[{"raw":"Titan"}]},"18e8d7dd8a90cff40222e3243db8a2f171a404a96dc915e5818ed61ad0179e88":{"s":"cancelled","r":"Payment not received","t":1791110577026,"i":[{"n":"Founder","q":1}]},"6a958aed30d642887ac7cd6cc5df83d1efd1cc8a28666bb64d8756e6e5464a2f":{"s":"cancelled","r":"","t":1791111053676,"i":[{"n":"Emperor","q":1}]}}</script>
+<script id="trk" type="application/json">{}</script>
 <footer><div class="wrap">Join: <b>play.echocore.fun</b> · Port <b>19132</b><br><a href="#/terms" data-go="terms" style="color:var(--ac2)">Terms and conditions</a> · No refunds after delivery<br>Need help? <a href="https://discord.gg/Q4fkCtABXc" style="color:var(--ac2)">Join our Discord for support</a></div></footer>
 
 <div id="bar" class=""><div><b id="bc">0 items</b><br><span id="bt">₹0</span></div><button class="buy" id="co">Checkout</button></div>
@@ -149,6 +196,7 @@ th{background:var(--sf);color:var(--mu)}
 <div class="tot" id="tot">Total ₹0</div>
 <label for="ign">Minecraft username</label><input id="ign" autocomplete="off" maxlength="32">
 <label for="dc">Discord name</label><input id="dc" autocomplete="off" maxlength="40">
+<label for="pn">Payment account name (name on the account you pay from)</label><input id="pn" autocomplete="off" maxlength="60" placeholder="So we can match your payment">
 <label style="display:flex;gap:8px;align-items:flex-start;font-weight:400;margin-top:14px"><input type="checkbox" id="agree" style="width:auto;margin-top:5px"><span>I agree to the <a href="#/terms" data-go="terms" style="color:var(--ac2)">terms and conditions</a>. No returns or refunds after delivery.</span></label>
 <div class="row"><button class="buy gh" id="x1">Close</button><button class="buy" id="go">Continue to pay</button></div>
 </div>
@@ -156,7 +204,7 @@ th{background:var(--sf);color:var(--mu)}
 <h3>Pay and confirm</h3>
 <div>Your sale ID</div><div class="sid" id="sid"></div>
 <div class="qr" id="qr">Payment QR will appear here</div>
-<div class="tot" id="tot2">Pay ₹0</div>
+<div class="tot" id="tot2" style="text-align:center;font-size:1.5rem;color:var(--ac)">Amount to pay: ₹0</div>
 <p class="sub" style="margin:0">Scan the QR, pay the exact total, then tap the button. To cancel, do it from My orders before the sales team accepts your payment. Paste the copied message in a Discord ticket with your payment screenshot. Support: <a href="https://discord.gg/Q4fkCtABXc" style="color:var(--ac2)">Discord</a>.</p>
 <div class="row"><button class="buy gh" id="back">Back</button><button class="buy" id="paid">I have paid</button></div>
 </div>
@@ -181,13 +229,24 @@ var DATA={
 ranks:[["Master",69,"/month"],["Elite",99,"/month"],["Emperor",129,"/month"],["Titan",169,"/month"],["Divine",289,"/month"],["Knight",399,"/month"],["Royal",649,"/month"]],
 keys:[["Legendary Key",59,"3 keys"],["Magma Key",99,"3 keys"],["OP Key",129,"2 keys"],["Echo Key",199,"2 keys"]],
 claims:[["10K claim blocks",30],["30K claim blocks",50],["50K claim blocks",80],["100K claim blocks",100]]};
+var POP=["Founder"]; // edit: names of your real best sellers
+var VAL=["100K claim blocks"]; // edit: best value items
 var $=function(i){return document.getElementById(i)};
 function esc(s){var d=document.createElement("div");d.textContent=s;return d.innerHTML}
-function card(name,price,unit,desc,cls){return '<div class="card '+(cls||'')+'"><div class="t"><div class="n">'+name+'</div><div class="d">'+desc+'</div></div><div class="p">₹'+price+(unit?' <span>'+unit+'</span>':'')+'</div><button class="buy" data-n="'+name+'" data-p="'+price+'">Add to cart</button></div>'}
-var h='';DATA.ranks.forEach(function(r){h+=card(r[0],r[1],r[2],"Monthly rank for Echo SMP.")});
-h+=card("Founder",1699,"permanent","Permanent rank with access to all kits.","top");$("g-ranks").innerHTML=h;
-h='';DATA.keys.forEach(function(k){h+=card(k[0],k[1],"",k[2]+" in the bundle.")});$("g-keys").innerHTML=h;
-h='';DATA.claims.forEach(function(c){h+=card(c[0],c[1],"","One-time purchase.")});$("g-claims").innerHTML=h;
+function card(name,price,unit,desc,cls){
+ var cat=cls&&cls.indexOf("rank")>=0?"ranks":cls&&cls.indexOf("key")>=0?"keys":cls&&cls.indexOf("claim")>=0?"claims":"product";
+ var hot=POP.indexOf(name)>=0?"best":"";
+ return '<div class="card productCard '+(cls||'')+'" data-cat="'+cat+'" data-name="'+esc(name.toLowerCase())+'" data-desc="'+esc(desc.toLowerCase())+'">'+
+ '<div class="badges">'+(hot?'<span class="badge '+hot+'">★ POPULAR</span>':'')+(VAL.indexOf(name)>=0?'<span class="badge hot">BEST VALUE</span>':'')+'<span class="badge">'+cat.toUpperCase()+'</span></div>'+
+ '<div class="t"><div class="n">'+name+'</div><div class="d">'+desc+'</div></div>'+
+ '<div class="p">₹'+price+(unit?' <span>'+unit+'</span>':'')+'</div>'+
+ '<div class="actions"><button class="wish" data-wish="'+esc(name)+'" aria-label="Favorite '+esc(name)+'">♡</button>'+
+ '<button class="buy" data-n="'+esc(name)+'" data-p="'+price+'">Add to cart</button></div></div>'
+}
+var h='';DATA.ranks.forEach(function(r){h+=card(r[0],r[1],r[2],"Monthly rank for Echo SMP.","rank")});
+h+=card("Founder",1699,"permanent","Permanent rank with access to all kits.","top rank");$("g-ranks").innerHTML=h;
+h='';DATA.keys.forEach(function(k){h+=card(k[0],k[1],"",k[2]+" in the bundle.","key")});$("g-keys").innerHTML=h;
+h='';DATA.claims.forEach(function(c){h+=card(c[0],c[1],"","One-time purchase.","claim")});$("g-claims").innerHTML=h;
 
 var tt;function toast(m){var t=$("toast");t.textContent=m;t.className="on";clearTimeout(tt);tt=setTimeout(function(){t.className=""},2800)}
 function copy(s,m){try{navigator.clipboard.writeText(s).then(function(){toast(m)},function(){toast("Copy failed. Long-press the text to copy.")})}catch(e){toast("Copy failed. Long-press the text to copy.")}}
@@ -196,17 +255,20 @@ $("cp").onclick=function(){copy("play.echocore.fun:19132","IP copied. Add it as 
 var cart={},sale=null;
 function total(){var t=0,c=0;for(var k in cart){t+=cart[k].p*cart[k].q;c+=cart[k].q}return[t,c]}
 function render(){var s=total();$("bar").className=s[1]?"on":"";$("bc").textContent=s[1]+(s[1]==1?" item":" items");$("bt").textContent="₹"+s[0];
-var l="";for(var k in cart)l+='<div><span>'+esc(k)+' × '+cart[k].q+'</span><span>₹'+cart[k].p*cart[k].q+' <button class="x" data-r="'+esc(k)+'" aria-label="Remove">✕</button></span></div>';
-$("lines").innerHTML=l;$("tot").textContent="Total ₹"+s[0];$("tot2").textContent="Pay ₹"+s[0];if(!s[1]&&$("dlg").open)$("dlg").close()}
+var l="";for(var k in cart)l+='<div style="align-items:center"><span>'+esc(k)+'<br><small>₹'+cart[k].p*cart[k].q+'</small></span><span style="display:flex;align-items:center;gap:6px"><button class="st" data-dec="'+esc(k)+'" aria-label="Less">−</button><b>'+cart[k].q+'</b><button class="st" data-inc="'+esc(k)+'" aria-label="More">+</button><button class="st dg" data-r="'+esc(k)+'" aria-label="Remove '+esc(k)+'">Remove</button></span></div>';
+$("lines").innerHTML=l;$("tot").textContent="Total ₹"+s[0];$("tot2").textContent="Amount to pay: ₹"+s[0];if(!s[1]&&$("dlg").open)$("dlg").close()}
 function newId(){var d=new Date(),a="ABCDEFGHJKLMNPQRSTUVWXYZ23456789",r="";for(var i=0;i<4;i++)r+=a[Math.floor(Math.random()*a.length)];
 return"ECHO-"+String(d.getFullYear()).slice(2)+("0"+(d.getMonth()+1)).slice(-2)+("0"+d.getDate()).slice(-2)+"-"+r}
 document.addEventListener("click",function(e){var b=e.target.closest(".buy[data-n]");if(b){var n=b.dataset.n;cart[n]=cart[n]||{p:+b.dataset.p,q:0};cart[n].q++;render();toast(n+" added to cart")}
-var r=e.target.closest("[data-r]");if(r){delete cart[r.dataset.r];render()}});
+var r=e.target.closest("[data-r]");if(r){delete cart[r.dataset.r];render()}
+var i=e.target.closest("[data-inc]");if(i&&cart[i.dataset.inc]){cart[i.dataset.inc].q++;render()}
+var d=e.target.closest("[data-dec]");if(d&&cart[d.dataset.dec]){if(--cart[d.dataset.dec].q<=0)delete cart[d.dataset.dec];render()}});
 function show(v){["v1","v2","v3"].forEach(function(i){$(i).hidden=i!=v})}
 $("co").onclick=function(){show("v1");$("dlg").showModal()};
 $("x1").onclick=function(){$("dlg").close()};
 $("back").onclick=function(){show("v1")};
 $("go").onclick=function(){if(!$("agree").checked){toast("Please agree to the terms to continue");return}if(!$("ign").value.trim()){toast("Enter your Minecraft username");$("ign").focus();return}
+if(!$("pn").value.trim()){toast("Enter your payment account name");$("pn").focus();return}
 sale=sale||newId();$("sid").textContent=sale;
 if(QR_IMAGE){$("qr").innerHTML='<img alt="Payment QR code" src="'+QR_IMAGE+'">'}show("v2")};
 var SK="echo_sales_admin";
@@ -219,8 +281,8 @@ set:function(o){return lop(function(){var a=ldb().filter(function(x){return x.id
 update:function(p){return lop(function(){lsave(ldb().map(function(x){if(x.id==id)for(var k in p)x[k]=p[k];return x}))})},
 delete:function(){return lop(function(){lsave(ldb().filter(function(x){return x.id!=id}))})}}}}}};
 $("paid").onclick=function(){var s=total(),items=[];for(var k in cart)items.push({name:k,qty:cart[k].q,price:cart[k].p});
-var rec={id:sale,ts:Date.now(),ign:$("ign").value.trim(),discord:$("dc").value.trim(),items:items,total:s[0],status:"pending"};
-var msg="Sale ID: "+rec.id+"\nPlayer: "+rec.ign+(rec.discord?"\nDiscord: "+rec.discord:"")+"\nItems: "+items.map(function(i){return i.name+" x"+i.qty+" (₹"+i.price*i.qty+")"}).join(", ")+"\nTotal: ₹"+rec.total+"\nPaid via QR";
+var rec={id:sale,ts:Date.now(),ign:$("ign").value.trim(),discord:$("dc").value.trim(),payer:$("pn").value.trim(),items:items,total:s[0],status:"pending"};
+var msg="Sale ID: "+rec.id+"\nPlayer: "+rec.ign+(rec.discord?"\nDiscord: "+rec.discord:"")+"\nPaid by: "+rec.payer+"\nItems: "+items.map(function(i){return i.name+" x"+i.qty+" (₹"+i.price*i.qty+")"}).join(", ")+"\nTotal: ₹"+rec.total+"\nPaid via QR";
 copy(msg,"Order copied");try{db.collection("sales").doc(rec.id).set(rec).catch(function(){})}catch(e){}
 
 $("sid3").textContent=rec.id;saveMine({id:rec.id,ign:rec.ign,items:items,total:rec.total,ts:rec.ts});show("v3");cart={};sale=null;render();drawMine()};
@@ -248,7 +310,7 @@ var t=TRK[await key(id,p)];$("trkres").innerHTML=t?ordHtml(id.toUpperCase(),t.i,
 drawMine();
 var rows=[];
 function drawSales(){$("nosales").hidden=rows.length>0;
-$("sales").innerHTML=rows.map(function(r){return'<tr><td><b>'+esc(r.id)+'</b></td><td>'+esc(new Date(r.ts).toLocaleString())+'</td><td>'+esc(r.ign)+(r.discord?'<br><small>'+esc(r.discord)+'</small>':'')+'</td><td>'+r.items.map(function(i){return i.raw?esc(i.raw):esc(i.name)+' × '+i.qty+' (₹'+i.price*i.qty+')'}).join('<br>')+'</td><td>₹'+r.total+'</td><td><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="st'+(r.status!="pending"?' ok':'')+'" data-s="'+esc(r.id)+'">'+(r.status!="pending"?"Paid ✓":"Mark paid")+'</button><button class="st'+(r.status=="delivered"?' ok':'')+'" data-dv="'+esc(r.id)+'">'+(r.status=="delivered"?"Delivered ✓":"Delivered")+'</button><button class="st dg" data-del="'+esc(r.id)+'">Delete</button></div></td></tr>'}).join("")}
+$("sales").innerHTML=rows.map(function(r){return'<tr><td><b>'+esc(r.id)+'</b></td><td>'+esc(new Date(r.ts).toLocaleString())+'</td><td>'+esc(r.ign)+(r.discord?'<br><small>'+esc(r.discord)+'</small>':'')+(r.payer?'<br><small>Paid by: <b>'+esc(r.payer)+'</b></small>':'')+'</td><td>'+r.items.map(function(i){return i.raw?esc(i.raw):esc(i.name)+' × '+i.qty+' (₹'+i.price*i.qty+')'}).join('<br>')+'</td><td>₹'+r.total+'</td><td><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="st'+(r.status!="pending"?' ok':'')+'" data-s="'+esc(r.id)+'">'+(r.status!="pending"?"Paid ✓":"Mark paid")+'</button><button class="st'+(r.status=="delivered"?' ok':'')+'" data-dv="'+esc(r.id)+'">'+(r.status=="delivered"?"Delivered ✓":"Delivered")+'</button><button class="st dg" data-del="'+esc(r.id)+'">Delete</button></div></td></tr>'}).join("")}
 var pend=null;
 $("cno").onclick=function(){$("cdlg").close();pend=null};
 $("cyes").onclick=async function(){var r=pend;if(!r||!db)return;var why=$("crs").value.trim();
@@ -258,7 +320,7 @@ $("omb").onclick=function(){var m=$("om").value,g=function(r){var x=m.match(r);r
 var id=g(/Sale ID:\s*(\S+)/i).toUpperCase(),ign=g(/Player:\s*(.+)/i),it=g(/Items:\s*(.+)/i),tot=g(/Total:\s*\D*(\d+)/i);
 if(!id||!ign||!it){toast("Message needs Sale ID, Player and Items lines");return}
 if(rows.some(function(x){return x.id.toUpperCase()==id})){toast("This sale is already in the log");return}
-db.collection("sales").doc(id).set({id:id,ts:Date.now(),ign:ign,discord:g(/Discord:\s*(.+)/i),items:[{raw:it,qty:1,price:0}],total:+tot||0,status:"pending"}).then(function(){$("om").value="";toast("Sale added to log")},function(){toast("Could not save")})};
+db.collection("sales").doc(id).set({id:id,ts:Date.now(),ign:ign,discord:g(/Discord:\s*(.+)/i),payer:g(/Paid by:\s*(.+)/i),items:[{raw:it,qty:1,price:0}],total:+tot||0,status:"pending"}).then(function(){$("om").value="";toast("Sale added to log")},function(){toast("Could not save")})};
 $("cmb").onclick=async function(){if(!db){toast("Sign in as owner");return}var m=$("cm").value,g=function(r){var x=m.match(r);return x?x[1].trim():""};
 var id=g(/Sale ID:\s*(\S+)/i).toUpperCase(),ign=g(/Player:\s*(.+)/i),why=g(/Reason:\s*(.+)/i);
 if(!id||!ign){toast("Message needs Sale ID and Player lines");return}
@@ -286,7 +348,7 @@ if(!p||!it){toast("Enter player and items");return}
 db.collection("sales").doc(id).set({id:id,ts:Date.now(),ign:p,discord:"",items:[{raw:it,qty:1,price:0}],total:+$("at").value||0,status:"pending"}).then(function(){["aid","ap","ai","at"].forEach(function(i){$(i).value=""});toast("Sale saved")},function(){toast("Could not save")})};
 $("exp").onclick=async function(){var d;try{d=window.claude&&await claude.use("downloads")}catch(e){}
 var q=function(v){return'"'+String(v).replace(/"/g,'""')+'"'};
-var c="Sale ID,Date,Player,Discord,Items,Total,Status\n"+rows.map(function(r){return[r.id,new Date(r.ts).toISOString(),r.ign,r.discord,r.items.map(function(i){return i.raw||i.name+" x"+i.qty}).join("; "),r.total,r.status].map(q).join(",")}).join("\n");
+var c="Sale ID,Date,Player,Discord,Paid by,Items,Total,Status\n"+rows.map(function(r){return[r.id,new Date(r.ts).toISOString(),r.ign,r.discord,r.payer||"",r.items.map(function(i){return i.raw||i.name+" x"+i.qty}).join("; "),r.total,r.status].map(q).join(",")}).join("\n");
 try{if(d){await d.save({filename:"echo-smp-sales.csv",data:c})}else{var u=URL.createObjectURL(new Blob([c],{type:"text/csv"})),l=document.createElement("a");l.href=u;l.download="echo-smp-sales.csv";document.body.appendChild(l);l.click();l.remove()}}catch(e){toast("Could not export")}};
 function why(m){var n=document.getElementById("nmsg");if(n)n.textContent=m}
 (function(){document.body.setAttribute("data-own","1");$("admin").style.display="block";
@@ -308,6 +370,54 @@ document.addEventListener("click",function(e){var x=e.target.closest("[data-rm]"
 document.addEventListener("click",function(e){var a=e.target.closest("[data-go]");if(a){e.preventDefault();go(a.dataset.go)}});
 go(location.hash=="#/terms"?"terms":location.hash=="#/orders"?"orders":location.hash=="#/sales"?"sales":"shop");
 render();
+
+/* Echo Shop V2 client features */
+var WSK="echo_wishlist_v2";
+function getWish(){try{return JSON.parse(localStorage.getItem(WSK)||"[]")}catch(e){return[]}}
+function setWish(a){try{localStorage.setItem(WSK,JSON.stringify(a))}catch(e){}}
+function updateStats(){
+ $("statProducts").textContent=document.querySelectorAll(".productCard").length;
+ $("statFav").textContent=getWish().length;
+ $("statOrders").textContent=getMine().length;
+}
+function syncWishButtons(){
+ var a=getWish();
+ document.querySelectorAll("[data-wish]").forEach(function(b){
+   var n=b.dataset.wish,yes=a.indexOf(n)>=0;
+   b.className="wish"+(yes?" on":""); b.textContent=yes?"♥":"♡";
+ });
+}
+function applyFilters(){
+ var q=($("search").value||"").trim().toLowerCase();
+ var f=window.echoFilter||"all",w=getWish();
+ document.querySelectorAll(".productCard").forEach(function(c){
+   var matchQ=!q||c.dataset.name.indexOf(q)>=0||c.dataset.desc.indexOf(q)>=0;
+   var matchF=f=="all"||(f=="fav"&&w.indexOf(c.querySelector("[data-wish]").dataset.wish)>=0)||c.dataset.cat==f;
+   c.style.display=matchQ&&matchF?"flex":"none";
+ });
+ var any=false;
+ ["ranks","keys","claims"].forEach(function(id){
+   var sec=$(id),vis=Array.prototype.some.call(sec.querySelectorAll(".productCard"),function(c){return c.style.display!="none"});
+   sec.style.display=vis?"":"none";if(vis)any=true;
+ });
+ $("noRes").style.display=any?"none":"block";
+ document.querySelectorAll(".filter").forEach(function(b){b.classList.toggle("on",b.dataset.filter==f)});
+}
+document.addEventListener("click",function(e){
+ var w=e.target.closest("[data-wish]");
+ if(w){
+   var a=getWish(),n=w.dataset.wish,i=a.indexOf(n);
+   if(i>=0){a.splice(i,1);toast(n+" removed from favorites")}
+   else{a.unshift(n);toast(n+" added to favorites")}
+   setWish(a);syncWishButtons();updateStats();if(window.echoFilter=="fav")applyFilters();
+ }
+ var f=e.target.closest("[data-filter]");
+ if(f){window.echoFilter=f.dataset.filter;applyFilters()}
+});
+$("search").addEventListener("input",applyFilters);
+$("clearSearch").onclick=function(){$("search").value="";window.echoFilter="all";applyFilters()};
+window.echoFilter="all";
+setTimeout(function(){syncWishButtons();updateStats();applyFilters()},0);
 </script>
 
 
