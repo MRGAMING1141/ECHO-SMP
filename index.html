@@ -64,8 +64,9 @@ input{width:100%;padding:10px;border-radius:10px;border:2px solid var(--ln);back
 .lines .x{border:0;background:none;color:var(--mu);cursor:pointer;font-size:1rem}
 .tot{font-family:Unbounded,sans-serif;font-size:1.3rem;text-align:right;margin:10px 0}
 .sid{font-family:Unbounded,sans-serif;font-size:1.25rem;color:var(--ac);text-align:center;margin:6px 0;word-break:break-all}
-.qr{width:200px;height:200px;margin:12px auto;border:2px dashed var(--ln);border-radius:12px;display:flex;align-items:center;justify-content:center;text-align:center;color:var(--mu);font-size:.85rem;padding:10px;background:#fff}
-.qr img{width:100%;height:100%;object-fit:contain}
+.qr{width:min(300px,100%);aspect-ratio:1/1;height:auto;margin:18px auto;padding:10px;border:1px solid var(--ln);border-radius:18px;display:flex;align-items:center;justify-content:center;text-align:center;color:var(--mu);font-size:.9rem;background:#fff;box-shadow:0 10px 30px rgba(0,0,0,.18);overflow:hidden}
+.qr img{display:block;width:100%;height:100%;object-fit:contain;image-rendering:auto;border-radius:8px}
+.qr .qr-error{padding:18px;color:#262626;line-height:1.5}
 .row{display:flex;gap:10px;margin-top:14px}
 .row .buy{flex:1}
 .ord{background:var(--sf);border:1px solid var(--ln);border-radius:14px;padding:16px;margin-bottom:12px}.ord .sid{text-align:left;font-size:1rem}.bd{display:inline-block;padding:3px 10px;border-radius:99px;border:1px solid var(--ln);font-size:.85rem;font-weight:600}.bd.d{background:var(--ac2);color:#fff;border-color:var(--ac2)}.ord a{color:var(--ac2)}.dg{border-color:#d33;color:#d33}
@@ -270,7 +271,7 @@ $("back").onclick=function(){show("v1")};
 $("go").onclick=function(){if(!$("agree").checked){toast("Please agree to the terms to continue");return}if(!$("ign").value.trim()){toast("Enter your Minecraft username");$("ign").focus();return}
 if(!$("pn").value.trim()){toast("Enter your payment account name");$("pn").focus();return}
 sale=sale||newId();$("sid").textContent=sale;
-if(QR_IMAGE){$("qr").innerHTML='<img alt="Payment QR code" src="'+QR_IMAGE+'">'}show("v2")};
+if(QR_IMAGE){$("qr").innerHTML='<img alt="PhonePe payment QR code" decoding="async" src="'+QR_IMAGE+'"><span class="qr-error" hidden>QR image could not load. Please contact support on Discord before paying.</span>';var qrImg=$("qr").querySelector("img");qrImg.onerror=function(){qrImg.hidden=true;var msg=$("qr").querySelector(".qr-error");if(msg)msg.hidden=false};qrImg.onload=function(){var msg=$("qr").querySelector(".qr-error");if(msg)msg.hidden=true}}else{$("qr").innerHTML='<span class="qr-error">Payment QR is temporarily unavailable. Please contact support on Discord.</span>'}show("v2")};
 var SK="echo_sales_admin";
 function ldb(){try{return JSON.parse(localStorage.getItem(SK)||"[]")}catch(e){return[]}}
 function lsave(a){localStorage.setItem(SK,JSON.stringify(a))}
