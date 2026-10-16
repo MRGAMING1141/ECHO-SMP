@@ -82,6 +82,9 @@ nav a.on{color:var(--tx);border-bottom:2px solid var(--ac)}
 dialog .dg{background:#d33;color:#fff;border-color:#d33}
 body[data-v="terms"] .v-shop,body[data-v="terms"] .v-orders{display:none!important}
 body:not([data-v="terms"]) .v-terms{display:none!important}
+body[data-v="wiki"] .v-shop,body[data-v="wiki"] .v-orders,body[data-v="wiki"] .v-terms{display:none!important}
+body:not([data-v="wiki"]) .v-wiki{display:none!important}
+.wiki-grid{grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}.wiki-card{gap:12px;background:linear-gradient(145deg,rgba(255,255,255,.085),rgba(255,255,255,.025));border-color:var(--glass-line,rgba(255,255,255,.15));backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 12px 26px rgba(0,0,0,.12)}.wiki-card h3{font-size:1rem;line-height:1.35}.wiki-symbol{display:grid;place-items:center;width:48px;height:48px;border-radius:15px;font-size:1.6rem;background:linear-gradient(145deg,rgba(255,255,255,.15),rgba(143,134,255,.08));box-shadow:inset 3px 3px 7px rgba(255,255,255,.07),inset -4px -4px 10px rgba(0,0,0,.12),0 5px 0 rgba(7,5,28,.12)}.wiki-address{display:grid;gap:4px;padding:12px;border:1px solid var(--glass-line,rgba(255,255,255,.15));border-radius:12px;background:rgba(255,255,255,.045)}.wiki-address small{color:var(--mu)}.wiki-address b,.wiki-card code{overflow-wrap:anywhere}.wiki-address .buy{margin-top:5px}.wiki-card ul{margin:0;padding-left:20px;color:var(--mu)}.wiki-card li{margin:5px 0}.wiki-link{display:inline-flex;justify-content:center;align-items:center;text-decoration:none;text-align:center}
 .gh{border-color:var(--ln);color:var(--mu)}
 #admin{display:none}
 .tw{overflow-x:auto;border:1px solid var(--ln);border-radius:12px}
@@ -211,7 +214,7 @@ footer{border-top-color:rgba(255,255,255,.12)}
 <div class="ip"><div><small>Java Edition</small><b>play.echocore.fun</b><small>Port 19132</small></div><button id="cpJava">Copy Java</button></div><div class="ip" style="margin-top:10px"><div><small>Bedrock Edition</small><b>play.echocore.fun</b></div><button id="cpBedrock">Copy Bedrock</button></div>
 </div>
 </header>
-<nav><div class="wrap"><a href="#/" class="nav-brand" aria-label="Echo SMP home"><img src="https://raw.githubusercontent.com/MRGAMING1141/ECHO-SMP/refs/heads/main/file_0000000059b8820ea00ed1257ab7245c-1.png" alt="">Echo SMP</a><a href="#/" data-go="shop" id="nv-shop" class="">Shop</a><a href="#/orders" data-go="orders" id="nv-orders" class="on">My orders</a><a href="#/terms" data-go="terms" id="nv-terms" class="">Terms</a><a href="#/sales" data-go="sales" id="navadm" class="">Sales log</a></div></nav>
+<nav><div class="wrap"><a href="#/" class="nav-brand" aria-label="Echo SMP home"><img src="https://raw.githubusercontent.com/MRGAMING1141/ECHO-SMP/refs/heads/main/file_0000000059b8820ea00ed1257ab7245c-1.png" alt="">Echo SMP</a><a href="#/" data-go="shop" id="nv-shop" class="">Shop</a><a href="#/wiki" data-go="wiki" id="nv-wiki" class="">Echo SMP Wiki</a><a href="#/orders" data-go="orders" id="nv-orders" class="on">My orders</a><a href="#/terms" data-go="terms" id="nv-terms" class="">Terms</a><a href="#/sales" data-go="sales" id="navadm" class="">Sales log</a></div></nav>
 <main class="wrap">
 <section class="v-shop" style="padding-top:24px">
   <div class="searchbox">
@@ -234,6 +237,23 @@ footer{border-top-color:rgba(255,255,255,.12)}
   <div id="noRes" class="empty" style="display:none">No products match. Try another search or filter.</div>
   <div class="flash">
     <strong>⚡ ECHO DEALS</strong> — Add your favorite products to wishlist and find them faster next time.
+  </div>
+</section>
+
+<section id="wiki" class="v-wiki">
+  <h2>📘 Echo SMP Wiki</h2>
+  <p class="sub">Everything you need to join the server, connect with the community, and get started.</p>
+  <div class="grid wiki-grid">
+    <article class="card wiki-card"><div class="wiki-symbol">🎮</div><h3>How to join the server</h3><p class="d">Open Minecraft, choose Multiplayer (Java) or Play → Servers (Bedrock), then add the server using the address below. Make sure your game version is supported by the server.</p>
+      <div class="wiki-address"><small>Server address</small><b>play.echocore.fun</b><button class="buy" data-copytext="play.echocore.fun">Copy address</button></div>
+      <div class="wiki-address"><small>Bedrock port</small><b>19132</b><button class="buy" data-copytext="19132">Copy port</button></div>
+      <p class="d"><b>Java:</b> Enter <code>play.echocore.fun:19132</code> if Java connections are enabled. <b>Bedrock:</b> enter <code>play.echocore.fun</code> and port <code>19132</code>.</p>
+    </article>
+    <article class="card wiki-card"><div class="wiki-symbol">💬</div><h3>Join the Discord</h3><p class="d">Join the Echo SMP Discord for community updates, announcements, support, and help with orders.</p><a class="buy wiki-link" href="https://discord.gg/HnwuRRdYXR" target="_blank" rel="noopener noreferrer">Join Echo SMP Discord ↗</a><p class="d">If an invite expires, ask a server staff member for a fresh invite.</p></article>
+    <article class="card wiki-card"><div class="wiki-symbol">🧭</div><h3>First steps</h3><ul><li>Read the server rules and announcements in Discord.</li><li>Use your correct Minecraft username when ordering from the shop.</li><li>Explore, gather resources, and build your base.</li><li>Use claim blocks to protect your land where supported.</li><li>Ask staff through the official Discord if you need help.</li></ul></article>
+    <article class="card wiki-card"><div class="wiki-symbol">🛍️</div><h3>Shop, payments & orders</h3><p class="d">Browse ranks, keys, and claim blocks in the Shop tab. Complete checkout instructions carefully, then save your sale ID to track your order.</p><p class="d">Open <b>My orders</b> to check progress. You can request cancellation only before the sales team accepts the order, according to the shop terms.</p><button class="buy" data-go="shop">Browse shop</button><button class="buy gh" data-go="orders">Track my order</button></article>
+    <article class="card wiki-card"><div class="wiki-symbol">🛡️</div><h3>Rules & fair play</h3><p class="d">Follow the rules posted by the Echo SMP team, respect other players, and listen to staff instructions. Check the official Discord for the latest rules and event-specific requirements.</p><a class="buy wiki-link" href="https://discord.gg/HnwuRRdYXR" target="_blank" rel="noopener noreferrer">Check rules on Discord ↗</a></article>
+    <article class="card wiki-card"><div class="wiki-symbol">❓</div><h3>Need help?</h3><p class="d">For connection problems, report your Minecraft edition, game version, and error message in Discord. For shop questions, include your sale ID—never share passwords or private payment details publicly.</p><a class="buy wiki-link" href="https://discord.gg/HnwuRRdYXR" target="_blank" rel="noopener noreferrer">Get help on Discord ↗</a></article>
   </div>
 </section>
 
@@ -683,7 +703,7 @@ async function refreshAdminOrders(password){
   $("unl").onclick=unlock;
   $("pw").onkeydown=function(e){if(e.key==="Enter")unlock()};
 })();
-function go(v){if($("dlg").open)$("dlg").close();document.body.dataset.v=v;["shop","orders","terms"].forEach(function(k){$("nv-"+k).className=k==v?"on":""});$("navadm").className=v=="sales"?"on":"";window.scrollTo(0,0);try{history.replaceState(null,"","#/"+(v=="shop"?"":v))}catch(e){}}
+function go(v){if($("dlg").open)$("dlg").close();document.body.dataset.v=v;["shop","wiki","orders","terms"].forEach(function(k){$("nv-"+k).className=k==v?"on":""});$("navadm").className=v=="sales"?"on":"";window.scrollTo(0,0);try{history.replaceState(null,"","#/"+(v=="shop"?"":v))}catch(e){}}
 var xo=null;
 document.addEventListener("click",function(e){var b=e.target.closest("[data-cx]");if(b){xo=getMine().filter(function(o){return o.id==b.dataset.cx})[0];if(!xo)return;$("xinfo").textContent=xo.id;$("xrs").value="";$("xdlg").showModal()}});
 $("xno").onclick=function(){$("xdlg").close();xo=null};
@@ -720,7 +740,8 @@ $("xyes").onclick=async function(){
 };
 document.addEventListener("click",function(e){var x=e.target.closest("[data-rm]");if(x){try{localStorage.setItem("echo_orders",JSON.stringify(getMine().filter(function(o){return o.id!=x.dataset.rm})))}catch(er){}drawMine()}});
 document.addEventListener("click",function(e){var a=e.target.closest("[data-go]");if(a){e.preventDefault();go(a.dataset.go)}});
-go(location.hash=="#/terms"?"terms":location.hash=="#/orders"?"orders":location.hash=="#/sales"?"sales":"shop");
+document.addEventListener("click",function(e){var b=e.target.closest("[data-copytext]");if(!b)return;var value=b.dataset.copytext;if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(value).then(function(){toast("Copied: "+value)}).catch(function(){toast("Copy failed — copy manually: "+value)})}else{toast("Copy this: "+value)}});
+go(location.hash=="#/terms"?"terms":location.hash=="#/orders"?"orders":location.hash=="#/sales"?"sales":location.hash=="#/wiki"?"wiki":"shop");
 render();
 
 /* Echo Shop V2 client features */
