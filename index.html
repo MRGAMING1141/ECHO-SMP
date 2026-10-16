@@ -396,7 +396,9 @@ $("cpJava").onclick=function(){copy("play.echocore.fun:19132","Java server addre
 var cart={},sale=null;
 var PROFILE_KEY="echo_minecraft_profile_v1";
 function getProfile(){try{var p=JSON.parse(localStorage.getItem(PROFILE_KEY)||"null");return p&&typeof p.username==="string"?p:null}catch(e){return null}}
-function normalizeMinecraftName(name){return String(name||"").replace(/\s/g,"_")}\nfunction normalizeMinecraftInput(el){if(el&&/\s/.test(el.value))el.value=normalizeMinecraftName(el.value)}\nfunction validMinecraftName(name){return /^[A-Za-z0-9_]{3,16}$/.test(name)}
+function normalizeMinecraftName(name){return String(name||"").replace(/\s/g,"_")}
+function normalizeMinecraftInput(el){if(el&&/\s/.test(el.value))el.value=normalizeMinecraftName(el.value)}
+function validMinecraftName(name){return /^[A-Za-z0-9_]{3,16}$/.test(name)}
 function paintProfile(){var p=getProfile(),out=$("profileSignedOut"),inside=$("profileSignedIn"),nav=$("nv-profile");if(p&&!validMinecraftName(p.username))p=null;document.body.dataset.auth=p?"yes":"no";if(out)out.hidden=!!p;if(inside)inside.hidden=!p;if(p){$("profileName").textContent=p.username;$("profileIgn").value=p.username;if(nav)nav.textContent="Profile"}else{if(nav)nav.textContent="Login"}}
 function saveProfileName(value,announce){var name=normalizeMinecraftName(value).trim();if(!validMinecraftName(name)){if($("profileMessage"))$("profileMessage").textContent="Enter a valid Minecraft username (3–16 letters, numbers, or underscores).";toast("Check your Minecraft username");return false}try{localStorage.setItem(PROFILE_KEY,JSON.stringify({username:name,updatedAt:Date.now()}))}catch(e){if($("profileMessage"))$("profileMessage").textContent="Browser storage is unavailable. Check your browser settings.";toast("Could not save username in this browser");return false}paintProfile();if($("ign"))$("ign").value=name;if($("profileMessage"))$("profileMessage").textContent=announce===false?"":"Username saved on this browser. Checkout will fill it automatically.";return true}
 function total(){var t=0,c=0;for(var k in cart){t+=cart[k].p*cart[k].q;c+=cart[k].q}return[t,c]}
@@ -414,8 +416,10 @@ $("co").onclick=function(){show("v1");var p=getProfile();if(p)$("ign").value=p.u
 $("profileSave").onclick=function(){if(saveProfileName($("profileIgn").value,true)){go("shop");toast("Welcome to Echo SMP, "+getProfile().username+"!")}};
 $("profileEdit").onclick=function(){try{localStorage.removeItem(PROFILE_KEY)}catch(e){}paintProfile();$("profileSignedOut").hidden=false;$("profileSignedIn").hidden=true;$("profileIgn").value="";$("profileMessage").textContent="Enter the other Minecraft username and save to continue.";$("profileIgn").focus();go("profile")};
 $("profileLogout").onclick=function(){try{localStorage.removeItem(PROFILE_KEY)}catch(e){}$("profileMessage").textContent="Logged out. Sign in with a Minecraft username to continue.";$("profileIgn").value="";paintProfile();go("profile");toast("You have logged out")};
-$("profileIgn").addEventListener("input",function(){normalizeMinecraftInput(this)});\n$("profileIgn").addEventListener("keydown",function(e){if(e.key==="Enter"){e.preventDefault();saveProfileName($("profileIgn").value,true)}});
-$("ign").addEventListener("input",function(){normalizeMinecraftInput(this)});\n$("ign").addEventListener("change",function(){var name=normalizeMinecraftName($("ign").value).trim();$("ign").value=name;if(validMinecraftName(name))saveProfileName(name,false)});
+$("profileIgn").addEventListener("input",function(){normalizeMinecraftInput(this)});
+$("profileIgn").addEventListener("keydown",function(e){if(e.key==="Enter"){e.preventDefault();saveProfileName($("profileIgn").value,true)}});
+$("ign").addEventListener("input",function(){normalizeMinecraftInput(this)});
+$("ign").addEventListener("change",function(){var name=normalizeMinecraftName($("ign").value).trim();$("ign").value=name;if(validMinecraftName(name))saveProfileName(name,false)});
 $("x1").onclick=function(){$("dlg").close()};
 $("back").onclick=function(){show("v1")};
 $("go").onclick=function(){if(!$("agree").checked){toast("Please agree to the terms to continue");return}if(!$("ign").value.trim()){toast("Enter your Minecraft username");$("ign").focus();return}
