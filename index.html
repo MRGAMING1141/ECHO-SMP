@@ -7,7 +7,7 @@
 <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/MRGAMING1141/ECHO-SMP/refs/heads/main/file_0000000059b8820ea00ed1257ab7245c-1.png">
 <meta property="og:title" content="Echo SMP Shop">
 <meta property="og:image" content="https://raw.githubusercontent.com/MRGAMING1141/ECHO-SMP/refs/heads/main/file_0000000059b8820ea00ed1257ab7245c-1.png">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&amp;family=Figtree:wght@400;600&amp;display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&amp;family=Figtree:wght@400;600&amp;family=Press+Start+2P&amp;display=swap">
 <style>
 :root{--bg:#13112e;--sf:#1e1b45;--ln:#37337a;--tx:#efecff;--mu:#a9a4d6;--ac:#ff7a66;--ac2:#8f86ff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f1efff;--sf:#fff;--ln:#cfcaf5;--tx:#1a1740;--mu:#5d588f;--ac:#e0452f;--ac2:#5a4ee0}}
@@ -212,6 +212,44 @@ footer{border-top-color:rgba(255,255,255,.12)}
 
 /* Local Minecraft username profile */
 .profile-card{max-width:560px;margin:18px 0 0}.profile-help{font-size:.88rem;margin:8px 0 14px}.profile-avatar{display:grid;place-items:center;width:64px;height:64px;overflow:hidden;border-radius:18px;background:linear-gradient(145deg,rgba(255,255,255,.14),rgba(143,134,255,.08));box-shadow:inset 3px 3px 7px rgba(255,255,255,.07),inset -4px -4px 10px rgba(0,0,0,.12);margin-bottom:14px}.profile-avatar img{display:block;width:100%;height:100%;object-fit:cover;image-rendering:pixelated}.profile-username{font-family:Unbounded,system-ui,sans-serif;font-size:1.3rem;overflow-wrap:anywhere;color:var(--ac2);margin:5px 0 14px}.profile-card .row{flex-wrap:wrap}.profile-card .row .buy{flex:1;min-width:130px}
+
+/* Minecraft-inspired block world theme */
+:root{--bg:#101a13;--sf:#1c2b20;--ln:#45634a;--tx:#f0f7e9;--mu:#b0c4ad;--ac:#7bd34b;--ac2:#5bc8e8}
+:root:not([data-theme="dark"]){--bg:#101a13;--sf:#1c2b20;--ln:#45634a;--tx:#f0f7e9;--mu:#b0c4ad;--ac:#7bd34b;--ac2:#5bc8e8}
+:root[data-theme="dark"]{--bg:#101a13;--sf:#1c2b20;--ln:#45634a;--tx:#f0f7e9;--mu:#b0c4ad;--ac:#7bd34b;--ac2:#5bc8e8}
+body{background-color:var(--bg);background-image:linear-gradient(90deg,rgba(120,190,90,.035) 1px,transparent 1px),linear-gradient(rgba(120,190,90,.035) 1px,transparent 1px),radial-gradient(ellipse at 50% -10%,rgba(91,200,232,.14),transparent 52%);background-size:24px 24px,24px 24px,auto}
+h1,h2,h3{text-shadow:3px 3px 0 rgba(0,0,0,.28)}
+h1{color:#f3ffe9;text-shadow:4px 4px 0 #31563a,7px 7px 0 rgba(0,0,0,.22)}
+.hero{background:linear-gradient(180deg,rgba(91,200,232,.09),transparent 78%)}
+nav{background:rgba(16,26,19,.94);backdrop-filter:blur(12px);border-bottom:4px solid #34553a;box-shadow:0 4px 0 rgba(0,0,0,.18)}
+nav a{padding:8px 10px;border:2px solid transparent}
+nav a.on{color:#eaffdf;background:#29472c;border-color:#547e49;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)}
+.nav-brand img{image-rendering:pixelated}
+.ip,.card,dialog,.profile-avatar,.note,.searchbox,.filters,.stat,.wiki-card{border-radius:4px}
+.ip,.card,dialog,.profile-card{box-shadow:5px 5px 0 rgba(0,0,0,.22)}
+.card{position:relative;border:2px solid var(--ln);background:linear-gradient(145deg,rgba(255,255,255,.035),transparent 55%),var(--sf)}
+.card.top{border:3px solid #7bd34b;background:linear-gradient(120deg,#263f29,#17271b)}
+.card .p{color:#a5ef78;text-shadow:2px 2px 0 rgba(0,0,0,.3)}
+.buy,.ip button,#bar .buy{border-radius:3px;border:2px solid #4d9139;box-shadow:inset 0 -4px 0 rgba(0,0,0,.22),0 3px 0 rgba(0,0,0,.25);background:#70c843;color:#10200f;transition:transform .12s,filter .12s}
+.buy:hover,.ip button:hover,#bar .buy:hover{background:#8be65c;color:#10200f;filter:brightness(1.04);transform:translateY(-1px)}
+.buy:active,.ip button:active,#bar .buy:active{transform:translateY(2px);box-shadow:inset 0 -1px 0 rgba(0,0,0,.2)}
+.buy.gh{background:#283b2b;border-color:#45634a;color:var(--tx)}
+.buy.gh:hover{background:#345238;color:#fff}
+.filter{border-radius:3px;border:2px solid var(--ln);background:#1c2b20;color:var(--mu);box-shadow:0 3px 0 rgba(0,0,0,.18)}
+.filter.on,.filter:hover{background:#315d32;color:#f3ffe9;border-color:#79c94e}
+input,textarea{border-radius:3px;border:2px solid #45634a;background:#111e15;box-shadow:inset 3px 3px 0 rgba(0,0,0,.18)}
+input:focus,textarea:focus{border-color:var(--ac);outline-offset:2px}
+.note{border-left:5px solid var(--ac);background:linear-gradient(90deg,rgba(123,211,75,.1),transparent),var(--sf)}
+#bar{background:rgba(20,34,23,.97);border-top:4px solid #70c843;box-shadow:0 -4px 0 rgba(0,0,0,.15);backdrop-filter:blur(12px)}
+dialog{border:3px solid #527a4c;box-shadow:8px 8px 0 rgba(0,0,0,.32)}
+dialog::backdrop{background:rgba(4,12,6,.78)}
+.profile-avatar{border:3px solid #527a4c;box-shadow:4px 4px 0 rgba(0,0,0,.24)}
+.profile-username{color:#a5ef78}
+footer{border-top:3px solid #34553a}
+::selection{background:#70c843;color:#10200f}
+@media(max-width:600px){.wrap{padding-left:14px;padding-right:14px}.hero{padding:56px 0 42px}.card{box-shadow:3px 3px 0 rgba(0,0,0,.2)}}
+@media(prefers-reduced-motion:reduce){.buy,.ip button,#bar .buy{transition:none}}
+
 </style>
 </head>
 <body>
