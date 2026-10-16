@@ -82,7 +82,9 @@ nav a.on{color:var(--tx);border-bottom:2px solid var(--ac)}
 dialog .dg{background:#d33;color:#fff;border-color:#d33}
 body[data-v="terms"] .v-shop,body[data-v="terms"] .v-orders{display:none!important}
 body:not([data-v="terms"]) .v-terms{display:none!important}
-body[data-v="wiki"] .v-shop,body[data-v="wiki"] .v-orders,body[data-v="wiki"] .v-terms{display:none!important}
+body[data-v="wiki"] .v-shop,body[data-v="wiki"] .v-orders,body[data-v="wiki"] .v-terms,body[data-v="wiki"] .v-profile{display:none!important}
+body[data-v="profile"] .v-shop,body[data-v="profile"] .v-orders,body[data-v="profile"] .v-terms,body[data-v="profile"] .v-wiki{display:none!important}
+body:not([data-v="profile"]) .v-profile{display:none!important}
 body:not([data-v="wiki"]) .v-wiki{display:none!important}
 .wiki-grid{grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}.wiki-card{gap:12px;background:linear-gradient(145deg,rgba(255,255,255,.085),rgba(255,255,255,.025));border-color:var(--glass-line,rgba(255,255,255,.15));backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 12px 26px rgba(0,0,0,.12)}.wiki-card h3{font-size:1rem;line-height:1.35}.wiki-symbol{display:grid;place-items:center;width:48px;height:48px;border-radius:15px;font-size:1.6rem;background:linear-gradient(145deg,rgba(255,255,255,.15),rgba(143,134,255,.08));box-shadow:inset 3px 3px 7px rgba(255,255,255,.07),inset -4px -4px 10px rgba(0,0,0,.12),0 5px 0 rgba(7,5,28,.12)}.wiki-address{display:grid;gap:4px;padding:12px;border:1px solid var(--glass-line,rgba(255,255,255,.15));border-radius:12px;background:rgba(255,255,255,.045)}.wiki-address small{color:var(--mu)}.wiki-address b,.wiki-card code{overflow-wrap:anywhere}.wiki-address .buy{margin-top:5px}.wiki-card ul{margin:0;padding-left:20px;color:var(--mu)}.wiki-card li{margin:5px 0}.wiki-link{display:inline-flex;justify-content:center;align-items:center;text-decoration:none;text-align:center}
 .gh{border-color:var(--ln);color:var(--mu)}
@@ -203,6 +205,9 @@ footer{border-top-color:rgba(255,255,255,.12)}
  *,*:before,*:after{scroll-behavior:auto!important;transition:none!important;animation:none!important}
 }
 
+
+/* Local Minecraft username profile */
+.profile-card{max-width:560px;margin:18px 0 0}.profile-help{font-size:.88rem;margin:8px 0 14px}.profile-avatar{display:grid;place-items:center;width:58px;height:58px;border-radius:18px;font-size:1.8rem;background:linear-gradient(145deg,rgba(255,255,255,.14),rgba(143,134,255,.08));box-shadow:inset 3px 3px 7px rgba(255,255,255,.07),inset -4px -4px 10px rgba(0,0,0,.12);margin-bottom:14px}.profile-username{font-family:Unbounded,system-ui,sans-serif;font-size:1.3rem;overflow-wrap:anywhere;color:var(--ac2);margin:5px 0 14px}.profile-card .row{flex-wrap:wrap}.profile-card .row .buy{flex:1;min-width:130px}
 </style>
 </head>
 <body>
@@ -214,8 +219,28 @@ footer{border-top-color:rgba(255,255,255,.12)}
 <div class="ip"><div><small>Java Edition</small><b>play.echocore.fun</b><small>Port 19132</small></div><button id="cpJava">Copy Java</button></div><div class="ip" style="margin-top:10px"><div><small>Bedrock Edition</small><b>play.echocore.fun</b></div><button id="cpBedrock">Copy Bedrock</button></div>
 </div>
 </header>
-<nav><div class="wrap"><a href="#/wiki" data-go="wiki" id="nv-brand" class="nav-brand" aria-label="Open Echo SMP Wiki"><img src="https://raw.githubusercontent.com/MRGAMING1141/ECHO-SMP/refs/heads/main/file_0000000059b8820ea00ed1257ab7245c-1.png" alt="">Echo SMP</a><a href="#/" data-go="shop" id="nv-shop" class="">Shop</a><a href="#/orders" data-go="orders" id="nv-orders" class="on">My orders</a><a href="#/terms" data-go="terms" id="nv-terms" class="">Terms</a><a href="#/sales" data-go="sales" id="navadm" class="">Sales log</a></div></nav>
+<nav><div class="wrap"><a href="#/wiki" data-go="wiki" id="nv-brand" class="nav-brand" aria-label="Open Echo SMP Wiki"><img src="https://raw.githubusercontent.com/MRGAMING1141/ECHO-SMP/refs/heads/main/file_0000000059b8820ea00ed1257ab7245c-1.png" alt="">Echo SMP</a><a href="#/" data-go="shop" id="nv-shop" class="">Shop</a><a href="#/profile" data-go="profile" id="nv-profile" class="">Login</a><a href="#/orders" data-go="orders" id="nv-orders" class="on">My orders</a><a href="#/terms" data-go="terms" id="nv-terms" class="">Terms</a><a href="#/sales" data-go="sales" id="navadm" class="">Sales log</a></div></nav>
 <main class="wrap">
+<section id="profile" class="v-profile" style="padding-top:24px">
+  <h2>👤 Minecraft Login</h2>
+  <p class="sub">Save your Minecraft username on this browser for faster checkout. No password or account connection is required.</p>
+  <div class="card profile-card">
+    <div id="profileSignedOut">
+      <label for="profileIgn">Minecraft username</label>
+      <input id="profileIgn" autocomplete="nickname" maxlength="16" autocapitalize="none" spellcheck="false" placeholder="Enter your Minecraft username">
+      <p class="sub profile-help">Use your in-game username (3–16 letters, numbers, or underscores). Your name stays in this browser only.</p>
+      <button class="buy" id="profileSave" type="button">Save username</button>
+    </div>
+    <div id="profileSignedIn" hidden>
+      <div class="profile-avatar">⛏️</div>
+      <div class="n">Username saved on this browser</div>
+      <p class="sub">Minecraft username</p>
+      <div class="profile-username" id="profileName"></div>
+      <div class="row"><button class="buy" id="profileEdit" type="button">Change username</button><button class="buy gh" id="profileLogout" type="button">Log out</button></div>
+    </div>
+    <p id="profileMessage" class="sub" role="status" aria-live="polite" style="margin:12px 0 0"></p>
+  </div>
+</section>
 <section class="v-shop" style="padding-top:24px">
   <div class="searchbox">
     <input id="search" placeholder="🔎 Search ranks, keys, claims..." autocomplete="off">
@@ -365,6 +390,11 @@ function copy(s,m){try{navigator.clipboard.writeText(s).then(function(){toast(m)
 $("cpJava").onclick=function(){copy("play.echocore.fun:19132","Java server address copied.")};$("cpBedrock").onclick=function(){copy("play.echocore.fun","Bedrock server address copied.")};
 
 var cart={},sale=null;
+var PROFILE_KEY="echo_minecraft_profile_v1";
+function getProfile(){try{var p=JSON.parse(localStorage.getItem(PROFILE_KEY)||"null");return p&&typeof p.username==="string"?p:null}catch(e){return null}}
+function validMinecraftName(name){return /^[A-Za-z0-9_]{3,16}$/.test(name)}
+function paintProfile(){var p=getProfile(),out=$("profileSignedOut"),inside=$("profileSignedIn"),nav=$("nv-profile");if(out)out.hidden=!!p;if(inside)inside.hidden=!p;if(p){$("profileName").textContent=p.username;$("profileIgn").value=p.username;if(nav)nav.textContent="Profile"}else{if(nav)nav.textContent="Login"}}
+function saveProfileName(value,announce){var name=String(value||"").trim();if(!validMinecraftName(name)){if($("profileMessage"))$("profileMessage").textContent="Enter a valid Minecraft username (3–16 letters, numbers, or underscores).";toast("Check your Minecraft username");return false}try{localStorage.setItem(PROFILE_KEY,JSON.stringify({username:name,updatedAt:Date.now()}))}catch(e){if($("profileMessage"))$("profileMessage").textContent="Browser storage is unavailable. Check your browser settings.";toast("Could not save username in this browser");return false}paintProfile();if($("ign"))$("ign").value=name;if($("profileMessage"))$("profileMessage").textContent=announce===false?"":"Username saved on this browser. Checkout will fill it automatically.";return true}
 function total(){var t=0,c=0;for(var k in cart){t+=cart[k].p*cart[k].q;c+=cart[k].q}return[t,c]}
 function render(){var s=total();$("bar").className=s[1]?"on":"";$("bc").textContent=s[1]+(s[1]==1?" item":" items");$("bt").textContent="₹"+s[0];
 var l="";for(var k in cart)l+='<div style="align-items:center"><span>'+esc(k)+'<br><small>₹'+cart[k].p*cart[k].q+'</small></span><span style="display:flex;align-items:center;gap:6px"><button class="st" data-dec="'+esc(k)+'" aria-label="Less">−</button><b>'+cart[k].q+'</b><button class="st" data-inc="'+esc(k)+'" aria-label="More">+</button><button class="st dg" data-r="'+esc(k)+'" aria-label="Remove '+esc(k)+'">Remove</button></span></div>';
@@ -376,7 +406,12 @@ var r=e.target.closest("[data-r]");if(r){delete cart[r.dataset.r];render()}
 var i=e.target.closest("[data-inc]");if(i&&cart[i.dataset.inc]){cart[i.dataset.inc].q++;render()}
 var d=e.target.closest("[data-dec]");if(d&&cart[d.dataset.dec]){if(--cart[d.dataset.dec].q<=0)delete cart[d.dataset.dec];render()}});
 function show(v){["v1","v2","v3"].forEach(function(i){$(i).hidden=i!=v})}
-$("co").onclick=function(){show("v1");$("dlg").showModal()};
+$("co").onclick=function(){show("v1");var p=getProfile();if(p)$("ign").value=p.username;$("dlg").showModal()};
+$("profileSave").onclick=function(){saveProfileName($("profileIgn").value,true)};
+$("profileEdit").onclick=function(){$("profileSignedIn").hidden=true;$("profileSignedOut").hidden=false;$("profileIgn").value=(getProfile()||{}).username||"";$("profileMessage").textContent="Update the username and save it.";$("profileIgn").focus()};
+$("profileLogout").onclick=function(){try{localStorage.removeItem(PROFILE_KEY)}catch(e){}$("profileMessage").textContent="Username removed from this browser.";$("profileIgn").value="";paintProfile()};
+$("profileIgn").addEventListener("keydown",function(e){if(e.key==="Enter"){e.preventDefault();saveProfileName($("profileIgn").value,true)}});
+$("ign").addEventListener("change",function(){var name=$("ign").value.trim();if(validMinecraftName(name))saveProfileName(name,false)});
 $("x1").onclick=function(){$("dlg").close()};
 $("back").onclick=function(){show("v1")};
 $("go").onclick=function(){if(!$("agree").checked){toast("Please agree to the terms to continue");return}if(!$("ign").value.trim()){toast("Enter your Minecraft username");$("ign").focus();return}
@@ -703,7 +738,7 @@ async function refreshAdminOrders(password){
   $("unl").onclick=unlock;
   $("pw").onkeydown=function(e){if(e.key==="Enter")unlock()};
 })();
-function go(v){if($("dlg").open)$("dlg").close();document.body.dataset.v=v;["shop","orders","terms"].forEach(function(k){$("nv-"+k).className=k==v?"on":""});$("nv-brand").className="nav-brand"+(v=="wiki"?" on":"");$("navadm").className=v=="sales"?"on":"";window.scrollTo(0,0);try{history.replaceState(null,"","#/"+(v=="shop"?"":v))}catch(e){}}
+function go(v){if($("dlg").open)$("dlg").close();document.body.dataset.v=v;["shop","profile","orders","terms"].forEach(function(k){$("nv-"+k).className=k==v?"on":""});$("nv-brand").className="nav-brand"+(v=="wiki"?" on":"");$("navadm").className=v=="sales"?"on":"";if(v=="profile"){var p=getProfile();$("profileMessage").textContent=p?"Your username is saved on this browser.":"No username saved yet.";paintProfile()}window.scrollTo(0,0);try{history.replaceState(null,"","#/"+(v=="shop"?"":v))}catch(e){}}
 var xo=null;
 document.addEventListener("click",function(e){var b=e.target.closest("[data-cx]");if(b){xo=getMine().filter(function(o){return o.id==b.dataset.cx})[0];if(!xo)return;$("xinfo").textContent=xo.id;$("xrs").value="";$("xdlg").showModal()}});
 $("xno").onclick=function(){$("xdlg").close();xo=null};
@@ -741,7 +776,8 @@ $("xyes").onclick=async function(){
 document.addEventListener("click",function(e){var x=e.target.closest("[data-rm]");if(x){try{localStorage.setItem("echo_orders",JSON.stringify(getMine().filter(function(o){return o.id!=x.dataset.rm})))}catch(er){}drawMine()}});
 document.addEventListener("click",function(e){var a=e.target.closest("[data-go]");if(a){e.preventDefault();go(a.dataset.go)}});
 document.addEventListener("click",function(e){var b=e.target.closest("[data-copytext]");if(!b)return;var value=b.dataset.copytext;if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(value).then(function(){toast("Copied: "+value)}).catch(function(){toast("Copy failed — copy manually: "+value)})}else{toast("Copy this: "+value)}});
-go(location.hash=="#/terms"?"terms":location.hash=="#/orders"?"orders":location.hash=="#/sales"?"sales":location.hash=="#/wiki"?"wiki":"shop");
+paintProfile();
+go(location.hash=="#/terms"?"terms":location.hash=="#/orders"?"orders":location.hash=="#/sales"?"sales":location.hash=="#/wiki"?"wiki":location.hash=="#/profile"?"profile":"shop");
 render();
 
 /* Echo Shop V2 client features */
