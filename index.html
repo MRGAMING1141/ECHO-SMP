@@ -214,7 +214,7 @@ footer{border-top-color:rgba(255,255,255,.12)}
 <div class="ip"><div><small>Java Edition</small><b>play.echocore.fun</b><small>Port 19132</small></div><button id="cpJava">Copy Java</button></div><div class="ip" style="margin-top:10px"><div><small>Bedrock Edition</small><b>play.echocore.fun</b></div><button id="cpBedrock">Copy Bedrock</button></div>
 </div>
 </header>
-<nav><div class="wrap"><a href="#/" class="nav-brand" aria-label="Echo SMP home"><img src="https://raw.githubusercontent.com/MRGAMING1141/ECHO-SMP/refs/heads/main/file_0000000059b8820ea00ed1257ab7245c-1.png" alt="">Echo SMP</a><a href="#/" data-go="shop" id="nv-shop" class="">Shop</a><a href="#/wiki" data-go="wiki" id="nv-wiki" class="">Echo SMP Wiki</a><a href="#/orders" data-go="orders" id="nv-orders" class="on">My orders</a><a href="#/terms" data-go="terms" id="nv-terms" class="">Terms</a><a href="#/sales" data-go="sales" id="navadm" class="">Sales log</a></div></nav>
+<nav><div class="wrap"><a href="#/wiki" data-go="wiki" id="nv-brand" class="nav-brand" aria-label="Open Echo SMP Wiki"><img src="https://raw.githubusercontent.com/MRGAMING1141/ECHO-SMP/refs/heads/main/file_0000000059b8820ea00ed1257ab7245c-1.png" alt="">Echo SMP</a><a href="#/" data-go="shop" id="nv-shop" class="">Shop</a><a href="#/orders" data-go="orders" id="nv-orders" class="on">My orders</a><a href="#/terms" data-go="terms" id="nv-terms" class="">Terms</a><a href="#/sales" data-go="sales" id="navadm" class="">Sales log</a></div></nav>
 <main class="wrap">
 <section class="v-shop" style="padding-top:24px">
   <div class="searchbox">
@@ -703,7 +703,7 @@ async function refreshAdminOrders(password){
   $("unl").onclick=unlock;
   $("pw").onkeydown=function(e){if(e.key==="Enter")unlock()};
 })();
-function go(v){if($("dlg").open)$("dlg").close();document.body.dataset.v=v;["shop","wiki","orders","terms"].forEach(function(k){$("nv-"+k).className=k==v?"on":""});$("navadm").className=v=="sales"?"on":"";window.scrollTo(0,0);try{history.replaceState(null,"","#/"+(v=="shop"?"":v))}catch(e){}}
+function go(v){if($("dlg").open)$("dlg").close();document.body.dataset.v=v;["shop","orders","terms"].forEach(function(k){$("nv-"+k).className=k==v?"on":""});$("nv-brand").className="nav-brand"+(v=="wiki"?" on":"");$("navadm").className=v=="sales"?"on":"";window.scrollTo(0,0);try{history.replaceState(null,"","#/"+(v=="shop"?"":v))}catch(e){}}
 var xo=null;
 document.addEventListener("click",function(e){var b=e.target.closest("[data-cx]");if(b){xo=getMine().filter(function(o){return o.id==b.dataset.cx})[0];if(!xo)return;$("xinfo").textContent=xo.id;$("xrs").value="";$("xdlg").showModal()}});
 $("xno").onclick=function(){$("xdlg").close();xo=null};
