@@ -116,6 +116,16 @@ th{background:var(--sf);color:var(--mu)}
 .empty{text-align:center;padding:28px;color:var(--mu);border:1px dashed var(--ln);border-radius:14px}
 @media(max-width:600px){.stats{grid-template-columns:repeat(2,1fr)}.searchbox{position:sticky;top:48px;z-index:4;background:var(--bg);padding:8px 0}.card{padding:15px}}
 
+/* Category icons and product visual polish */
+.section-title{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.category-icon{display:inline-flex;align-items:center;justify-content:center;flex:0 0 46px;width:46px;height:46px;border:1px solid var(--ln);border-radius:14px;background:linear-gradient(145deg,var(--sf),var(--bg));font-family:system-ui,sans-serif;font-size:1.55rem;box-shadow:0 6px 18px rgba(0,0,0,.12)}
+.rank-icon{border-color:rgba(255,193,7,.45)}
+.key-icon{border-color:rgba(143,134,255,.6)}
+.claim-icon{border-color:rgba(72,190,145,.5)}
+.card .product-heading{display:flex;align-items:center;gap:10px;margin-bottom:5px}
+.product-icon{display:inline-flex;align-items:center;justify-content:center;flex:0 0 42px;width:42px;height:42px;border:1px solid var(--ln);border-radius:12px;background:var(--bg);font-family:system-ui,sans-serif;font-size:1.35rem}
+.product-heading .n{min-width:0}
+@media(max-width:520px){.category-icon{flex-basis:40px;width:40px;height:40px;font-size:1.35rem;border-radius:12px}.section-title{gap:9px}.product-icon{flex-basis:36px;width:36px;height:36px;font-size:1.2rem}}
 /* Echo SMP brand logo */
 .brand-lockup{display:flex;align-items:center;justify-content:center;gap:16px;margin:0 auto 14px}
 .brand-lockup img{width:clamp(72px,14vw,124px);height:clamp(72px,14vw,124px);object-fit:contain;border-radius:22px;filter:drop-shadow(0 8px 20px rgba(0,0,0,.22))}
@@ -164,10 +174,10 @@ footer .footer-brand img{width:38px;height:38px;object-fit:contain;border-radius
   </div>
 </section>
 
-<section id="ranks" class="v-shop"><h2>Monthly ranks</h2><p class="sub">Each rank lasts one month. Founder is permanent.</p><div class="grid" id="g-ranks"></div></section>
-<section id="keys" class="v-shop"><h2>Keys</h2><p class="sub">Pick a bundle and open crates in game.</p><div class="grid" id="g-keys"></div>
+<section id="ranks" class="v-shop"><h2 class="section-title"><span class="category-icon rank-icon" aria-hidden="true">🏆</span> Monthly ranks</h2><p class="sub">Each rank lasts one month. Founder is permanent.</p><div class="grid" id="g-ranks"></div></section>
+<section id="keys" class="v-shop"><h2 class="section-title"><span class="category-icon key-icon" aria-hidden="true">🔑</span> Keys</h2><p class="sub">Pick a bundle and open crates in game.</p><div class="grid" id="g-keys"></div>
 <div class="note"><b>Tip:</b> the Common Crate can give you any key when you spin it, so it is one of the best value picks.</div></section>
-<section id="claims" class="v-shop"><h2>Claim blocks</h2><p class="sub">Protect more land for your base.</p><div class="grid" id="g-claims"></div></section>
+<section id="claims" class="v-shop"><h2 class="section-title"><span class="category-icon claim-icon" aria-hidden="true">🛡️</span> Claim blocks</h2><p class="sub">Protect more land for your base.</p><div class="grid" id="g-claims"></div></section>
 <section id="orders" class="v-orders"><h2>My orders</h2><p class="sub">See what you bought and whether it was delivered. Orders you place on this device show up here automatically.</p>
 <div id="myl"></div>
 <div class="card" style="max-width:420px;margin-top:14px"><div class="n">Track an order</div>
@@ -252,11 +262,13 @@ var $=function(i){return document.getElementById(i)};
 function esc(s){var d=document.createElement("div");d.textContent=s;return d.innerHTML}
 function card(name,price,unit,desc,cls){
  var cat=cls&&cls.indexOf("rank")>=0?"ranks":cls&&cls.indexOf("key")>=0?"keys":cls&&cls.indexOf("claim")>=0?"claims":"product";
+ var symbol=cat==="ranks"?"🏆":cat==="keys"?"🔑":cat==="claims"?"🛡️":"🎁";
+ if(name==="Founder")symbol="👑";
  var hot=POP.indexOf(name)>=0?"best":"";
  return '<div class="card productCard '+(cls||'')+'" data-cat="'+cat+'" data-name="'+esc(name.toLowerCase())+'" data-desc="'+esc(desc.toLowerCase())+'">'+
  '<div class="badges">'+(hot?'<span class="badge '+hot+'">★ POPULAR</span>':'')+(VAL.indexOf(name)>=0?'<span class="badge hot">BEST VALUE</span>':'')+'<span class="badge">'+cat.toUpperCase()+'</span></div>'+
- '<div class="t"><div class="n">'+name+'</div><div class="d">'+desc+'</div></div>'+
- '<div class="p">₹'+price+(unit?' <span>'+unit+'</span>':'')+'</div>'+
+ '<div class="t"><div class="product-heading"><span class="product-icon" aria-hidden="true">'+symbol+'</span><div class="n">'+esc(name)+'</div></div><div class="d">'+esc(desc)+'</div></div>'+
+ '<div class="p">₹'+price+(unit?' <span>'+esc(unit)+'</span>':'')+'</div>'+
  '<div class="actions"><button class="wish" data-wish="'+esc(name)+'" aria-label="Favorite '+esc(name)+'">♡</button>'+
  '<button class="buy" data-n="'+esc(name)+'" data-p="'+price+'">Add to cart</button></div></div>'
 }
