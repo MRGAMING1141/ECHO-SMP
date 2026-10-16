@@ -3,6 +3,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Echo SMP Shop</title>
+<link rel="icon" type="image/png" href="https://raw.githubusercontent.com/MRGAMING1141/ECHO-SMP/refs/heads/main/file_0000000059b8820ea00ed1257ab7245c-1.png">
+<meta property="og:title" content="Echo SMP Shop">
+<meta property="og:image" content="https://raw.githubusercontent.com/MRGAMING1141/ECHO-SMP/refs/heads/main/file_0000000059b8820ea00ed1257ab7245c-1.png">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&amp;family=Figtree:wght@400;600&amp;display=swap">
 <style>
 :root{--bg:#13112e;--sf:#1e1b45;--ln:#37337a;--tx:#efecff;--mu:#a9a4d6;--ac:#ff7a66;--ac2:#8f86ff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -111,18 +114,30 @@ th{background:var(--sf);color:var(--mu)}
 .flash strong{color:var(--ac)}
 .empty{text-align:center;padding:28px;color:var(--mu);border:1px dashed var(--ln);border-radius:14px}
 @media(max-width:600px){.stats{grid-template-columns:repeat(2,1fr)}.searchbox{position:sticky;top:48px;z-index:4;background:var(--bg);padding:8px 0}.card{padding:15px}}
+
+/* Echo SMP brand logo */
+.brand-lockup{display:flex;align-items:center;justify-content:center;gap:16px;margin:0 auto 14px}
+.brand-lockup img{width:clamp(72px,14vw,124px);height:clamp(72px,14vw,124px);object-fit:contain;border-radius:22px;filter:drop-shadow(0 8px 20px rgba(0,0,0,.22))}
+.brand-lockup h1{margin:0}
+nav .wrap{align-items:center}
+nav .nav-brand{display:inline-flex;align-items:center;gap:8px;margin-right:6px;color:var(--tx);font-family:Unbounded,system-ui,sans-serif;font-size:.85rem}
+nav .nav-brand img{width:30px;height:30px;object-fit:contain;border-radius:8px}
+footer .footer-brand{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:12px;color:var(--tx);font-family:Unbounded,system-ui,sans-serif}
+footer .footer-brand img{width:38px;height:38px;object-fit:contain;border-radius:10px}
+@media(max-width:520px){.brand-lockup{gap:10px}.brand-lockup img{width:68px;height:68px;border-radius:14px}.brand-lockup h1{font-size:clamp(2rem,8vw,3rem)}nav .nav-brand{font-size:.72rem;gap:5px}nav .nav-brand img{width:25px;height:25px}}
+
 </style>
 </head>
 <body>
 <header class="hero v-shop">
 <div class="rings"><i></i><i></i><i></i><i></i></div>
 <div class="wrap">
-<h1>Echo SMP</h1>
+<div class="brand-lockup"><img src="https://raw.githubusercontent.com/MRGAMING1141/ECHO-SMP/refs/heads/main/file_0000000059b8820ea00ed1257ab7245c-1.png" alt="Echo SMP logo" fetchpriority="high"><h1>Echo SMP</h1></div>
 <p>Monthly ranks, keys and claim blocks. Prices just dropped.</p>
 <div class="ip"><div><small>Java Edition</small><b>play.echocore.fun</b><small>Port 19132</small></div><button id="cpJava">Copy Java</button></div><div class="ip" style="margin-top:10px"><div><small>Bedrock Edition</small><b>play.echocore.fun</b></div><button id="cpBedrock">Copy Bedrock</button></div>
 </div>
 </header>
-<nav><div class="wrap"><a href="#/" data-go="shop" id="nv-shop" class="">Shop</a><a href="#/orders" data-go="orders" id="nv-orders" class="on">My orders</a><a href="#/terms" data-go="terms" id="nv-terms" class="">Terms</a><a href="#/sales" data-go="sales" id="navadm" class="">Sales log</a></div></nav>
+<nav><div class="wrap"><a href="#/" class="nav-brand" aria-label="Echo SMP home"><img src="https://raw.githubusercontent.com/MRGAMING1141/ECHO-SMP/refs/heads/main/file_0000000059b8820ea00ed1257ab7245c-1.png" alt="">Echo SMP</a><a href="#/" data-go="shop" id="nv-shop" class="">Shop</a><a href="#/orders" data-go="orders" id="nv-orders" class="on">My orders</a><a href="#/terms" data-go="terms" id="nv-terms" class="">Terms</a><a href="#/sales" data-go="sales" id="navadm" class="">Sales log</a></div></nav>
 <main class="wrap">
 <section class="v-shop" style="padding-top:24px">
   <div class="searchbox">
@@ -186,7 +201,7 @@ th{background:var(--sf);color:var(--mu)}
 <p class="sub" id="nosales" style="margin-top:12px">No sales yet.</p></div></section>
 </main>
 <script id="trk" type="application/json">{}</script>
-<footer><div class="wrap">Join: <b>play.echocore.fun</b> · Port <b>19132</b><br><a href="#/terms" data-go="terms" style="color:var(--ac2)">Terms and conditions</a> · No refunds after delivery<br>Need help? <a href="https://discord.gg/Q4fkCtABXc" style="color:var(--ac2)">Join our Discord for support</a></div></footer>
+<footer><div class="wrap"><div class="footer-brand"><img src="https://raw.githubusercontent.com/MRGAMING1141/ECHO-SMP/refs/heads/main/file_0000000059b8820ea00ed1257ab7245c-1.png" alt="">Echo SMP</div>Join: <b>play.echocore.fun</b> · Port <b>19132</b><br><a href="#/terms" data-go="terms" style="color:var(--ac2)">Terms and conditions</a> · No refunds after delivery<br>Need help? <a href="https://discord.gg/Q4fkCtABXc" style="color:var(--ac2)">Join our Discord for support</a></div></footer>
 
 <div id="bar" class=""><div><b id="bc">0 items</b><br><span id="bt">₹0</span></div><button class="buy" id="co">Checkout</button></div>
 
