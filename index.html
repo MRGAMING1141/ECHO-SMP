@@ -434,8 +434,8 @@ body::before{
 </main>
 <script id="trk" type="application/json">{}</script>
 <script>
-/* Echo SMP background music player */
-(function(){
+/* Echo SMP background music player — wait until the player HTML exists */
+document.addEventListener("DOMContentLoaded", function(){
   var audio=document.getElementById("echoBackgroundMusic");
   var toggle=document.getElementById("echoMusicToggle");
   var state=document.getElementById("echoMusicState");
@@ -472,7 +472,7 @@ body::before{
     /* Autoplay is attempted; browsers may require a user tap. */
     playMusic();
   }else{setUI(false,"Music is off");}
-})();
+});
 
 </script>
 <footer><div class="wrap"><div class="footer-brand"><img src="https://raw.githubusercontent.com/MRGAMING1141/ECHO-SMP/refs/heads/main/file_0000000059b8820ea00ed1257ab7245c-1.png" alt="">Echo SMP</div>Join: <b>play.echocore.fun</b> · Port <b>19132</b><br><a href="#/terms" data-go="terms" style="color:var(--ac2)">Terms and conditions</a> · No refunds after delivery<br>Need help? <a href="https://discord.gg/Q4fkCtABXc" style="color:var(--ac2)">Join our Discord for support</a></div></footer>
