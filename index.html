@@ -308,6 +308,19 @@ body::before{
 @media(prefers-reduced-motion:reduce){
   body::before{animation:none;opacity:0}
 }
+
+/* Echo SMP floating music player — solid/glass styling, no gradients */
+#echoMusicPlayer{position:fixed;right:14px;bottom:calc(94px + env(safe-area-inset-bottom,0px));z-index:30;display:flex;align-items:center;gap:9px;max-width:calc(100vw - 28px);padding:10px 12px;border:1px solid var(--ln);border-radius:16px;background:rgba(30,27,69,.94);color:var(--tx);box-shadow:0 8px 24px rgba(0,0,0,.25);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+#echoMusicPlayer button{min-width:36px;min-height:36px;border:1px solid var(--ln);border-radius:10px;background:var(--sf);color:var(--tx);font:600 .9rem Figtree,system-ui,sans-serif;cursor:pointer}
+#echoMusicPlayer button:focus-visible,#echoMusicPlayer input:focus-visible{outline:3px solid var(--ac2);outline-offset:2px}
+#echoMusicPlayer .music-meta{min-width:0;max-width:120px;line-height:1.25}
+#echoMusicPlayer .music-title{display:block;font-weight:700;font-size:.82rem;white-space:nowrap}
+#echoMusicPlayer .music-state{display:block;color:var(--mu);font-size:.72rem;white-space:nowrap}
+#echoMusicPlayer input[type=range]{width:72px;accent-color:var(--ac);padding:0;border:0;box-shadow:none;background:transparent}
+#echoMusicPlayer .music-volume{display:flex;align-items:center;gap:5px}
+@media(max-width:420px){#echoMusicPlayer{right:8px;bottom:calc(88px + env(safe-area-inset-bottom,0px));gap:6px;padding:8px}#echoMusicPlayer .music-meta{max-width:88px}#echoMusicPlayer input[type=range]{width:54px}}
+@media(prefers-reduced-motion:reduce){#echoMusicPlayer *{transition:none!important}}
+
 </style>
 </head>
 <body>
@@ -419,7 +432,48 @@ body::before{
 <div class="tw"><table><thead><tr><th>Sale ID</th><th>Date</th><th>Player</th><th>Items</th><th>Total</th><th>Status</th></tr></thead><tbody id="sales"></tbody></table></div>
 <p class="sub" id="nosales" style="margin-top:12px">No sales yet.</p></div></section>
 </main>
-<script id="trk" type="application/json">{}</script>
+<script id="trk" type="application/json">{}
+/* Echo SMP background music player */
+(function(){
+  var audio=document.getElementById("echoBackgroundMusic");
+  var toggle=document.getElementById("echoMusicToggle");
+  var state=document.getElementById("echoMusicState");
+  var volume=document.getElementById("echoMusicVolume");
+  if(!audio||!toggle||!state||!volume)return;
+  var STORE="echo_music_settings_v1";
+  var settings={volume:0.35,enabled:true};
+  try{var saved=JSON.parse(localStorage.getItem(STORE)||"{}");if(typeof saved.volume==="number")settings.volume=Math.max(0,Math.min(1,saved.volume));if(typeof saved.enabled==="boolean")settings.enabled=saved.enabled;}catch(e){}
+  audio.volume=settings.volume;
+  volume.value=String(settings.volume);
+  function save(){try{localStorage.setItem(STORE,JSON.stringify({volume:audio.volume,enabled:settings.enabled}));}catch(e){}}
+  function setUI(playing,message){
+    toggle.textContent=playing?"Ⅱ":"▶";
+    toggle.setAttribute("aria-label",playing?"Pause background music":"Play background music");
+    state.textContent=message||(playing?"Now playing":"Paused");
+  }
+  function playMusic(){
+    if(!settings.enabled){setUI(false,"Music is off");return;}
+    var promise=audio.play();
+    if(promise&&typeof promise.then==="function"){
+      promise.then(function(){setUI(true,"Now playing");}).catch(function(){setUI(false,"Tap ▶ to play");});
+    }
+  }
+  toggle.addEventListener("click",function(){
+    if(!audio.paused){audio.pause();settings.enabled=false;setUI(false,"Paused");save();return;}
+    settings.enabled=true;save();playMusic();
+  });
+  volume.addEventListener("input",function(){audio.volume=Number(volume.value);save();});
+  audio.addEventListener("playing",function(){setUI(true,"Now playing");});
+  audio.addEventListener("pause",function(){if(!audio.ended)setUI(false,settings.enabled?"Paused":"Music is off");});
+  audio.addEventListener("error",function(){setUI(false,"Add music/echo-theme.mp3");});
+  audio.addEventListener("canplay",function(){if(!settings.enabled)setUI(false,"Music is off");else if(audio.paused)setUI(false,"Ready — tap ▶ if needed");});
+  if(settings.enabled){
+    /* Autoplay is attempted; browsers may require a user tap. */
+    playMusic();
+  }else{setUI(false,"Music is off");}
+})();
+
+</script>
 <footer><div class="wrap"><div class="footer-brand"><img src="https://raw.githubusercontent.com/MRGAMING1141/ECHO-SMP/refs/heads/main/file_0000000059b8820ea00ed1257ab7245c-1.png" alt="">Echo SMP</div>Join: <b>play.echocore.fun</b> · Port <b>19132</b><br><a href="#/terms" data-go="terms" style="color:var(--ac2)">Terms and conditions</a> · No refunds after delivery<br>Need help? <a href="https://discord.gg/Q4fkCtABXc" style="color:var(--ac2)">Join our Discord for support</a></div></footer>
 
 <div id="bar" class=""><div><b id="bc">0 items</b><br><span id="bt">₹0</span></div><button class="buy" id="co">Checkout</button></div>
@@ -933,5 +987,16 @@ window.echoFilter="all";
 setTimeout(function(){syncWishButtons();updateStats();applyFilters()},0);
 </script>
 
+
+
+<!-- Echo SMP background music. Upload your own MP3 to music/echo-theme.mp3 -->
+<div id="echoMusicPlayer" role="region" aria-label="Echo SMP music player">
+  <button id="echoMusicToggle" type="button" aria-label="Play background music" title="Play / pause">▶</button>
+  <div class="music-meta"><span class="music-title">Echo SMP Music</span><span class="music-state" id="echoMusicState" aria-live="polite">Loading music…</span></div>
+  <label class="music-volume" aria-label="Music volume"><span aria-hidden="true">🔊</span><input id="echoMusicVolume" type="range" min="0" max="1" step="0.05" value="0.35" aria-label="Music volume"></label>
+  <audio id="echoBackgroundMusic" preload="metadata" loop playsinline>
+    <source src="music/echo-theme.mp3" type="audio/mpeg">
+  </audio>
+</div>
 
 </body></html>
