@@ -465,7 +465,7 @@ body::before{
   volume.addEventListener("input",function(){audio.volume=Number(volume.value);save();});
   audio.addEventListener("playing",function(){setUI(true,"Now playing");});
   audio.addEventListener("pause",function(){if(!audio.ended)setUI(false,settings.enabled?"Paused":"Music is off");});
-  audio.addEventListener("error",function(){setUI(false,"Add music/echo-theme.mp3");});
+  audio.addEventListener("error",function(){setUI(false,"Check musiecho-theme.mp3");});
   audio.addEventListener("canplay",function(){if(!settings.enabled)setUI(false,"Music is off");else if(audio.paused)setUI(false,"Ready — tap ▶ if needed");});
   if(settings.enabled){
     /* Autoplay is attempted; browsers may require a user tap. */
@@ -995,7 +995,7 @@ setTimeout(function(){syncWishButtons();updateStats();applyFilters()},0);
   <div class="music-meta"><span class="music-title">Echo SMP Music</span><span class="music-state" id="echoMusicState" aria-live="polite">Loading music…</span></div>
   <label class="music-volume" aria-label="Music volume"><span aria-hidden="true">🔊</span><input id="echoMusicVolume" type="range" min="0" max="1" step="0.05" value="0.35" aria-label="Music volume"></label>
   <audio id="echoBackgroundMusic" preload="metadata" loop playsinline>
-    <source src="music/echo-theme.mp3" type="audio/mpeg">
+    <source src="musiecho-theme.mp3" type="audio/mpeg">
   </audio>
 </div>
 
