@@ -216,7 +216,13 @@ module.exports = async function handler(req, res) {
     if (Array.isArray(existing) && existing.length) {
       const saved = existing[0];
       const samePlayer = String(saved.player_name || "").toLowerCase() === playerName.toLowerCase();
-      const sameItems = JSON.stringify(saved.items || []) === JSON.stringify(order.items);
+      const savedItems = Array.isArray(saved.items) ? saved.items : [];
+      const sameItems = savedItems.length === order.items.length && order.items.every((item, index) => {
+        const prior = savedItems[index] || {};
+        return prior.name === item.name &&
+          Number(prior.qty) === item.qty &&
+          Number(prior.unit_price) === item.unit_price;
+      });
       if (!samePlayer || !sameItems) {
         return send(res, 409, { error: "This order reference already belongs to a different order. Start checkout again." }, origin);
       }
