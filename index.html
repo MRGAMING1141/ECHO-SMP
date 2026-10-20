@@ -778,12 +778,21 @@ function renderAdminOrders(orders){
   // on mobile/touch browsers than relying only on a document-level delegated click.
   tbody.querySelectorAll("[data-admin-status]").forEach(function(button){
     button.type="button";
-    button.addEventListener("click",function(event){
-      event.preventDefault();
-      event.stopPropagation();
-      if(button.disabled)return;
-      updateAdminStatus(button.dataset.adminId,button.dataset.adminStatus,button);
-    });
+    var runStatusAction=function(event){
+      if(event){
+        event.preventDefault();
+        event.stopPropagation();
+      }
+      if(button.disabled||button.dataset.statusActionRunning==="1")return;
+      button.dataset.statusActionRunning="1";
+      updateAdminStatus(button.dataset.adminId,button.dataset.adminStatus,button)
+        .finally(function(){
+          if(button.isConnected)button.dataset.statusActionRunning="0";
+        });
+    };
+    // Explicit touch handling plus click support for mouse and keyboard.
+    button.addEventListener("pointerup",runStatusAction,{passive:false});
+    button.addEventListener("click",runStatusAction);
   });
 }
 async function loadAdminOrders(password){
@@ -872,7 +881,13 @@ async function updateAdminStatus(orderId,status,button){
     toast(status==="paid"?"Order marked as paid.":"Order marked as delivered.");
     await refreshAdminOrders(window.__echoAdminPassword);
   }catch(e){
-    toast(e&&e.message?e.message:"Could not update order status.");
+    var message=e&&e.message?e.message:"Could not update order status.";
+    toast(message);
+    var adminError=document.getElementById("adminError");
+    if(adminError){
+      adminError.hidden=false;
+      adminError.textContent="Status update failed: "+message;
+    }
     button.disabled=false;
     button.textContent=status==="paid"?"Paid":"Delivered";
   }
