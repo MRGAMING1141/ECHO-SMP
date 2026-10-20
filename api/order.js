@@ -203,7 +203,7 @@ module.exports = async function handler(req, res) {
     // already exists. The table itself is unchanged; this is application-level
     // idempotency because payment_reference is not assumed to be UNIQUE.
     const existingResponse = await fetch(
-      `${supabaseUrl}/rest/v1/sales_log?select=id,payment_reference,payment_status&payment_reference=eq.${encodeURIComponent(paymentReference)}&limit=1`,
+      `${supabaseUrl}/rest/v1/sales_log?select=id,payment_reference,payment_status,payment_method&payment_reference=eq.${encodeURIComponent(paymentReference)}&limit=1`,
       { headers }
     );
 
