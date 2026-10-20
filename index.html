@@ -677,7 +677,6 @@ $("paid").onclick=function(){
       "\\nPayment status: Pending manual verification";
     copy(msg,"Order details copied");
     $("sid3").textContent=paymentOrder.id;
-    saveMine({id:paymentOrder.id,ign:normalizeMinecraftName($("ign").value).trim(),items:paymentOrder.items,total:paymentOrder.total,cancel_token:paymentOrder.cancel_token,ts:Date.now(),method:paymentOrder.method});
     show("v3");
     cart={};sale=null;paymentOrder=null;render();drawMine();
   }catch(e){toast("Could not prepare order message. Your order remains pending.");}
