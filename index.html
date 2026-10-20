@@ -610,7 +610,7 @@ function displayPaymentInstructions(method){
     else $("qr").innerHTML='<span class="qr-error">Payment QR is temporarily unavailable. Please contact support on Discord.</span>';
   }
 }
-$("co").onclick=function(){show("v1");var p=getProfile();if(p)$("ign").value=p.username;$("dlg").showModal()};
+$("co").onclick=function(){if(paymentOrder){$("sid").textContent=paymentOrder.id;$("tot2").textContent="Server-verified amount: ₹"+paymentOrder.total;displayPaymentInstructions(paymentOrder.method);show("v2")}else{show("v1");var p=getProfile();if(p)$("ign").value=p.username} $("dlg").showModal()};
 $("profileSave").onclick=function(){if(saveProfileName($("profileIgn").value,true)){go("shop");toast("Welcome to Echo SMP, "+getProfile().username+"!")}};
 $("profileEdit").onclick=function(){try{localStorage.removeItem(PROFILE_KEY)}catch(e){}paintProfile();$("profileSignedOut").hidden=false;$("profileSignedIn").hidden=true;$("profileIgn").value="";$("profileMessage").textContent="Enter the other Minecraft username and save to continue.";$("profileIgn").focus();go("profile")};
 $("profileLogout").onclick=function(){try{localStorage.removeItem(PROFILE_KEY)}catch(e){}$("profileMessage").textContent="Logged out. Sign in with a Minecraft username to continue.";$("profileIgn").value="";paintProfile();go("profile");toast("You have logged out")};
