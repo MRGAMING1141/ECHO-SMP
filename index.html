@@ -516,6 +516,7 @@ document.addEventListener("DOMContentLoaded", function(){
 <h3>Your order</h3>
 <div class="lines" id="lines"></div>
 <div class="tot" id="tot">Total ₹0</div>
+<div class="pay-options" style="border:1px solid var(--ln);border-radius:14px;padding:12px;margin:12px 0"><b>Choose payment method</b><label style="display:flex;gap:10px;align-items:center;margin:10px 0;font-weight:500"><input type="radio" name="paymentMethod" value="upi" style="width:auto" checked> UPI (pay using your UPI app)</label><label style="display:flex;gap:10px;align-items:center;margin:8px 0 0;font-weight:500"><input type="radio" name="paymentMethod" value="qr" style="width:auto"> QR Code</label><p class="sub" style="margin:8px 0 0">UPI contact number: <b>8918096284</b>. This is a contact number only, not a verified UPI ID.</p></div>
 <label for="ign">Minecraft username</label><input id="ign" autocomplete="off" maxlength="32">
 <label for="dc">Discord name</label><input id="dc" autocomplete="off" maxlength="40">
 <label for="pn">Payment account name (name on the account you pay from)</label><input id="pn" autocomplete="off" maxlength="60" placeholder="So we can match your payment">
@@ -525,9 +526,12 @@ document.addEventListener("DOMContentLoaded", function(){
 <div id="v2" hidden="">
 <h3>Pay and confirm</h3>
 <div>Your sale ID</div><div class="sid" id="sid"></div>
+<div class="card" style="padding:14px;margin:12px 0"><div style="font-weight:700">Payment method</div><div id="methodSummary" style="margin-top:6px">UPI</div><div class="sub" style="margin-top:8px">Method is locked for this order. To change it, cancel this pending order and start a new checkout.</div></div>
+<div id="upiPayment" class="card" style="padding:14px;margin:12px 0" hidden><b>UPI payment</b><p style="margin:8px 0">Contact number: <strong>8918096284</strong></p><p class="sub" style="margin:0">This number is shown as a contact only. No UPI ID or payment link is inferred. Confirm the recipient inside your UPI app before sending money.</p></div>
 <div class="qr" id="qr">Payment QR will appear here</div>
-<div class="tot" id="tot2" style="text-align:center;font-size:1.5rem;color:var(--ac)">Amount to pay: ₹0</div>
-<p class="sub" style="margin:0">Scan the QR, pay the exact total, then tap the button. To cancel, do it from My orders before the sales team accepts your payment. Paste the copied message in a Discord ticket with your payment screenshot. Support: <a href="https://discord.gg/Q4fkCtABXc" style="color:var(--ac2)">Discord</a>.</p>
+<div class="tot" id="tot2" style="text-align:center;font-size:1.5rem;color:var(--ac)">Server-verified amount: ₹0</div>
+<p id="amountLockNotice" class="sub" style="margin:0">The amount is calculated and validated by the server. Do not edit the amount in your payment app; send exactly the amount shown above. Manual UPI/QR payments are not verified automatically.</p>
+<p class="sub" style="margin-top:10px">After paying, tap the button and paste the copied message in a Discord ticket with your payment screenshot. Staff must verify payment before accepting the order. Support: <a href="https://discord.gg/Q4fkCtABXc" style="color:var(--ac2)">Discord</a>.</p>
 <div class="row"><button class="buy gh" id="back">Back</button><button class="buy" id="paid">I have paid</button></div>
 </div>
 <div id="v3" hidden="">
@@ -595,6 +599,17 @@ var r=e.target.closest("[data-r]");if(r){delete cart[r.dataset.r];render()}
 var i=e.target.closest("[data-inc]");if(i&&cart[i.dataset.inc]){cart[i.dataset.inc].q++;render()}
 var d=e.target.closest("[data-dec]");if(d&&cart[d.dataset.dec]){if(--cart[d.dataset.dec].q<=0)delete cart[d.dataset.dec];render()}});
 function show(v){["v1","v2","v3"].forEach(function(i){$(i).hidden=i!=v})}
+var paymentOrder=null;
+function selectedPaymentMethod(){var el=document.querySelector('input[name="paymentMethod"]:checked');return el&&el.value==="qr"?"qr":"upi"}
+function displayPaymentInstructions(method){
+  $("methodSummary").textContent=method==="qr"?"QR Code":"UPI";
+  $("upiPayment").hidden=method!=="upi";
+  $("qr").hidden=method!=="qr";
+  if(method==="qr"){
+    if(QR_IMAGE){$("qr").innerHTML='<img alt="Echo SMP payment QR code" decoding="async" src="'+QR_IMAGE+'"><span class="qr-error" hidden>QR image could not load. Please contact support on Discord before paying.</span>';var qrImg=$("qr").querySelector("img");qrImg.onerror=function(){qrImg.hidden=true;var msg=$("qr").querySelector(".qr-error");if(msg)msg.hidden=false};qrImg.onload=function(){var msg=$("qr").querySelector(".qr-error");if(msg)msg.hidden=true}}
+    else $("qr").innerHTML='<span class="qr-error">Payment QR is temporarily unavailable. Please contact support on Discord.</span>';
+  }
+}
 $("co").onclick=function(){show("v1");var p=getProfile();if(p)$("ign").value=p.username;$("dlg").showModal()};
 $("profileSave").onclick=function(){if(saveProfileName($("profileIgn").value,true)){go("shop");toast("Welcome to Echo SMP, "+getProfile().username+"!")}};
 $("profileEdit").onclick=function(){try{localStorage.removeItem(PROFILE_KEY)}catch(e){}paintProfile();$("profileSignedOut").hidden=false;$("profileSignedIn").hidden=true;$("profileIgn").value="";$("profileMessage").textContent="Enter the other Minecraft username and save to continue.";$("profileIgn").focus();go("profile")};
@@ -604,11 +619,40 @@ $("profileIgn").addEventListener("keydown",function(e){if(e.key==="Enter"){e.pre
 $("ign").addEventListener("input",function(){normalizeMinecraftInput(this)});
 $("ign").addEventListener("change",function(){var name=normalizeMinecraftName($("ign").value).trim();$("ign").value=name;if(validMinecraftName(name))saveProfileName(name,false)});
 $("x1").onclick=function(){$("dlg").close()};
-$("back").onclick=function(){show("v1")};
-$("go").onclick=function(){if(!$("agree").checked){toast("Please agree to the terms to continue");return}if(!$("ign").value.trim()){toast("Enter your Minecraft username");$("ign").focus();return}
-if(!$("pn").value.trim()){toast("Enter your payment account name");$("pn").focus();return}
-sale=sale||newId();$("sid").textContent=sale;
-if(QR_IMAGE){$("qr").innerHTML='<img alt="PhonePe payment QR code" decoding="async" src="'+QR_IMAGE+'"><span class="qr-error" hidden>QR image could not load. Please contact support on Discord before paying.</span>';var qrImg=$("qr").querySelector("img");qrImg.onerror=function(){qrImg.hidden=true;var msg=$("qr").querySelector(".qr-error");if(msg)msg.hidden=false};qrImg.onload=function(){var msg=$("qr").querySelector(".qr-error");if(msg)msg.hidden=true}}else{$("qr").innerHTML='<span class="qr-error">Payment QR is temporarily unavailable. Please contact support on Discord.</span>'}show("v2")};
+$("back").onclick=function(){if(paymentOrder){toast("Payment method and amount are locked for this order. Close checkout or continue with this order.");return}show("v1")};
+$("go").onclick=async function(){
+  if(!$("agree").checked){toast("Please agree to the terms to continue");return}
+  if(!validMinecraftName(normalizeMinecraftName($("ign").value).trim())){toast("Enter a valid Minecraft username");$("ign").focus();return}
+  if(!$("dc").value.trim()){toast("Enter your Discord name");$("dc").focus();return}
+  if(!$("pn").value.trim()){toast("Enter your payment account name");$("pn").focus();return}
+  var items=[];for(var k in cart)items.push({name:k,qty:cart[k].q});
+  if(!items.length){toast("Your cart is empty");return}
+  var method=selectedPaymentMethod(),button=$("go");
+  button.disabled=true;button.textContent="Verifying total…";
+  try{
+    var saleId=sale||newId();
+    var response=await fetch("/api/order",{method:"POST",headers:{"Content-Type":"application/json"},cache:"no-store",body:JSON.stringify({
+      player_name:normalizeMinecraftName($("ign").value).trim(),
+      discord_username:$("dc").value.trim(),
+      items:items,
+      payment_reference:saleId,
+      payment_method:method
+    })});
+    var data={};try{data=await response.json()}catch(e){}
+    if(!response.ok||!data.ok)throw new Error(data.error||"Could not securely create your order.");
+    var serverTotal=Number(data.total_amount);
+    if(!Number.isSafeInteger(serverTotal)||serverTotal<=0)throw new Error("Server returned an invalid order total. No payment should be made.");
+    paymentOrder={id:data.payment_reference||saleId,method:method,items:data.items||items,total:serverTotal,cancel_token:data.cancel_token||""};
+    sale=paymentOrder.id;
+    $("sid").textContent=paymentOrder.id;
+    $("tot2").textContent="Server-verified amount: ₹"+serverTotal;
+    displayPaymentInstructions(method);
+    saveMine({id:paymentOrder.id,ign:normalizeMinecraftName($("ign").value).trim(),items:paymentOrder.items,total:serverTotal,cancel_token:paymentOrder.cancel_token,ts:Date.now(),method:method});
+    show("v2");
+    drawMine();
+  }catch(e){toast(e&&e.message?e.message:"Could not create order. Please try again.");}
+  finally{button.disabled=false;button.textContent="Continue to pay"}
+};
 var SK="echo_sales_admin";
 function ldb(){try{return JSON.parse(localStorage.getItem(SK)||"[]")}catch(e){return[]}}
 function lsave(a){localStorage.setItem(SK,JSON.stringify(a))}
@@ -618,57 +662,26 @@ var db={collection:function(){return{doc:function(id){return{
 set:function(o){return lop(function(){var a=ldb().filter(function(x){return x.id!=id});a.push(o);lsave(a)})},
 update:function(p){return lop(function(){lsave(ldb().map(function(x){if(x.id==id)for(var k in p)x[k]=p[k];return x}))})},
 delete:function(){return lop(function(){lsave(ldb().filter(function(x){return x.id!=id}))})}}}}}};
-$("paid").onclick=async function(){
+$("paid").onclick=function(){
   var button=$("paid");
   if(button.disabled)return;
-  var s=total(),items=[];
-  for(var k in cart)items.push({name:k,qty:cart[k].q});
-  if(!items.length){toast("Your cart is empty");return}
-
-  button.disabled=true;
-  button.textContent="Saving order…";
-
-  var saleId=sale||newId();
+  if(!paymentOrder){toast("No verified order total is loaded. Go back and try again.");return}
+  button.disabled=true;button.textContent="Preparing message…";
   try{
-    var response=await fetch("/api/order",{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({
-        player_name:$("ign").value.trim(),
-        discord_username:$("dc").value.trim(),
-        items:items,
-        payment_reference:saleId
-      })
-    });
-    var data={};
-    try{data=await response.json()}catch(e){}
-    if(!response.ok||!data.ok)throw new Error(data.error||"Could not save your order.");
-
-    sale=data.payment_reference||saleId;
-    var serverItems=data.items||items;
-    var serverTotal=Number(data.total_amount);
-    if(!Number.isSafeInteger(serverTotal)||serverTotal<=0)throw new Error("Invalid total returned by order service.");
-
-    var msg="Sale ID: "+sale+"\\nPlayer: "+$("ign").value.trim()+
+    var msg="Sale ID: "+paymentOrder.id+"\\nPlayer: "+normalizeMinecraftName($("ign").value).trim()+
       ($("dc").value.trim()?"\\nDiscord: "+$("dc").value.trim():"")+
-      "\\nPaid by: "+$("pn").value.trim()+
-      "\\nItems: "+serverItems.map(function(i){return i.name+" x"+i.qty+" (₹"+(i.unit_price*i.qty)+")"}).join(", ")+
-      "\\nTotal: ₹"+serverTotal+"\\nPaid via QR";
-
-    copy(msg,"Order saved and copied");
-    $("sid3").textContent=sale;
-    saveMine({id:sale,ign:$("ign").value.trim(),items:serverItems,total:serverTotal,cancel_token:data.cancel_token||"",ts:Date.now()});
+      "\\nPayment account name: "+$("pn").value.trim()+
+      "\\nItems: "+paymentOrder.items.map(function(i){return i.name+" x"+i.qty+" (₹"+(i.unit_price*i.qty)+")"}).join(", ")+
+      "\\nServer-verified total: ₹"+paymentOrder.total+
+      "\\nPayment method: "+(paymentOrder.method==="qr"?"QR Code":"UPI")+
+      "\\nPayment status: Pending manual verification";
+    copy(msg,"Order details copied");
+    $("sid3").textContent=paymentOrder.id;
+    saveMine({id:paymentOrder.id,ign:normalizeMinecraftName($("ign").value).trim(),items:paymentOrder.items,total:paymentOrder.total,cancel_token:paymentOrder.cancel_token,ts:Date.now(),method:paymentOrder.method});
     show("v3");
-    cart={};
-    sale=null;
-    render();
-    drawMine();
-  }catch(e){
-    toast(e&&e.message?e.message:"Could not save your order. Please try again.");
-  }finally{
-    button.disabled=false;
-    button.textContent="I have paid";
-  }
+    cart={};sale=null;paymentOrder=null;render();drawMine();
+  }catch(e){toast("Could not prepare order message. Your order remains pending.");}
+  finally{button.disabled=false;button.textContent="I have paid"}
 };
 $("done").onclick=function(){$("dlg").close()};
 $("dlg").addEventListener("close",function(){});
