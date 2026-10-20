@@ -203,7 +203,7 @@ module.exports = async function handler(req, res) {
     // already exists. The table itself is unchanged; this is application-level
     // idempotency because payment_reference is not assumed to be UNIQUE.
     const existingResponse = await fetch(
-      `${supabaseUrl}/rest/v1/sales_log?select=id,payment_reference,payment_status,payment_method&payment_reference=eq.${encodeURIComponent(paymentReference)}&limit=1`,
+      `${supabaseUrl}/rest/v1/sales_log?select=id,payment_reference,payment_status,payment_method,total_amount,items,currency,player_name&payment_reference=eq.${encodeURIComponent(paymentReference)}&limit=1`,
       { headers }
     );
 
@@ -214,16 +214,22 @@ module.exports = async function handler(req, res) {
 
     const existing = await existingResponse.json();
     if (Array.isArray(existing) && existing.length) {
+      const saved = existing[0];
+      const samePlayer = String(saved.player_name || "").toLowerCase() === playerName.toLowerCase();
+      const sameItems = JSON.stringify(saved.items || []) === JSON.stringify(order.items);
+      if (!samePlayer || !sameItems) {
+        return send(res, 409, { error: "This order reference already belongs to a different order. Start checkout again." }, origin);
+      }
       return send(res, 200, {
         ok: true,
         duplicate: true,
-        order_id: existing[0].id,
+        order_id: saved.id,
         payment_reference: paymentReference,
-        payment_status: existing[0].payment_status || "pending",
-        payment_method: existing[0].payment_method || paymentMethod,
-        total_amount: order.total,
-        currency: "INR",
-        items: order.items,
+        payment_status: saved.payment_status || "pending",
+        payment_method: saved.payment_method || paymentMethod,
+        total_amount: Number(saved.total_amount),
+        currency: saved.currency || "INR",
+        items: saved.items,
         cancel_token: cancelToken(paymentReference, playerName),
       }, origin);
     }
