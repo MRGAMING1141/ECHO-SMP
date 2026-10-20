@@ -97,7 +97,7 @@ body:not([data-v="wiki"]) .v-wiki{display:none!important}
 table{border-collapse:collapse;width:100%;min-width:640px;font-size:.9rem}
 th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--ln);vertical-align:top}
 th{background:var(--sf);color:var(--mu)}
-.st{border:1px solid var(--ln);background:transparent;color:var(--tx);border-radius:8px;padding:4px 10px;cursor:pointer;font:600 .85rem Figtree,sans-serif}
+.st{border:1px solid var(--ln);background:transparent;color:var(--tx);border-radius:8px;padding:8px 12px;min-height:38px;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;pointer-events:auto;position:relative;z-index:1;font:600 .85rem Figtree,sans-serif}
 .st.ok{background:var(--ac2);color:#fff;border-color:var(--ac2)}
 #toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom,0px));transform:translate(-50%,200px);background:var(--tx);color:var(--bg);padding:12px 18px;border-radius:12px;font-weight:600;transition:transform .25s;max-width:90vw;text-align:center;z-index:20}
 #toast.on{transform:translate(-50%,0)}
@@ -774,6 +774,17 @@ function renderAdminOrders(orders){
       "<td>"+adminEscape(r.payment_method||"—")+"</td>"+
     "</tr>";
   }).join("");
+  // Bind status actions directly to each freshly-rendered button. This is more reliable
+  // on mobile/touch browsers than relying only on a document-level delegated click.
+  tbody.querySelectorAll("[data-admin-status]").forEach(function(button){
+    button.type="button";
+    button.addEventListener("click",function(event){
+      event.preventDefault();
+      event.stopPropagation();
+      if(button.disabled)return;
+      updateAdminStatus(button.dataset.adminId,button.dataset.adminStatus,button);
+    });
+  });
 }
 async function loadAdminOrders(password){
   var configResponse=await fetch("/api/admin-function-url",{
@@ -839,7 +850,8 @@ function setupAdminBody(){
   };
 }
 async function updateAdminStatus(orderId,status,button){
-  if(!window.__echoAdminPassword)return;
+  if(!window.__echoAdminPassword){toast("Admin session expired. Unlock the sales log again.");return;}
+  if(!orderId||!status||!button){toast("Could not identify this order. Refresh the sales log and try again.");return;}
   button.disabled=true;
   button.textContent=status==="paid"?"Saving…":"Delivering…";
   try{
@@ -865,11 +877,6 @@ async function updateAdminStatus(orderId,status,button){
     button.textContent=status==="paid"?"Paid":"Delivered";
   }
 }
-document.addEventListener("click",function(e){
-  var b=e.target.closest("[data-admin-status]");
-  if(!b)return;
-  updateAdminStatus(b.dataset.adminId,b.dataset.adminStatus,b);
-});
 async function refreshAdminOrders(password){
   var state=document.getElementById("adminState");
   var error=document.getElementById("adminError");
