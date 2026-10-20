@@ -194,6 +194,10 @@ module.exports = async function handler(req, res) {
     }
 
     const order = calculateOrder(body.items);
+    const paymentMethod = cleanText(body.payment_method, 12).toLowerCase();
+    if (!["upi", "qr"].includes(paymentMethod)) {
+      return send(res, 400, { error: "Choose UPI or QR Code as the payment method." }, origin);
+    }
 
     // Make retries of the same browser submission harmless when the reference
     // already exists. The table itself is unchanged; this is application-level
@@ -216,6 +220,7 @@ module.exports = async function handler(req, res) {
         order_id: existing[0].id,
         payment_reference: paymentReference,
         payment_status: existing[0].payment_status || "pending",
+        payment_method: existing[0].payment_method || paymentMethod,
         total_amount: order.total,
         currency: "INR",
         items: order.items,
@@ -236,8 +241,8 @@ module.exports = async function handler(req, res) {
         total_amount: order.total,
         currency: "INR",
         payment_reference: paymentReference,
-        // payment_method/payment_status/paid_at are deliberately omitted so
-        // the database defaults remain authoritative.
+        payment_method: paymentMethod,
+        // Status and paid_at are deliberately omitted; manual payment remains pending.
       }),
     });
 
@@ -261,6 +266,7 @@ module.exports = async function handler(req, res) {
       order_id: row && row.id,
       payment_reference: paymentReference,
       payment_status: row && row.payment_status ? row.payment_status : "pending",
+      payment_method: row && row.payment_method ? row.payment_method : paymentMethod,
       total_amount: order.total,
       currency: "INR",
       items: order.items,
