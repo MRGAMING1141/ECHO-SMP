@@ -516,7 +516,7 @@ document.addEventListener("DOMContentLoaded", function(){
 <h3>Your order</h3>
 <div class="lines" id="lines"></div>
 <div class="tot" id="tot">Total ₹0</div>
-<div class="pay-options" style="border:1px solid var(--ln);border-radius:14px;padding:12px;margin:12px 0"><b>Choose payment method</b><label style="display:flex;gap:10px;align-items:center;margin:10px 0;font-weight:500"><input type="radio" name="paymentMethod" value="upi" style="width:auto" checked> UPI (pay using your UPI app)</label><label style="display:flex;gap:10px;align-items:center;margin:8px 0 0;font-weight:500"><input type="radio" name="paymentMethod" value="qr" style="width:auto"> QR Code</label><p class="sub" style="margin:8px 0 0">UPI contact number: <b>8918096284</b>. This is a contact number only, not a verified UPI ID.</p></div>
+<div class="pay-options" style="border:1px solid var(--ln);border-radius:14px;padding:12px;margin:12px 0"><b>Choose payment method</b><label style="display:flex;gap:10px;align-items:center;margin:10px 0;font-weight:500"><input type="radio" name="paymentMethod" value="upi" style="width:auto" disabled> UPI (pay using your UPI app)</label><label style="display:flex;gap:10px;align-items:center;margin:8px 0 0;font-weight:500"><input type="radio" name="paymentMethod" value="qr" style="width:auto" checked> QR Code</label><p class="sub" style="margin:8px 0 0">UPI contact number: <b>xxxxxxxxxx</b>. UPI is temporarily unavailable today. This is a masked contact number, not a verified UPI ID.</p></div>
 <label for="ign">Minecraft username</label><input id="ign" autocomplete="off" maxlength="32">
 <label for="dc">Discord name</label><input id="dc" autocomplete="off" maxlength="40">
 <label for="pn">Payment account name (name on the account you pay from)</label><input id="pn" autocomplete="off" maxlength="60" placeholder="So we can match your payment">
@@ -527,7 +527,7 @@ document.addEventListener("DOMContentLoaded", function(){
 <h3>Pay and confirm</h3>
 <div>Your sale ID</div><div class="sid" id="sid"></div>
 <div class="card" style="padding:14px;margin:12px 0"><div style="font-weight:700">Payment method</div><div id="methodSummary" style="margin-top:6px">UPI</div><div class="sub" style="margin-top:8px">Method is locked for this order. To change it, cancel this pending order and start a new checkout.</div></div>
-<div id="upiPayment" class="card" style="padding:14px;margin:12px 0" hidden><b>UPI payment</b><p style="margin:8px 0">Contact number: <strong>8918096284</strong></p><p class="sub" style="margin:0">This number is shown as a contact only. No UPI ID or payment link is inferred. Confirm the recipient inside your UPI app before sending money.</p></div>
+<div id="upiPayment" class="card" style="padding:14px;margin:12px 0" hidden><b>UPI payment</b><p style="margin:8px 0">Contact number: <strong>xxxxxxxxxx</strong></p><p class="sub" style="margin:0">UPI is temporarily unavailable today. This is a masked contact number, not a UPI ID or payment link.</p></div>
 <div class="qr" id="qr">Payment QR will appear here</div>
 <div class="tot" id="tot2" style="text-align:center;font-size:1.5rem;color:var(--ac)">Server-verified amount: ₹0</div>
 <p id="amountLockNotice" class="sub" style="margin:0">The amount is calculated and validated by the server. Do not edit the amount in your payment app; send exactly the amount shown above. Manual UPI/QR payments are not verified automatically.</p>
