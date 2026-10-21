@@ -1167,8 +1167,11 @@ async function runNativeGooglePopup(){
   googleLoginInFlight=true;
   var btn=$("profileGoogleBtn");
   if(btn){btn.disabled=true;btn.textContent="Opening Google Sign-In…";}
+  // Create the provider before the try block so the redirect fallback can use it too.
+  // Start Firebase's account chooser directly from this button click; do not route through
+  // any intermediate Echo SMP sign-in/information page.
+  var provider=window.echoAuth.createGoogleProvider?window.echoAuth.createGoogleProvider():window.echoAuth.googleProvider;
   try{
-    var provider=window.echoAuth.createGoogleProvider?window.echoAuth.createGoogleProvider():window.echoAuth.googleProvider;
     var res=await window.echoAuth.signInWithPopup(window.echoAuth.auth,provider);
     var user=res.user;
     var email=(user.email||"").toLowerCase();
