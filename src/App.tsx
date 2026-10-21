@@ -287,7 +287,7 @@ export default function App() {
       if (user) {
         setGoogleUser(user);
         const email = (user.email || "").toLowerCase();
-        const isStaff = email === "lasthope.mr@gmail.com";
+        const isStaff = ["lasthope.mr@gmail.com", "zxbrar1@gmail.com"].includes(email);
         if (isStaff) {
           setIsStaffGoogleUser(true);
           setIsAdminLoggedIn(true);
@@ -372,7 +372,7 @@ export default function App() {
       setShowLoginModal(false);
       addToast("Signed in with Google", `Welcome ${user.displayName || user.email}!`, "success");
       const email = (user.email || "").toLowerCase();
-      if (email === "lasthope.mr@gmail.com") {
+      if (["lasthope.mr@gmail.com", "zxbrar1@gmail.com"].includes(email)) {
         setIsStaffGoogleUser(true);
         setIsAdminLoggedIn(true);
         addToast("Staff Verified", "Staff Sales Log unlocked automatically.", "success");
@@ -1113,7 +1113,7 @@ export default function App() {
                 <div>
                   <h3 className="text-lg font-bold text-white mb-2">Staff Sales Log Restricted</h3>
                   <p className="text-xs text-slate-400 leading-relaxed">
-                    The Sales Log is exclusively restricted to authorized server staff. Only signing in with the staff Google account <strong className="text-emerald-400 font-mono">lasthope.mr@gmail.com</strong> can access this tab.
+                    The Sales Log is exclusively restricted to authorized server staff. Only signing in with the authorized staff Google account can access this tab.
                   </p>
                 </div>
 
@@ -1125,14 +1125,14 @@ export default function App() {
                       provider.setCustomParameters({ prompt: "select_account" });
                       const res = await signInWithPopup(auth, provider);
                       const email = (res.user.email || "").toLowerCase();
-                      if (email === "lasthope.mr@gmail.com") {
+                      if (["lasthope.mr@gmail.com", "zxbrar1@gmail.com"].includes(email)) {
                         setIsStaffGoogleUser(true);
                         setIsAdminLoggedIn(true);
                         addToast("Staff Verified", `Welcome Admin (${email})!`, "success");
                       } else {
                         setIsStaffGoogleUser(false);
                         setIsAdminLoggedIn(false);
-                        addToast("Access Denied", `${email} is not authorized for staff access. Only lasthope.mr@gmail.com is permitted.`, "warning");
+                        addToast("Access Denied", `${email} is not authorized for staff access. Only authorized staff Gmail accounts are permitted.`, "warning");
                       }
                     } catch (err: any) {
                       if (err.code !== "auth/popup-closed-by-user") {
@@ -1148,7 +1148,7 @@ export default function App() {
                     <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
                     <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
                   </svg>
-                  <span>Sign in with lasthope.mr@gmail.com</span>
+                  <span>Sign in with staff Google account</span>
                 </button>
 
                 <button
