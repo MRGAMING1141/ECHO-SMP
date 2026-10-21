@@ -353,6 +353,22 @@ body::before{
 @media(max-width:350px){#echoMusicPlayer{gap:6px;padding-right:8px}#echoMusicPlayer .music-meta{max-width:84px}#echoMusicPlayer input[type=range]{width:38px}}
 @media(prefers-reduced-motion:reduce){#echoMusicPlayer,#echoMusicPlayer *{transition:none!important}}
 
+
+/* Admin sales table: solid, high-contrast header for readable column labels */
+#admin #adminTable thead th,
+#admin .tw thead th{
+  background-color:#24213f!important;
+  color:#ffffff!important;
+  opacity:1!important;
+  text-shadow:none!important;
+  font-weight:700!important;
+  border-bottom:1px solid rgba(255,255,255,.22)!important;
+  -webkit-text-fill-color:#ffffff;
+}
+#admin #adminTable tbody td,
+#admin .tw tbody td{
+  color:var(--tx);
+}
 </style>
 </head>
 <body>
