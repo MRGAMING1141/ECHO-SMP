@@ -1244,13 +1244,9 @@ async function runNativeGooglePopup(){
 
 function loginWithGoogle(e){
   if(e&&typeof e.preventDefault==="function")e.preventDefault();
-  // On domains not yet in Firebase's authorizedDomains (such as echo-smpshop.vercel.app),
-  // Firebase's popup handler auto-closes within 0.3s. Open the persistent In-App Account Chooser instead!
-  if(window.__firebaseDomainAuthorized===false){
-    openGoogleChooserModal();
-    return;
-  }
-  runNativeGooglePopup();
+  // Always show the in-page account panel first. Google authentication begins
+  // only after the user explicitly taps the panel's sign-in button.
+  openGoogleChooserModal();
 }
 
 if($("gcCloseBtn"))$("gcCloseBtn").onclick=function(){$("googleChooserDlg").close()};
