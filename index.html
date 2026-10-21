@@ -1984,7 +1984,7 @@ function setupAdminBody(){
         method:"POST",
         headers:{
           "Content-Type":"application/json",
-          "Authorization":"Bearer "+(window.__echoAdminPassword||"GOOGLE_STAFF:"+email"),
+          "Authorization":"Bearer "+(window.__echoAdminPassword||"GOOGLE_STAFF:"+email),
           "X-Staff-Email":(getProfile()&&getProfile().email||"")
         },
         body:JSON.stringify({
