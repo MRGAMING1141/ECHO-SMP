@@ -369,6 +369,24 @@ body::before{
 #admin .tw tbody td{
   color:var(--tx);
 }
+
+/* Sales log responsive layout: cards on phones, scrollable table on larger screens */
+#admin #adminTable{display:block;width:100%;max-width:100%;min-width:0;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
+#admin #adminTable table{width:100%;min-width:860px;table-layout:auto}
+#admin #adminTable th{white-space:nowrap}
+#admin #adminTable td{overflow-wrap:anywhere}
+@media(max-width:640px){
+  #admin #adminTable{overflow:visible;border:0}
+  #admin #adminTable table,#admin #adminTable tbody{display:block;width:100%;min-width:0}
+  #admin #adminTable thead{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+  #admin #adminTable tbody{display:grid;gap:12px}
+  #admin #adminTable tbody tr{display:block;min-width:0;background:rgba(20,28,24,.96);border:1px solid rgba(175,220,190,.35);border-radius:14px;overflow:hidden;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+  #admin #adminTable tbody td{display:grid;grid-template-columns:minmax(105px,36%) minmax(0,1fr);gap:10px;width:100%;min-width:0;padding:11px 12px;border-bottom:1px solid rgba(255,255,255,.12);color:#fff!important;overflow-wrap:anywhere;word-break:break-word}
+  #admin #adminTable tbody td:last-child{border-bottom:0}
+  #admin #adminTable tbody td::before{content:attr(data-label);font-weight:700;color:#c7e7d0;line-height:1.35}
+  #admin #adminTable tbody td small{overflow-wrap:anywhere}
+  #admin #adminTable tbody td button{min-height:42px}
+}
 </style>
 </head>
 <body>
@@ -811,14 +829,14 @@ function renderAdminOrders(orders){
   empty.hidden=rows.length>0;
   tbody.innerHTML=rows.map(function(r){
     return "<tr>"+
-      "<td><b>"+adminEscape(r.payment_reference||r.id||"—")+"</b></td>"+
-      "<td>"+adminDate(r.created_at)+"</td>"+
-      "<td>"+adminEscape(r.player_name||"—")+
+      "<td data-label=\"Sale ID\"><b>"+adminEscape(r.payment_reference||r.id||"—")+"</b></td>"+
+      "<td data-label=\"Date\">"+adminDate(r.created_at)+"</td>"+
+      "<td data-label=\"Player / Discord\">"+adminEscape(r.player_name||"—")+
         (r.discord_username?"<br><small>"+adminEscape(r.discord_username)+"</small>":"")+
       "</td>"+
-      "<td>"+adminItems(r.items)+"</td>"+
-      "<td>₹"+adminEscape(r.total_amount)+" "+adminEscape(r.currency||"")+"</td>"+
-      "<td>"+adminStatus(r.payment_status)+
+      "<td data-label=\"Items\">"+adminItems(r.items)+"</td>"+
+      "<td data-label=\"Total\">₹"+adminEscape(r.total_amount)+" "+adminEscape(r.currency||"")+"</td>"+
+      "<td data-label=\"Payment status\">"+adminStatus(r.payment_status)+
         (r.paid_at?"<br><small>Paid: "+adminDate(r.paid_at)+"</small>":"")+
         (String(r.payment_status||"pending").toLowerCase()==="pending"
           ? '<div style="margin-top:8px"><button class="st ok" data-admin-status="paid" data-admin-id="'+adminEscape(r.id)+'">Paid</button></div>'
@@ -826,7 +844,7 @@ function renderAdminOrders(orders){
             ? '<div style="margin-top:8px"><button class="st ok" data-admin-status="delivered" data-admin-id="'+adminEscape(r.id)+'">Delivered</button></div>'
             : "")+
       "</td>"+
-      "<td>"+adminEscape(r.payment_method||"—")+"</td>"+
+      "<td data-label=\"Method\">"+adminEscape(r.payment_method||"—")+"</td>"+
     "</tr>";
   }).join("");
   // Bind status actions directly to each freshly-rendered button. This is more reliable
