@@ -120,17 +120,17 @@ app.post("/api/supabase-proxy", (req, res) => {
     return res.json({ ok: true, website_logins: loginStats });
   }
 
-  // Strict staff authorization: only lasthope.mr@gmail.com
+  // Strict staff authorization: only authorized staff Gmail accounts
   const staffEmailHeader = String(req.headers["x-staff-email"] || "").trim().toLowerCase();
   const isAuthorizedStaff =
-    token === "GOOGLE_STAFF:lasthope.mr@gmail.com" ||
-    token.toLowerCase() === "lasthope.mr@gmail.com" ||
-    staffEmailHeader === "lasthope.mr@gmail.com";
+    ["GOOGLE_STAFF:lasthope.mr@gmail.com", "GOOGLE_STAFF:zxbrar1@gmail.com"].includes(token) ||
+    ["lasthope.mr@gmail.com", "zxbrar1@gmail.com"].includes(token.toLowerCase()) ||
+    ["lasthope.mr@gmail.com", "zxbrar1@gmail.com"].includes(staffEmailHeader);
 
   if (!isAuthorizedStaff) {
     return res.status(401).json({
       ok: false,
-      error: "Unauthorized. Access is strictly restricted to lasthope.mr@gmail.com."
+      error: "Unauthorized. Access is strictly restricted to authorized staff Gmail accounts."
     });
   }
 
