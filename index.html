@@ -611,14 +611,14 @@ function displayPaymentInstructions(method){
   }
 }
 $("co").onclick=function(){if(paymentOrder){$("sid").textContent=paymentOrder.id;$("tot2").textContent="Server-verified amount: ₹"+paymentOrder.total;displayPaymentInstructions(paymentOrder.method);show("v2")}else{show("v1");var p=getProfile();if(p)$("ign").value=p.username} $("dlg").showModal()};
-async function recordPlayerLogin(username){
+async function recordWebsiteLogin(){
   var configResponse=await fetch("/api/admin-function-url",{method:"GET",cache:"no-store"});
   var config={};try{config=await configResponse.json()}catch(e){}
   if(!configResponse.ok||!config.url)throw new Error(config.error||"Login counter endpoint is unavailable.");
   var response=await fetch(config.url,{
     method:"POST",
     headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({action:"record_login",player_name:username}),
+    body:JSON.stringify({action:"record_site_login"}),
     cache:"no-store"
   });
   var data={};try{data=await response.json()}catch(e){}
@@ -632,9 +632,9 @@ $("profileSave").onclick=async function(){
   var button=$("profileSave");
   button.disabled=true;button.textContent="Recording login…";
   try{
-    var result=await recordPlayerLogin(saved);
+    await recordWebsiteLogin();
     go("shop");
-    toast("Welcome to Echo SMP, "+saved+"! Login #"+(result.login_count||"recorded"));
+    toast("Welcome to Echo SMP, "+saved+"!");
   }catch(e){
     toast("Username saved, but login counter failed: "+(e&&e.message?e.message:"Try again."));
   }finally{button.disabled=false;button.textContent="Save username";}
@@ -800,9 +800,6 @@ function renderAdminOrders(orders){
       "<td>"+adminEscape(r.player_name||"—")+
         (r.discord_username?"<br><small>"+adminEscape(r.discord_username)+"</small>":"")+
       "</td>"+
-      "<td><b>"+adminEscape(r.login_count==null?0:r.login_count)+"</b></td>"+
-      "<td>"+adminDate(r.first_login_at)+"</td>"+
-      "<td>"+adminDate(r.last_login_at)+"</td>"+
       "<td>"+adminItems(r.items)+"</td>"+
       "<td>₹"+adminEscape(r.total_amount)+" "+adminEscape(r.currency||"")+"</td>"+
       "<td>"+adminStatus(r.payment_status)+
@@ -861,6 +858,8 @@ async function loadAdminOrders(password){
   if(!response.ok||!data.ok){
     throw new Error(data.error||"Could not load the sales log.");
   }
+  var totalNode=document.getElementById("websiteLoginTotal");
+  if(totalNode)totalNode.textContent=String(Number(data.website_logins&&data.website_logins.total_logins)||0);
   return Array.isArray(data.orders)?data.orders:[];
 }
 function showAdminError(message){
@@ -882,6 +881,11 @@ function setupAdminBody(){
   if(!body)return;
   body.innerHTML=
     '<div class="card" style="margin-bottom:14px">'+
+      '<div class="n">Total website logins</div>'+
+      '<div class="sid" id="websiteLoginTotal">—</div>'+
+      '<p class="d" style="margin:0">Total successful website logins recorded.</p>'+
+    '</div>'+
+    '<div class="card" style="margin-bottom:14px">'+
       '<div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap">'+
         '<div><div class="n">Orders from Supabase</div><p class="d" style="margin:4px 0 0">Read-only view of public.sales_log. RLS remains enabled; the browser never receives a Supabase database key.</p></div>'+
         '<button class="buy gh" id="refreshAdmin" type="button">Refresh</button>'+
@@ -891,7 +895,7 @@ function setupAdminBody(){
     '<div id="adminError" class="empty" hidden></div>'+
     '<div class="tw" id="adminTable" hidden>'+
       '<table><thead><tr>'+
-        '<th>Sale ID</th><th>Date</th><th>Player / Discord</th><th>Logins</th><th>First login</th><th>Last login</th><th>Items</th>'+
+        '<th>Sale ID</th><th>Date</th><th>Player / Discord</th><th>Items</th>'+
         '<th>Total</th><th>Payment status</th><th>Method</th>'+
       '</tr></thead><tbody id="sales"></tbody></table>'+
     '</div>'+
