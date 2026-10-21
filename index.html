@@ -790,21 +790,11 @@ document.addEventListener("DOMContentLoaded", function(){
     </div>
   </div>
 
-  <div id="googleSavedAccountsList" style="display:grid;gap:8px;margin-bottom:14px"></div>
-
-  <div id="googleCustomAccountBox" class="card" style="padding:14px;margin-bottom:12px">
-    <label for="gcEmailInput" style="margin-top:0">Gmail Address</label>
-    <input id="gcEmailInput" type="email" autocomplete="email" placeholder="yourname@gmail.com">
-    <label for="gcIgnInput">Minecraft Username (IGN)</label>
-    <input id="gcIgnInput" maxlength="16" autocomplete="nickname" placeholder="e.g. Steve_MC">
-    <p class="sub" style="margin:6px 0 0;font-size:.78rem">Authorized staff accounts can access the Sales Log tab.</p>
-    <div class="row" style="margin-top:12px">
-      <button class="buy" id="gcContinueBtn" type="button">Continue with Gmail</button>
-    </div>
+  <div class="card" style="padding:14px;margin-bottom:12px">
+    <p class="sub" style="margin:0 0 12px">Sign in securely through Google. Typing an email address alone cannot sign you in or unlock staff access.</p>
+    <button class="buy" id="gcContinueBtn" type="button" style="width:100%">Open Google Sign-In</button>
   </div>
-
-  <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;padding-top:8px;border-top:1px solid var(--ln)">
-    <button class="st" id="gcTryPopupBtn" type="button" style="font-size:.78rem">↗ Try Google Popup Window</button>
+  <div style="display:flex;justify-content:flex-end;align-items:center;gap:8px;padding-top:8px;border-top:1px solid var(--ln)">
     <button class="buy gh" id="gcCloseBtn" type="button" style="padding:7px 14px">Cancel</button>
   </div>
 </dialog>
@@ -981,7 +971,20 @@ $("cpJava").onclick=function(){copy("play.echocore.in:6018","Java server address
 $("cpBedrock").onclick=function(){copy("play.echocore.in","Bedrock address copied: play.echocore.in (Port 6018)")};
 
 var PROFILE_KEY="echo_minecraft_profile_v1";
-function getProfile(){try{var p=JSON.parse(localStorage.getItem(PROFILE_KEY)||"null");return p&&typeof p.username==="string"?p:null}catch(e){return null}}
+function getProfile(){
+  try{
+    var p=JSON.parse(localStorage.getItem(PROFILE_KEY)||"null");
+    if(!p||typeof p.username!=="string")return null;
+    if(String(p.email||"").trim().toLowerCase()==="lasthope.mr@gmail.com"&&window.__echoAuthResolved===true){
+      var authUser=window.echoAuth&&window.echoAuth.auth?window.echoAuth.auth.currentUser:null;
+      if(!authUser||String(authUser.email||"").trim().toLowerCase()!=="lasthope.mr@gmail.com"){
+        localStorage.removeItem(PROFILE_KEY);
+        return null;
+      }
+    }
+    return p;
+  }catch(e){return null}
+}
 function normalizeMinecraftName(name){return String(name||"").replace(/\s/g,"_").replace(/[^A-Za-z0-9_]/g,"").slice(0,16)}
 function normalizeMinecraftInput(el){if(el){var c=normalizeMinecraftName(el.value);if(el.value!==c)el.value=c}}
 function validMinecraftName(name){return /^[A-Za-z0-9_]{3,16}$/.test(name)}
@@ -1111,31 +1114,13 @@ function paintProfile(){
   }
 }
 
-var SAVED_ACCOUNTS_KEY="echo_saved_google_accounts_v1";
-function getSavedGoogleAccounts(){
-  try{
-    var list=JSON.parse(localStorage.getItem(SAVED_ACCOUNTS_KEY)||"[]");
-    if(!Array.isArray(list))list=[];
-    var hasStaff=list.some(function(a){return a&&String(a.email||"").toLowerCase()==="lasthope.mr@gmail.com"});
-    if(!hasStaff){
-      list.unshift({email:"lasthope.mr@gmail.com",username:"MR_GAMING1141",displayName:"MR_GAMING1141 (Staff)"});
-    }
-    return list.slice(0,6);
-  }catch(e){
-    return [{email:"lasthope.mr@gmail.com",username:"MR_GAMING1141",displayName:"MR_GAMING1141 (Staff)"}];
-  }
-}
-function saveGoogleAccountToList(email,username){
-  try{
-    var cleanEmail=String(email||"").trim().toLowerCase();
-    if(!cleanEmail)return;
-    var list=getSavedGoogleAccounts().filter(function(a){return String(a.email||"").toLowerCase()!==cleanEmail});
-    list.unshift({email:cleanEmail,username:username,displayName:username});
-    localStorage.setItem(SAVED_ACCOUNTS_KEY,JSON.stringify(list.slice(0,6)));
-  }catch(e){}
-}
+try{localStorage.removeItem("echo_saved_google_accounts_v1")}catch(e){}
 
 async function completeGoogleAccountLogin(emailRaw,ignRaw,uidOpt,photoOpt){
+  if(!uidOpt){
+    toast("Please complete Google Sign-In first. An email address alone cannot verify an account.");
+    return false;
+  }
   var email=String(emailRaw||"").trim().toLowerCase();
   if(!email||email.indexOf("@")<1){
     toast("Please enter a valid Gmail address (e.g. yourname@gmail.com)");
@@ -1153,7 +1138,7 @@ async function completeGoogleAccountLogin(emailRaw,ignRaw,uidOpt,photoOpt){
   }
   if(!validMinecraftName(ign)){
     toast("Enter a valid Minecraft username (3–16 letters, numbers, or underscores)");
-    if($("gcIgnInput"))$("gcIgnInput").focus();
+    
     return false;
   }
 
@@ -1169,7 +1154,6 @@ async function completeGoogleAccountLogin(emailRaw,ignRaw,uidOpt,photoOpt){
     updatedAt:Date.now()
   };
   localStorage.setItem(PROFILE_KEY,JSON.stringify(prof));
-  saveGoogleAccountToList(email,ign);
 
   try{
     if(window.echoAuth&&window.echoAuth.db){
@@ -1197,38 +1181,7 @@ async function completeGoogleAccountLogin(emailRaw,ignRaw,uidOpt,photoOpt){
 function openGoogleChooserModal(){
   var dlg=$("googleChooserDlg");
   if(!dlg)return;
-  var listEl=$("googleSavedAccountsList");
-  var existing=getProfile();
-  if($("gcIgnInput")&&existing&&validMinecraftName(existing.username)){
-    $("gcIgnInput").value=existing.username;
-  }
-  if(listEl){
-    var accounts=getSavedGoogleAccounts();
-    listEl.innerHTML=accounts.map(function(acc){
-      var isStaff=isAuthorizedStaffEmail(acc.email);
-      var ign=acc.username||(isStaff?"MR_GAMING1141":"Player");
-      return '<button type="button" class="buy gh" data-pick-email="'+esc(acc.email)+'" data-pick-ign="'+esc(ign)+'" style="display:flex;align-items:center;justify-content:space-between;gap:10px;text-align:left;width:100%;padding:10px 12px">'+
-        '<span style="display:flex;align-items:center;gap:10px;min-width:0">'+
-          '<img src="https://mc-heads.net/avatar/'+encodeURIComponent(ign)+'/36" alt="" style="width:32px;height:32px;border-radius:6px;flex-shrink:0" onerror="this.src=\'/steve.png\'">'+
-          '<span style="min-width:0;overflow:hidden;text-overflow:ellipsis">'+
-            '<b style="display:block;color:var(--tx);font-size:.9rem">'+esc(acc.email)+'</b>'+
-            '<small style="color:var(--mu);font-size:.76rem">Minecraft IGN: '+esc(ign)+(isStaff?' · 🛡️ Staff Access':'')+'</small>'+
-          '</span>'+
-        '</span>'+
-        '<span style="color:var(--ac);font-weight:700;font-size:.82rem;flex-shrink:0">Select →</span>'+
-      '</button>';
-    }).join("");
-
-    listEl.querySelectorAll("[data-pick-email]").forEach(function(btn){
-      btn.onclick=function(){
-        var em=btn.getAttribute("data-pick-email")||"";
-        var ig=btn.getAttribute("data-pick-ign")||"";
-        if($("gcEmailInput"))$("gcEmailInput").value=em;
-        if($("gcIgnInput")&&ig)$("gcIgnInput").value=ig;
-        completeGoogleAccountLogin(em,ig);
-      };
-    });
-  }
+  try{localStorage.removeItem("echo_saved_google_accounts_v1")}catch(e){}
   if(!dlg.open)dlg.showModal();
 }
 
@@ -1301,15 +1254,10 @@ function loginWithGoogle(e){
 }
 
 if($("gcCloseBtn"))$("gcCloseBtn").onclick=function(){$("googleChooserDlg").close()};
-if($("gcTryPopupBtn"))$("gcTryPopupBtn").onclick=function(){
-  $("googleChooserDlg").close();
-  runNativeGooglePopup();
-};
-if($("gcIgnInput"))$("gcIgnInput").addEventListener("input",function(){normalizeMinecraftInput(this)});
 if($("gcContinueBtn"))$("gcContinueBtn").onclick=function(){
-  var email=$("gcEmailInput")?$("gcEmailInput").value:"";
-  var ign=$("gcIgnInput")?$("gcIgnInput").value:"";
-  completeGoogleAccountLogin(email,ign);
+  var dlg=$("googleChooserDlg");
+  if(dlg&&dlg.open)dlg.close();
+  runNativeGooglePopup();
 };
 
 async function saveProfileName(value,announce){
@@ -1331,7 +1279,7 @@ async function saveProfileName(value,announce){
    updatedAt:Date.now()
  };
  localStorage.setItem(PROFILE_KEY,JSON.stringify(prof));
- if(email)saveGoogleAccountToList(email,name);
+ 
  paintProfile();
  drawMine();
  if($("ign"))$("ign").value=name;
@@ -2388,6 +2336,7 @@ setTimeout(function(){syncWishButtons();updateStats();applyFilters()},0);
    getDocFromServer(doc(db, "test", "connection")).catch(function() {});
 
    onAuthStateChanged(auth, async function(user) {
+     window.__echoAuthResolved = true;
      const existingProfile = typeof getProfile === "function" ? getProfile() : null;
      if (user) {
        const email = (user.email || "").toLowerCase();
@@ -2428,7 +2377,7 @@ setTimeout(function(){syncWishButtons();updateStats();applyFilters()},0);
          };
          localStorage.setItem("echo_minecraft_profile_v1", JSON.stringify(prof));
          if (typeof saveGoogleAccountToList === "function" && user.email) {
-           saveGoogleAccountToList(user.email, username);
+
          }
          try {
            await setDoc(doc(db, "users", user.uid), prof, { merge: true });
