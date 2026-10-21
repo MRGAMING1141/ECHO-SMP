@@ -430,6 +430,13 @@ input,textarea,select{background:rgba(0,0,0,.22)!important;color:var(--tx)!impor
   nav a:not(.nav-brand){padding:8px 9px;font-size:.9rem}
   #echoMusicPlayer{right:10px;bottom:calc(88px + env(safe-area-inset-bottom,0px));max-width:calc(100vw - 20px)}
 }
+/* Neutralize remaining legacy gradient decorations while retaining bg1.jpg/bg2.jpg. */
+.wiki-symbol,.flash,.category-icon,.card .product-icon,.filter,.profile-avatar{
+  background:rgba(255,255,255,.09)!important;background-image:none!important;
+}
+.card::before,.hero::after{
+  background:rgba(255,255,255,.025)!important;background-image:none!important;
+}
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
