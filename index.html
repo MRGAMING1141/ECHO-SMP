@@ -611,7 +611,34 @@ function displayPaymentInstructions(method){
   }
 }
 $("co").onclick=function(){if(paymentOrder){$("sid").textContent=paymentOrder.id;$("tot2").textContent="Server-verified amount: ₹"+paymentOrder.total;displayPaymentInstructions(paymentOrder.method);show("v2")}else{show("v1");var p=getProfile();if(p)$("ign").value=p.username} $("dlg").showModal()};
-$("profileSave").onclick=function(){if(saveProfileName($("profileIgn").value,true)){go("shop");toast("Welcome to Echo SMP, "+getProfile().username+"!")}};
+async function recordPlayerLogin(username){
+  var configResponse=await fetch("/api/admin-function-url",{method:"GET",cache:"no-store"});
+  var config={};try{config=await configResponse.json()}catch(e){}
+  if(!configResponse.ok||!config.url)throw new Error(config.error||"Login counter endpoint is unavailable.");
+  var response=await fetch(config.url,{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({action:"record_login",player_name:username}),
+    cache:"no-store"
+  });
+  var data={};try{data=await response.json()}catch(e){}
+  if(!response.ok||!data.ok)throw new Error(data.error||"Could not record this login.");
+  return data;
+}
+$("profileSave").onclick=async function(){
+  var username=$("profileIgn").value;
+  if(!saveProfileName(username,true))return;
+  var saved=getProfile().username;
+  var button=$("profileSave");
+  button.disabled=true;button.textContent="Recording login…";
+  try{
+    var result=await recordPlayerLogin(saved);
+    go("shop");
+    toast("Welcome to Echo SMP, "+saved+"! Login #"+(result.login_count||"recorded"));
+  }catch(e){
+    toast("Username saved, but login counter failed: "+(e&&e.message?e.message:"Try again."));
+  }finally{button.disabled=false;button.textContent="Save username";}
+};
 $("profileEdit").onclick=function(){try{localStorage.removeItem(PROFILE_KEY)}catch(e){}paintProfile();$("profileSignedOut").hidden=false;$("profileSignedIn").hidden=true;$("profileIgn").value="";$("profileMessage").textContent="Enter the other Minecraft username and save to continue.";$("profileIgn").focus();go("profile")};
 $("profileLogout").onclick=function(){try{localStorage.removeItem(PROFILE_KEY)}catch(e){}$("profileMessage").textContent="Logged out. Sign in with a Minecraft username to continue.";$("profileIgn").value="";paintProfile();go("profile");toast("You have logged out")};
 $("profileIgn").addEventListener("input",function(){normalizeMinecraftInput(this)});
@@ -773,6 +800,9 @@ function renderAdminOrders(orders){
       "<td>"+adminEscape(r.player_name||"—")+
         (r.discord_username?"<br><small>"+adminEscape(r.discord_username)+"</small>":"")+
       "</td>"+
+      "<td><b>"+adminEscape(r.login_count==null?0:r.login_count)+"</b></td>"+
+      "<td>"+adminDate(r.first_login_at)+"</td>"+
+      "<td>"+adminDate(r.last_login_at)+"</td>"+
       "<td>"+adminItems(r.items)+"</td>"+
       "<td>₹"+adminEscape(r.total_amount)+" "+adminEscape(r.currency||"")+"</td>"+
       "<td>"+adminStatus(r.payment_status)+
@@ -861,7 +891,7 @@ function setupAdminBody(){
     '<div id="adminError" class="empty" hidden></div>'+
     '<div class="tw" id="adminTable" hidden>'+
       '<table><thead><tr>'+
-        '<th>Sale ID</th><th>Date</th><th>Player / Discord</th><th>Items</th>'+
+        '<th>Sale ID</th><th>Date</th><th>Player / Discord</th><th>Logins</th><th>First login</th><th>Last login</th><th>Items</th>'+
         '<th>Total</th><th>Payment status</th><th>Method</th>'+
       '</tr></thead><tbody id="sales"></tbody></table>'+
     '</div>'+
