@@ -94,6 +94,36 @@ export default {
       return json({ error: "Method not allowed." }, 405, origin);
     }
 
+    // Public website-wide login counter. The database secret stays server-side.
+    const earlyBody = await request.clone().json().catch(() => ({}));
+    if (earlyBody?.action === "record_site_login") {
+      const loginUrl = (Deno.env.get("SUPABASE_URL") || "").replace(/\/$/, "");
+      const loginSecret = getSecretKey();
+      if (!loginUrl || !loginSecret) {
+        return json({ error: "Website login counter is not configured." }, 500, origin);
+      }
+      try {
+        const loginResponse = await fetch(`${loginUrl}/rest/v1/rpc/increment_website_login`, {
+          method: "POST",
+          headers: {
+            apikey: loginSecret,
+            Authorization: `Bearer ${loginSecret}`,
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({}),
+        });
+        if (!loginResponse.ok) {
+          return json({ error: "Could not record this website login." }, 502, origin);
+        }
+        const result = await loginResponse.json();
+        const entry = Array.isArray(result) ? result[0] : null;
+        return json({ ok: true, total_logins: entry?.total_logins ?? 0 }, 200, origin);
+      } catch {
+        return json({ error: "Could not record this website login." }, 502, origin);
+      }
+    }
+
     const adminPassword = Deno.env.get("ADMIN_PASSWORD") || "";
     const supabaseUrl = (Deno.env.get("SUPABASE_URL") || "").replace(/\/$/, "");
     const secretKey = getSecretKey();
@@ -179,9 +209,24 @@ export default {
         return json({ error: "Invalid sales log response." }, 502, origin);
       }
 
-      // Return only the already allowlisted fields. Never echo request headers,
-      // environment variables, database errors, or secrets.
-      return json({ ok: true, orders: data }, 200, origin);
+      // Return aggregate website-wide logins only; never expose per-player counters.
+      const statsResponse = await fetch(
+        `${supabaseUrl}/rest/v1/website_login_stats?select=total_logins,first_login_at,last_login_at&id=eq.1`,
+        { headers },
+      );
+      if (!statsResponse.ok) {
+        return json({ error: "Could not read the website login counter." }, 502, origin);
+      }
+      const statsRows = await statsResponse.json();
+      if (!Array.isArray(statsRows)) {
+        return json({ error: "Invalid website login counter response." }, 502, origin);
+      }
+      const websiteLogins = statsRows[0] || {
+        total_logins: 0,
+        first_login_at: null,
+        last_login_at: null,
+      };
+      return json({ ok: true, orders: data, website_logins: websiteLogins }, 200, origin);
     } catch {
       return json({ error: "Could not read the sales log." }, 502, origin);
     }
