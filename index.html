@@ -751,6 +751,17 @@ $("dlg").addEventListener("close",function(){});
 var DISCORD="https://discord.gg/Q4fkCtABXc";
 var TRK={};try{TRK=JSON.parse($("trk").textContent||"{}")}catch(e){}
 async function key(id,ign){var b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(id.trim().toUpperCase()+"|"+ign.trim().toLowerCase()));return Array.from(new Uint8Array(b)).map(function(v){return("0"+v.toString(16)).slice(-2)}).join("")}
+/* One-time cleanup of pre-launch test orders on each visitor's browser.
+   Future orders are stored normally after this version marker is set. */
+(function clearPrelaunchTestOrders(){
+  var key="echo_orders_cleanup_v1";
+  try{
+    if(localStorage.getItem(key)!=="done"){
+      localStorage.removeItem("echo_orders");
+      localStorage.setItem(key,"done");
+    }
+  }catch(e){}
+})();
 function getMine(){try{return JSON.parse(localStorage.getItem("echo_orders")||"[]")}catch(e){return[]}}
 function saveMine(o){try{var a=getMine();a.unshift(o);localStorage.setItem("echo_orders",JSON.stringify(a.slice(0,30)))}catch(e){}}
 function statusHtml(t){
