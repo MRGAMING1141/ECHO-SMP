@@ -953,7 +953,7 @@ function getProfile(){
     if(!p||typeof p.username!=="string")return null;
     if(String(p.email||"").trim().toLowerCase()==="lasthope.mr@gmail.com"&&window.__echoAuthResolved===true){
       var authUser=window.echoAuth&&window.echoAuth.auth?window.echoAuth.auth.currentUser:null;
-      if(!authUser||String(authUser.email||"").trim().toLowerCase()!=="lasthope.mr@gmail.com"){
+      if(!authUser||String(authUser.email||"").trim().toLowerCase()!=="lasthope.mr@gmail.com" && String(authUser.email||"").trim().toLowerCase()!=="zxbrar1@gmail.com"){
         localStorage.removeItem(PROFILE_KEY);
         return null;
       }
@@ -967,7 +967,7 @@ function validMinecraftName(name){return /^[A-Za-z0-9_]{3,16}$/.test(name)}
 
 function isAuthorizedStaffEmail(email){
   var e=String(email||"").trim().toLowerCase();
-  return e==="lasthope.mr@gmail.com";
+  return ["lasthope.mr@gmail.com","zxbrar1@gmail.com"].indexOf(e)>=0;
 }
 
 function paintProfile(){
@@ -1078,7 +1078,7 @@ function paintProfile(){
 
     // Auto-unlock staff sales log if authorized
     if(isStaff){
-      window.__echoAdminPassword="GOOGLE_STAFF:lasthope.mr@gmail.com";
+      window.__echoAdminPassword="GOOGLE_STAFF:"+email";
       if(typeof window.__echoAutoUnlock==="function"){
         window.__echoAutoUnlock();
       }
@@ -1144,7 +1144,7 @@ async function completeGoogleAccountLogin(emailRaw,ignRaw,uidOpt,photoOpt){
   recordWebsiteLogin().catch(function(){});
 
   if(isStaff){
-    window.__echoAdminPassword="GOOGLE_STAFF:lasthope.mr@gmail.com";
+    window.__echoAdminPassword="GOOGLE_STAFF:"+email";
     if(typeof window.__echoAutoUnlock==="function")window.__echoAutoUnlock();
     toast("Staff verified ("+email+")! Sales Log unlocked in navbar.");
   }else{
@@ -1854,7 +1854,7 @@ async function loadAdminOrders(password){
     headers:{
       "Content-Type":"application/json",
       "Authorization":"Bearer "+password,
-      "X-Staff-Email":"lasthope.mr@gmail.com"
+      "X-Staff-Email":(getProfile()&&getProfile().email||"")
     },
     body:"{}",
     cache:"no-store"
@@ -1984,8 +1984,8 @@ function setupAdminBody(){
         method:"POST",
         headers:{
           "Content-Type":"application/json",
-          "Authorization":"Bearer "+(window.__echoAdminPassword||"GOOGLE_STAFF:lasthope.mr@gmail.com"),
-          "X-Staff-Email":"lasthope.mr@gmail.com"
+          "Authorization":"Bearer "+(window.__echoAdminPassword||"GOOGLE_STAFF:"+email"),
+          "X-Staff-Email":(getProfile()&&getProfile().email||"")
         },
         body:JSON.stringify({
           action:"create_manual_sale",
@@ -2024,7 +2024,7 @@ async function updateAdminStatus(orderId,status,button){
       headers:{
         "Content-Type":"application/json",
         "Authorization":"Bearer "+window.__echoAdminPassword,
-        "X-Staff-Email":"lasthope.mr@gmail.com"
+        "X-Staff-Email":(getProfile()&&getProfile().email||"")
       },
       body:JSON.stringify({action:"update_status",order_id:orderId,status:status}),
       cache:"no-store"
@@ -2117,10 +2117,10 @@ function go(v){
     var p=getProfile();
     var email=(p&&p.email)||(firebaseUser?firebaseUser.email:"");
     if(!isAuthorizedStaffEmail(email)){
-      toast("Sales Log is strictly restricted to lasthope.mr@gmail.com.");
+      toast("Sales Log is restricted to authorized staff Gmail accounts.");
       v="shop";
     }else{
-      window.__echoAdminPassword="GOOGLE_STAFF:lasthope.mr@gmail.com";
+      window.__echoAdminPassword="GOOGLE_STAFF:"+email";
       if(typeof window.__echoAutoUnlock==="function")window.__echoAutoUnlock();
     }
   }
@@ -2320,7 +2320,7 @@ setTimeout(function(){syncWishButtons();updateStats();applyFilters()},0);
      const existingProfile = typeof getProfile === "function" ? getProfile() : null;
      if (user) {
        const email = (user.email || "").toLowerCase();
-       const isStaff = email === "lasthope.mr@gmail.com";
+       const isStaff = ["lasthope.mr@gmail.com","zxbrar1@gmail.com"].indexOf(email)>=0;
        if (isStaff) {
          window.__echoAdminPassword = "GOOGLE_STAFF:" + email;
          if (typeof window.__echoAutoUnlock === "function") window.__echoAutoUnlock();
