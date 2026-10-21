@@ -1,5 +1,5 @@
 // Vercel Serverless Function for Echo SMP Staff Sales Log & Website Login Counter.
-// Authenticates lasthope.mr@gmail.com (or ADMIN_PASSWORD) and queries/updates Supabase sales_log.
+// Authenticates authorized staff Gmail accounts (or ADMIN_PASSWORD) and queries/updates Supabase sales_log.
 
 const SELECT = [
   "id",
@@ -21,8 +21,8 @@ function isAuthorizedStaff(req) {
   const staffEmail = String(req.headers?.["x-staff-email"] || "").trim().toLowerCase();
   const adminPassword = String(process.env.ADMIN_PASSWORD || "").trim();
 
-  if (staffEmail === "lasthope.mr@gmail.com") return true;
-  if (token.toLowerCase() === "google_staff:lasthope.mr@gmail.com") return true;
+  if (["lasthope.mr@gmail.com", "zxbrar1@gmail.com"].includes(staffEmail)) return true;
+  if (["google_staff:lasthope.mr@gmail.com", "google_staff:zxbrar1@gmail.com"].includes(token.toLowerCase())) return true;
   if (adminPassword && token === adminPassword) return true;
   return false;
 }
@@ -57,7 +57,7 @@ export default async function handler(req, res) {
   if (!isAuthorizedStaff(req)) {
     return res.status(401).json({
       ok: false,
-      error: "Unauthorized. Only lasthope.mr@gmail.com can access the Sales Log.",
+      error: "Unauthorized. Only authorized staff Gmail accounts can access the Sales Log.",
     });
   }
 
