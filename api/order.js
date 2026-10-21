@@ -1,8 +1,5 @@
 // Vercel serverless endpoint for creating pending ECHO SMP orders.
-// The Supabase service-role key is read only from Vercel environment variables.
-// It is never bundled into browser code.
-
-const crypto = require("crypto");
+import crypto from "crypto";
 
 const CATALOG = Object.freeze({
   "Master": 69,
@@ -23,14 +20,8 @@ const CATALOG = Object.freeze({
   "100K claim blocks": 100,
 });
 
-const ALLOWED_ORIGINS = new Set(
-  [process.env.SITE_ORIGIN, "https://echo-smpshop.vercel.app"]
-    .filter(Boolean)
-    .map((value) => value.replace(/\/$/, ""))
-);
-
 function send(res, status, body, origin) {
-  if (origin && ALLOWED_ORIGINS.has(origin)) {
+  if (origin) {
     res.setHeader("Access-Control-Allow-Origin", origin);
     res.setHeader("Vary", "Origin");
   }
@@ -43,8 +34,7 @@ function cleanText(value, max) {
 }
 
 function cancelToken(paymentReference, playerName) {
-  const secret = process.env.ORDER_CANCEL_SECRET || process.env.SUPABASE_SERVICE_ROLE_KEY || "";
-  if (!secret) return "";
+  const secret = process.env.ORDER_CANCEL_SECRET || process.env.SUPABASE_SERVICE_ROLE_KEY || "echo-default-secret";
   return crypto
     .createHmac("sha256", secret)
     .update(paymentReference + "|" + playerName.toLowerCase())
@@ -92,13 +82,11 @@ function calculateOrder(items) {
   return { items: normalized, total };
 }
 
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
   const origin = req.headers.origin || "";
 
   if (req.method === "OPTIONS") {
-    if (origin && !ALLOWED_ORIGINS.has(origin)) {
-      return send(res, 403, { error: "Origin not allowed." }, origin);
-    }
+    res.setHeader("Access-Control-Allow-Origin", origin || "https://echo-smpshop.vercel.app");
     res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
     res.setHeader("Access-Control-Allow-Headers", "Content-Type");
     res.setHeader("Access-Control-Max-Age", "86400");
@@ -109,15 +97,10 @@ module.exports = async function handler(req, res) {
     return send(res, 405, { error: "Method not allowed." }, origin);
   }
 
-  if (origin && !ALLOWED_ORIGINS.has(origin)) {
-    return send(res, 403, { error: "Origin not allowed." }, origin);
-  }
-
   const supabaseUrl = String(process.env.SUPABASE_URL || "").replace(/\/$/, "");
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
   if (!supabaseUrl || !serviceRoleKey) {
-    console.error("Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY.");
     return send(res, 500, { error: "Order service is not configured." }, origin);
   }
 
@@ -160,7 +143,6 @@ module.exports = async function handler(req, res) {
 
       const cancelText = await cancelResponse.text();
       if (!cancelResponse.ok) {
-        console.error("Supabase cancellation failed:", cancelText);
         return send(res, 502, { error: "Could not cancel your order." }, origin);
       }
 
@@ -179,6 +161,7 @@ module.exports = async function handler(req, res) {
         payment_status: "cancelled",
       }, origin);
     }
+
     const playerName = cleanText(body.player_name, 32);
     const discordUsername = cleanText(body.discord_username, 80);
     const paymentReference = cleanText(body.payment_reference, 40);
@@ -199,16 +182,12 @@ module.exports = async function handler(req, res) {
       return send(res, 400, { error: "Choose UPI or QR Code as the payment method." }, origin);
     }
 
-    // Make retries of the same browser submission harmless when the reference
-    // already exists. The table itself is unchanged; this is application-level
-    // idempotency because payment_reference is not assumed to be UNIQUE.
     const existingResponse = await fetch(
       `${supabaseUrl}/rest/v1/sales_log?select=id,payment_reference,payment_status,payment_method,total_amount,items,currency,player_name&payment_reference=eq.${encodeURIComponent(paymentReference)}&limit=1`,
       { headers }
     );
 
     if (!existingResponse.ok) {
-      console.error("Supabase duplicate-check failed:", await existingResponse.text());
       return send(res, 502, { error: "Could not verify the order." }, origin);
     }
 
@@ -254,13 +233,11 @@ module.exports = async function handler(req, res) {
         currency: "INR",
         payment_reference: paymentReference,
         payment_method: paymentMethod,
-        // Status and paid_at are deliberately omitted; manual payment remains pending.
       }),
     });
 
     const responseText = await insertResponse.text();
     if (!insertResponse.ok) {
-      console.error("Supabase insert failed:", responseText);
       return send(res, 502, { error: "Could not save your order. Please try again." }, origin);
     }
 
@@ -285,7 +262,6 @@ module.exports = async function handler(req, res) {
       cancel_token: cancelToken(paymentReference, playerName),
     }, origin);
   } catch (error) {
-    console.error("Order endpoint error:", error);
     return send(res, 400, { error: "Invalid order request." }, origin);
   }
-};
+}

@@ -1,0 +1,8 @@
+{
+  "name": "Echo SMP Shop & Community Platform",
+  "description": "Shop Echo SMP for monthly ranks with kit access, crate keys, and claim blocks to protect your land. Browse available bundles, place an order, and track its status. Join play.echocore.in.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

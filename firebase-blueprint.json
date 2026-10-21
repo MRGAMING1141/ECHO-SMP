@@ -1,0 +1,61 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Player profile and linked Minecraft username stored in Firestore",
+      "type": "object",
+      "properties": {
+        "username": { "type": "string", "minLength": 3, "maxLength": 32 },
+        "minecraftUsername": { "type": "string", "minLength": 3, "maxLength": 32 },
+        "uid": { "type": "string", "maxLength": 128 },
+        "email": { "type": "string", "maxLength": 128 },
+        "displayName": { "type": "string", "maxLength": 128 },
+        "photoURL": { "type": "string", "maxLength": 512 },
+        "role": { "type": "string", "enum": ["player", "staff", "admin"] },
+        "updatedAt": { "type": "number" }
+      },
+      "required": ["updatedAt"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Echo SMP server store order records",
+      "type": "object",
+      "properties": {
+        "payment_reference": { "type": "string", "maxLength": 64 },
+        "player_name": { "type": "string", "maxLength": 32 },
+        "discord_username": { "type": "string", "maxLength": 64 },
+        "total_amount": { "type": "number" },
+        "currency": { "type": "string", "maxLength": 8 },
+        "payment_method": { "type": "string", "maxLength": 32 },
+        "payment_status": { "type": "string", "enum": ["pending", "paid", "delivered", "cancelled"] },
+        "cancel_token": { "type": "string", "maxLength": 64 },
+        "created_at": { "type": "string", "format": "date-time" }
+      },
+      "required": ["payment_reference", "player_name", "total_amount", "payment_status", "created_at"]
+    },
+    "WebsiteLogin": {
+      "title": "WebsiteLogin",
+      "description": "Total website login statistics",
+      "type": "object",
+      "properties": {
+        "total_logins": { "type": "number" },
+        "last_login": { "type": "string", "format": "date-time" }
+      },
+      "required": ["total_logins"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "Player profiles keyed by user ID or normalized username"
+    },
+    "/orders/{orderId}": {
+      "schema": { "$ref": "#/entities/Order" },
+      "description": "Store orders collection"
+    },
+    "/stats/logins": {
+      "schema": { "$ref": "#/entities/WebsiteLogin" },
+      "description": "Website login statistics document"
+    }
+  }
+}

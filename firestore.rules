@@ -1,0 +1,50 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isValidUserProfile(data) {
+      return data.keys().hasAll(['updatedAt'])
+        && data.keys().hasOnly(['username', 'minecraftUsername', 'uid', 'email', 'displayName', 'photoURL', 'role', 'updatedAt'])
+        && (!('username' in data) || (data.username is string && data.username.size() >= 3 && data.username.size() <= 32))
+        && (!('minecraftUsername' in data) || (data.minecraftUsername is string && data.minecraftUsername.size() >= 3 && data.minecraftUsername.size() <= 32))
+        && (!('uid' in data) || (data.uid is string && data.uid.size() <= 128))
+        && (!('email' in data) || (data.email is string && data.email.size() <= 128))
+        && (!('displayName' in data) || (data.displayName is string && data.displayName.size() <= 128))
+        && (!('photoURL' in data) || (data.photoURL is string && data.photoURL.size() <= 512))
+        && (!('role' in data) || (data.role is string && data.role in ['player', 'staff', 'admin']))
+        && data.updatedAt is number;
+    }
+
+    match /users/{userId} {
+      allow get: if isValidId(userId);
+      allow create, update: if isValidId(userId) && isValidUserProfile(request.resource.data);
+      allow delete: if false;
+    }
+
+    match /orders/{orderId} {
+      allow read: if true;
+      allow create: if isValidId(orderId)
+                    && request.resource.data.payment_reference is string
+                    && request.resource.data.payment_reference.size() <= 64
+                    && request.resource.data.player_name is string
+                    && request.resource.data.player_name.size() <= 32
+                    && request.resource.data.total_amount is number
+                    && request.resource.data.payment_status == 'pending';
+      allow update: if isValidId(orderId)
+                    && request.resource.data.payment_status in ['pending', 'paid', 'delivered', 'cancelled'];
+      allow delete: if false;
+    }
+
+    match /stats/logins {
+      allow read: if true;
+      allow write: if true;
+    }
+  }
+}
