@@ -1251,14 +1251,13 @@ async function runNativeGooglePopup(){
 
 function loginWithGoogle(e){
   if(e&&typeof e.preventDefault==="function")e.preventDefault();
-  // Always show the in-page account panel first. Google authentication begins
-  // only after the user explicitly taps the panel's sign-in button.
-  openGoogleChooserModal();
+  // Open Google's real account chooser immediately from the user's click.
+  // Skip the extra in-page chooser so there is only one account-selection step.
+  runNativeGooglePopup();
 }
 
 if($("gcCloseBtn"))$("gcCloseBtn").onclick=function(){closeGoogleChooserModal()};
 if($("gcContinueBtn"))$("gcContinueBtn").onclick=function(){
-  var dlg=$("googleChooserDlg");
   closeGoogleChooserModal();
   runNativeGooglePopup();
 };
