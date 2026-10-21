@@ -1196,7 +1196,7 @@ var googleLoginInFlight=false;
 async function runNativeGooglePopup(){
   if(googleLoginInFlight)return;
   if(!window.echoAuth||!window.echoAuth.auth||!window.echoAuth.signInWithPopup){
-    openGoogleChooserModal();
+    if($("profileMessage"))$("profileMessage").textContent="Google sign-in is still loading. Please tap Continue with Google again in a moment.";
     return;
   }
   googleLoginInFlight=true;
@@ -1238,8 +1238,19 @@ async function runNativeGooglePopup(){
       if($("linkIgnInput"))$("linkIgnInput").focus();
     }
   }catch(err){
-    window.__firebaseDomainAuthorized=false;
-    openGoogleChooserModal();
+    var code=err&&err.code?String(err.code):"";
+    // If the browser blocks popups, go straight to Google's redirect flow without an extra Echo SMP panel.
+    if(code==="auth/popup-blocked"||code==="auth/operation-not-supported-in-this-environment"){
+      try{
+        await window.echoAuth.signInWithRedirect(window.echoAuth.auth,provider);
+        return;
+      }catch(redirectErr){
+        if($("profileMessage"))$("profileMessage").textContent="Google sign-in couldn't open. Please allow pop-ups or open the site in Chrome.";
+      }
+    }else{
+      if($("profileMessage"))$("profileMessage").textContent=code==="auth/unauthorized-domain"?"This website domain must be authorized in Firebase Authentication.":"Google sign-in failed. Please try again.";
+    }
+    closeGoogleChooserModal();
   }finally{
     googleLoginInFlight=false;
     if(btn){
