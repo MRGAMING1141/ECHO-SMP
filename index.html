@@ -1157,7 +1157,7 @@ async function completeGoogleAccountLogin(emailRaw,ignRaw,uidOpt,photoOpt){
     }
   }catch(e){}
 
-  if($("googleChooserDlg")&&$("googleChooserDlg").open)$("googleChooserDlg").close();
+  closeGoogleChooserModal();
   paintProfile();
   if($("ign"))$("ign").value=ign;
   drawMine();
@@ -1174,11 +1174,40 @@ async function completeGoogleAccountLogin(emailRaw,ignRaw,uidOpt,photoOpt){
   return true;
 }
 
+var googleChooserAllowClose=false;
+function closeGoogleChooserModal(){
+  var dlg=$("googleChooserDlg");
+  if(!dlg)return;
+  googleChooserAllowClose=true;
+  if(dlg.open)dlg.close();
+}
 function openGoogleChooserModal(){
   var dlg=$("googleChooserDlg");
   if(!dlg)return;
   try{localStorage.removeItem("echo_saved_google_accounts_v1")}catch(e){}
-  if(!dlg.open)dlg.showModal();
+  // Keep the account panel open unless the user explicitly cancels,
+  // starts Google Sign-In, or authentication completes.
+  if(!dlg.dataset.stickyCloseGuard){
+    dlg.dataset.stickyCloseGuard="1";
+    dlg.addEventListener("close",function(){
+      if(googleChooserAllowClose){
+        googleChooserAllowClose=false;
+        return;
+      }
+      // An unrelated handler/browser event closed it unexpectedly: restore it.
+      setTimeout(function(){
+        if(!googleChooserAllowClose&&!dlg.open&&document.body.contains(dlg)){
+          try{dlg.showModal()}catch(e){dlg.setAttribute("open","")}
+        }
+      },0);
+    });
+    dlg.addEventListener("cancel",function(e){
+      e.preventDefault();
+    });
+  }
+  if(!dlg.open){
+    try{dlg.showModal()}catch(e){dlg.setAttribute("open","")}
+  }
 }
 
 var googleLoginInFlight=false;
@@ -1245,10 +1274,10 @@ function loginWithGoogle(e){
   openGoogleChooserModal();
 }
 
-if($("gcCloseBtn"))$("gcCloseBtn").onclick=function(){$("googleChooserDlg").close()};
+if($("gcCloseBtn"))$("gcCloseBtn").onclick=function(){closeGoogleChooserModal()};
 if($("gcContinueBtn"))$("gcContinueBtn").onclick=function(){
   var dlg=$("googleChooserDlg");
-  if(dlg&&dlg.open)dlg.close();
+  closeGoogleChooserModal();
   runNativeGooglePopup();
 };
 
