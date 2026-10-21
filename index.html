@@ -3,7 +3,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Echo SMP Shop</title>
-<meta name="description" content="Shop Echo SMP for monthly ranks with kit access, crate keys, and claim blocks to protect your land. Browse available bundles, place an order, and track its status. Join play.echocore.in.">
+<meta name="description" content="Shop Echo SMP for monthly ranks with kit access, crate keys, and claim blocks to protect your land. Browse available bundles, place an order, and track its status. Join play.echocore.fun.">
 <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/MRGAMING1141/ECHO-SMP/refs/heads/main/file_0000000059b8820ea00ed1257ab7245c-1.png">
 <meta property="og:title" content="Echo SMP Shop">
 <meta property="og:image" content="https://raw.githubusercontent.com/MRGAMING1141/ECHO-SMP/refs/heads/main/file_0000000059b8820ea00ed1257ab7245c-1.png">
@@ -387,6 +387,52 @@ body::before{
   #admin #adminTable tbody td small{overflow-wrap:anywhere}
   #admin #adminTable tbody td button{min-height:42px}
 }
+
+/* Final Echo SMP polish: real image backgrounds, frosted glass + clay; no gradients. */
+body{
+  background-color:#111b13!important;
+  background-image:url("https://raw.githubusercontent.com/MRGAMING1141/ECHO-SMP/refs/heads/main/bg1.jpg")!important;
+  background-position:center center!important;background-size:cover!important;background-repeat:no-repeat!important;background-attachment:fixed!important;
+}
+body::before{
+  background-image:url("https://raw.githubusercontent.com/MRGAMING1141/ECHO-SMP/refs/heads/main/bg2.jpg")!important;
+  background-position:center center!important;background-size:cover!important;background-repeat:no-repeat!important;
+  opacity:.18;animation:none!important;
+}
+body, .hero, nav, section, footer{background-color:transparent}
+.hero{background-image:none!important;text-shadow:none}
+nav{background:rgba(15,24,18,.72)!important;border:1px solid rgba(255,255,255,.17)!important;border-radius:0 0 18px 18px;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);box-shadow:0 8px 28px rgba(0,0,0,.22)!important}
+nav .wrap{gap:8px;align-items:center}
+nav a:not(.nav-brand){padding:9px 13px;border:1px solid transparent;border-radius:12px;transition:background .18s,border-color .18s}
+nav a.on{background:rgba(255,255,255,.12)!important;border:1px solid rgba(255,255,255,.2)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.14)!important}
+.card,.card.top,.wiki-card,.profile-card,.searchbox,.filters,.stat,.note,.ip,dialog,.ord,.tw{
+  background:rgba(18,29,21,.76)!important;background-image:none!important;
+  border:1px solid rgba(255,255,255,.17)!important;border-radius:18px!important;
+  box-shadow:0 10px 28px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.09)!important;
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+}
+.card.top{border-color:rgba(123,211,75,.58)!important}
+.buy,.ip button,#bar .buy,.st{
+  background:rgba(123,211,75,.16)!important;background-image:none!important;color:#efffe7!important;
+  border:1px solid rgba(164,235,128,.55)!important;border-radius:12px!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 5px 14px rgba(0,0,0,.16)!important;
+}
+.buy:hover,.ip button:hover,#bar .buy:hover{background:rgba(123,211,75,.27)!important;transform:translateY(-1px)}
+.buy.gh{background:rgba(255,255,255,.08)!important;border-color:rgba(255,255,255,.2)!important}
+#bar{background:rgba(16,26,19,.82)!important;background-image:none!important;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+.card .p{color:#c9f6ad}
+input,textarea,select{background:rgba(0,0,0,.22)!important;color:var(--tx)!important;border:1px solid rgba(255,255,255,.2)!important;border-radius:12px!important}
+.badge{border-radius:999px}
+#echoMusicPlayer{background:rgba(16,26,19,.78)!important;background-image:none!important}
+@media(max-width:640px){
+  .wrap{padding-left:14px;padding-right:14px}
+  nav .wrap{gap:5px}
+  nav a:not(.nav-brand){padding:8px 9px;font-size:.9rem}
+  #echoMusicPlayer{right:10px;bottom:calc(88px + env(safe-area-inset-bottom,0px));max-width:calc(100vw - 20px)}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
 </style>
 </head>
 <body>
@@ -395,7 +441,7 @@ body::before{
 <div class="wrap">
 <div class="brand-lockup"><img src="https://raw.githubusercontent.com/MRGAMING1141/ECHO-SMP/refs/heads/main/file_0000000059b8820ea00ed1257ab7245c-1.png" alt="Echo SMP logo" fetchpriority="high"><h1>Echo SMP</h1></div>
 <p>Power up your Echo SMP adventure with monthly ranks and kit access, crate keys for in-game rewards, and claim blocks to protect your land. Browse the shop, choose your items, and track your order.</p>
-<div class="ip"><div><small>Java Edition</small><b>play.echocore.in</b><small>Port 6018</small></div><button id="cpJava">Copy Java</button></div><div class="ip" style="margin-top:10px"><div><small>Bedrock Edition</small><b>play.echocore.in</b></div><button id="cpBedrock">Copy Bedrock</button></div>
+<div class="ip"><div><small>Java Edition</small><b>play.echocore.fun:19132</b></div><button id="cpJava">Copy Java</button></div><div class="ip" style="margin-top:10px"><div><small>Bedrock Edition</small><b>play.echocore.fun</b></div><button id="cpBedrock">Copy Bedrock</button></div>
 </div>
 </header>
 <nav><div class="wrap"><a href="#/wiki" data-go="wiki" id="nv-brand" class="nav-brand" aria-label="Open Echo SMP Wiki"><img src="https://raw.githubusercontent.com/MRGAMING1141/ECHO-SMP/refs/heads/main/file_0000000059b8820ea00ed1257ab7245c-1.png" alt="">Echo SMP</a><a href="#/" data-go="shop" id="nv-shop" class="">Shop</a><a href="#/profile" data-go="profile" id="nv-profile" class="">Login</a><a href="#/orders" data-go="orders" id="nv-orders" class="on">My orders</a><a href="#/terms" data-go="terms" id="nv-terms" class="">Terms</a><a href="#/sales" data-go="sales" id="navadm" class="">Sales log</a></div></nav>
@@ -586,7 +632,7 @@ document.addEventListener("DOMContentLoaded", function(){
 <script>
 var QR_IMAGE="https://raw.githubusercontent.com/MRGAMING1141/ECHO-SMP/refs/heads/main/IMG-20260925-WA0005.jpg"; // payment QR data URI goes here
 var DATA={
-ranks:[["Master",69,"/month"],["Elite",99,"/month"],["Emperor",129,"/month"],["Titan",169,"/month"],["Divine",289,"/month"],["Knight",399,"/month"],["Royal",649,"/month"]],
+ranks:[["Master",69,"/month"],["Elite",99,"/month"],["Emperor",129,"/month"],["Titan",169,"/month"],["Divine",289,"/month"],["Knight",399,"/month"],["Royal",649,"/month"],["Founder",1699,"permanent"]],
 keys:[["Legendary Key",59,"3 keys"],["Magma Key",99,"3 keys"],["OP Key",129,"2 keys"],["Echo Key",199,"2 keys"]],
 claims:[["10K claim blocks",30],["30K claim blocks",50],["50K claim blocks",80],["100K claim blocks",100]]};
 var POP=["Founder"]; // edit: names of your real best sellers
@@ -612,7 +658,7 @@ h='';DATA.claims.forEach(function(c){h+=card(c[0],c[1],"","One-time purchase.","
 
 var tt;function toast(m){var t=$("toast");t.textContent=m;t.className="on";clearTimeout(tt);tt=setTimeout(function(){t.className=""},2800)}
 function copy(s,m){try{navigator.clipboard.writeText(s).then(function(){toast(m)},function(){toast("Copy failed. Long-press the text to copy.")})}catch(e){toast("Copy failed. Long-press the text to copy.")}}
-$("cpJava").onclick=function(){copy("play.echocore.in:6018","Java server address copied.")};$("cpBedrock").onclick=function(){copy("play.echocore.in","Bedrock server address copied.")};
+$("cpJava").onclick=function(){copy("play.echocore.fun:19132","Java server address copied.")};$("cpBedrock").onclick=function(){copy("play.echocore.fun","Bedrock server address copied.")};
 
 var cart={},sale=null;
 var PROFILE_KEY="echo_minecraft_profile_v1";
@@ -748,7 +794,7 @@ $("dlg").addEventListener("close",function(){});
 
 // owner-only sales log
 
-var DISCORD="https://discord.gg/Q4fkCtABXc";
+var DISCORD="https://discord.gg/HnwuRRdYXR";
 var TRK={};try{TRK=JSON.parse($("trk").textContent||"{}")}catch(e){}
 async function key(id,ign){var b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(id.trim().toUpperCase()+"|"+ign.trim().toLowerCase()));return Array.from(new Uint8Array(b)).map(function(v){return("0"+v.toString(16)).slice(-2)}).join("")}
 /* One-time cleanup of pre-launch test orders on each visitor's browser.
@@ -772,8 +818,12 @@ if(t.s=="paid")return'<span class="bd ok">Paid ✓</span><p class="sub" style="m
 return'<span class="bd">Pending</span><p class="sub" style="margin:8px 0 0">Your order is waiting for the sales team to accept and verify the payment.</p>';
 }
 function extra(o,t){if(!o)return"";
-if(t&&t.s=="cancelled")return'<div class="row"><button class="buy gh" data-rm="'+esc(o.id)+'">Remove from my list</button></div>';
-if(!t)return o.cx?'<p class="sub" style="margin:8px 0 0"><b>Cancel requested.</b> Send the copied message in your Discord ticket so staff can confirm it.</p>':'<div class="row"><button class="buy dg" data-cx="'+esc(o.id)+'">Cancel order</button></div><p class="sub" style="margin:8px 0 0">Reminder: cancel before the sales team accepts your payment. After that it cannot be cancelled.</p>';
+if(t&&t.s==="cancelled")return'<div class="row"><button class="buy gh" data-rm="'+esc(o.id)+'">Remove from my list</button></div>';
+if(!t||t.s==="pending"){
+  if(o.cx)return'<p class="sub" style="margin:8px 0 0"><b>Cancellation submitted.</b> Refresh the order status shortly. If it remains pending, contact support on Discord.</p>';
+  if(o.cancel_token)return'<div class="row"><button class="buy dg" data-cx="'+esc(o.id)+'">Cancel order</button></div><p class="sub" style="margin:8px 0 0">You can cancel while the order is pending. Once payment is accepted, cancellation is locked.</p>';
+  return'<p class="sub" style="margin:8px 0 0">This older order has no cancellation token. Contact support on Discord if you need help.</p>';
+}
 return'<p class="sub" style="margin:8px 0 0">Accepted orders cannot be cancelled. No returns or refunds after delivery.</p>'}
 function ordHtml(id,items,t,rm){return'<div class="ord"><div class="sid">'+esc(id)+'</div><div class="lines">'+items.map(function(i){return'<div><span>'+esc(i.raw||i.name||i.n)+((i.qty||i.q)>1||(!i.raw&&(i.qty||i.q))?' × '+(i.qty||i.q):'')+'</span></div>'}).join("")+'</div>'+statusHtml(t)+extra(rm,t)+(false?'<div class="row"><button class="buy gh" data-rm="'+esc(id)+'">Remove from my list</button></div>':'')+'</div>'}
 async function fetchMineStatus(o){
@@ -802,6 +852,13 @@ async function drawMine(){
 $("tk").onclick=async function(){var id=$("ts").value.trim(),p=$("tp").value.trim();if(!id||!p){toast("Enter sale ID and username");return}
 var t=TRK[await key(id,p)];$("trkres").innerHTML=t?ordHtml(id.toUpperCase(),t.i,t):'<div class="ord">'+statusHtml(null)+'<p class="sub" style="margin:8px 0 0">Check the sale ID and username. Support: <a href="'+DISCORD+'" style="color:var(--ac2)">Discord</a>.</p></div>'};
 drawMine();
+// Keep My Orders synced with staff-paid/delivered changes while the page is open.
+setInterval(function(){
+  if(document.body.dataset.v==="orders" && document.visibilityState==="visible")drawMine();
+},20000);
+document.addEventListener("visibilitychange",function(){
+  if(document.visibilityState==="visible" && document.body.dataset.v==="orders")drawMine();
+});
 var rows=[];
 function adminEscape(value){
   return String(value==null?"":value).replace(/[&<>"']/g,function(c){
