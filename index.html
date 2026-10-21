@@ -458,7 +458,7 @@ input,textarea,select{background:rgba(0,0,0,.22)!important;color:var(--tx)!impor
     </div>
     <div id="profileSignedIn" hidden>
       <div class="profile-avatar"><img src="https://raw.githubusercontent.com/MRGAMING1141/ECHO-SMP/refs/heads/main/steve.png" alt="Minecraft Steve avatar" loading="lazy"></div>
-      <div class="n">Username saved on this browser</div>
+      <div class="n">You’re signed in</div>
       <p class="sub">Minecraft username</p>
       <div class="profile-username" id="profileName"></div>
       <div class="row"><button class="buy" id="profileEdit" type="button">Change username</button><button class="buy gh" id="profileLogout" type="button">Log out</button></div>
@@ -1099,7 +1099,7 @@ async function refreshAdminOrders(password){
   $("unl").onclick=unlock;
   $("pw").onkeydown=function(e){if(e.key==="Enter")unlock()};
 })();
-function go(v){var p=getProfile();if(!p&&v!=="profile"){v="profile";paintProfile();if($("profileMessage"))$("profileMessage").textContent="Log in with your Minecraft username to access the shop and other pages."}if($("dlg").open)$("dlg").close();document.body.dataset.v=v;["shop","profile","orders","terms"].forEach(function(k){$("nv-"+k).className=k==v?"on":""});$("nv-brand").className="nav-brand"+(v=="wiki"?" on":"");$("navadm").className=v=="sales"?"on":"";if(v=="profile"){var p=getProfile();$("profileMessage").textContent=p?"Your username is saved on this browser.":"No username saved yet.";paintProfile()}window.scrollTo(0,0);try{history.replaceState(null,"","#/"+(v=="shop"?"":v))}catch(e){}}
+function go(v){var p=getProfile();if(!p&&v!=="profile"){v="profile";paintProfile();if($("profileMessage"))$("profileMessage").textContent="Log in with your Minecraft username to access the shop and other pages."}if($("dlg").open)$("dlg").close();document.body.dataset.v=v;["shop","profile","orders","terms"].forEach(function(k){$("nv-"+k).className=k==v?"on":""});$("nv-brand").className="nav-brand"+(v=="wiki"?" on":"");$("navadm").className=v=="sales"?"on":"";if(v=="profile"){var p=getProfile();$("profileMessage").textContent=p?"Signed in as "+p.username+".":"Enter your Minecraft username to continue.";paintProfile()}window.scrollTo(0,0);try{history.replaceState(null,"","#/"+(v=="shop"?"":v))}catch(e){}}
 var xo=null;
 document.addEventListener("click",function(e){var b=e.target.closest("[data-cx]");if(b){xo=getMine().filter(function(o){return o.id==b.dataset.cx})[0];if(!xo)return;$("xinfo").textContent=xo.id;$("xrs").value="";$("xdlg").showModal()}});
 $("xno").onclick=function(){$("xdlg").close();xo=null};
