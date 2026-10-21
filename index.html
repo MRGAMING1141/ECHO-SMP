@@ -1078,7 +1078,7 @@ function paintProfile(){
 
     // Auto-unlock staff sales log if authorized
     if(isStaff){
-      window.__echoAdminPassword="GOOGLE_STAFF:"+email";
+      window.__echoAdminPassword="GOOGLE_STAFF:"+email;
       if(typeof window.__echoAutoUnlock==="function"){
         window.__echoAutoUnlock();
       }
@@ -1144,7 +1144,7 @@ async function completeGoogleAccountLogin(emailRaw,ignRaw,uidOpt,photoOpt){
   recordWebsiteLogin().catch(function(){});
 
   if(isStaff){
-    window.__echoAdminPassword="GOOGLE_STAFF:"+email";
+    window.__echoAdminPassword="GOOGLE_STAFF:"+email;
     if(typeof window.__echoAutoUnlock==="function")window.__echoAutoUnlock();
     toast("Staff verified ("+email+")! Sales Log unlocked in navbar.");
   }else{
@@ -2120,7 +2120,7 @@ function go(v){
       toast("Sales Log is restricted to authorized staff Gmail accounts.");
       v="shop";
     }else{
-      window.__echoAdminPassword="GOOGLE_STAFF:"+email";
+      window.__echoAdminPassword="GOOGLE_STAFF:"+email;
       if(typeof window.__echoAutoUnlock==="function")window.__echoAutoUnlock();
     }
   }
