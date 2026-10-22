@@ -951,9 +951,9 @@ function getProfile(){
   try{
     var p=JSON.parse(localStorage.getItem(PROFILE_KEY)||"null");
     if(!p||typeof p.username!=="string")return null;
-    if(["lasthope.mr@gmail.com","zxbrar1@gmail.com","ayushbhaktistudio@gmail.com"].includes(String(p.email||"").trim().toLowerCase())&&window.__echoAuthResolved===true){
+    if(["lasthope.mr@gmail.com","zxbrar1@gmail.com","ayushbhaktistudio@gmail.com","janvirajpurohit491@gmail.com"].includes(String(p.email||"").trim().toLowerCase())&&window.__echoAuthResolved===true){
       var authUser=window.echoAuth&&window.echoAuth.auth?window.echoAuth.auth.currentUser:null;
-      if(!authUser||String(authUser.email||"").trim().toLowerCase()!=="lasthope.mr@gmail.com" && String(authUser.email||"").trim().toLowerCase()!=="zxbrar1@gmail.com" && String(authUser.email||"").trim().toLowerCase()!=="ayushbhaktistudio@gmail.com"){
+      if(!authUser||String(authUser.email||"").trim().toLowerCase()!=="lasthope.mr@gmail.com" && String(authUser.email||"").trim().toLowerCase()!=="zxbrar1@gmail.com" && String(authUser.email||"").trim().toLowerCase()!=="ayushbhaktistudio@gmail.com","janvirajpurohit491@gmail.com"){
         localStorage.removeItem(PROFILE_KEY);
         return null;
       }
@@ -967,7 +967,7 @@ function validMinecraftName(name){return /^[A-Za-z0-9_]{3,16}$/.test(name)}
 
 function isAuthorizedStaffEmail(email){
   var e=String(email||"").trim().toLowerCase();
-  return ["lasthope.mr@gmail.com","zxbrar1@gmail.com","ayushbhaktistudio@gmail.com"].indexOf(e)>=0;
+  return ["lasthope.mr@gmail.com","zxbrar1@gmail.com","ayushbhaktistudio@gmail.com","janvirajpurohit491@gmail.com"].indexOf(e)>=0;
 }
 
 function paintProfile(){
@@ -2320,7 +2320,7 @@ setTimeout(function(){syncWishButtons();updateStats();applyFilters()},0);
      const existingProfile = typeof getProfile === "function" ? getProfile() : null;
      if (user) {
        const email = (user.email || "").toLowerCase();
-       const isStaff = ["lasthope.mr@gmail.com","zxbrar1@gmail.com","ayushbhaktistudio@gmail.com"].indexOf(email)>=0;
+       const isStaff = ["lasthope.mr@gmail.com","zxbrar1@gmail.com","ayushbhaktistudio@gmail.com","janvirajpurohit491@gmail.com"].indexOf(email)>=0;
        if (isStaff) {
          window.__echoAdminPassword = "GOOGLE_STAFF:" + email;
          if (typeof window.__echoAutoUnlock === "function") window.__echoAutoUnlock();
