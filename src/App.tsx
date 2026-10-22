@@ -287,7 +287,7 @@ export default function App() {
       if (user) {
         setGoogleUser(user);
         const email = (user.email || "").toLowerCase();
-        const isStaff = ["lasthope.mr@gmail.com", "zxbrar1@gmail.com"].includes(email);
+        const isStaff = ["lasthope.mr@gmail.com", "zxbrar1@gmail.com", "ayushbhaktistudio@gmail.com"].includes(email);
         if (isStaff) {
           setIsStaffGoogleUser(true);
           setIsAdminLoggedIn(true);
@@ -372,7 +372,7 @@ export default function App() {
       setShowLoginModal(false);
       addToast("Signed in with Google", `Welcome ${user.displayName || user.email}!`, "success");
       const email = (user.email || "").toLowerCase();
-      if (["lasthope.mr@gmail.com", "zxbrar1@gmail.com"].includes(email)) {
+      if (["lasthope.mr@gmail.com", "zxbrar1@gmail.com", "ayushbhaktistudio@gmail.com"].includes(email)) {
         setIsStaffGoogleUser(true);
         setIsAdminLoggedIn(true);
         addToast("Staff Verified", "Staff Sales Log unlocked automatically.", "success");
@@ -1125,7 +1125,7 @@ export default function App() {
                       provider.setCustomParameters({ prompt: "select_account" });
                       const res = await signInWithPopup(auth, provider);
                       const email = (res.user.email || "").toLowerCase();
-                      if (["lasthope.mr@gmail.com", "zxbrar1@gmail.com"].includes(email)) {
+                      if (["lasthope.mr@gmail.com", "zxbrar1@gmail.com", "ayushbhaktistudio@gmail.com"].includes(email)) {
                         setIsStaffGoogleUser(true);
                         setIsAdminLoggedIn(true);
                         addToast("Staff Verified", `Welcome Admin (${email})!`, "success");
