@@ -953,7 +953,7 @@ function getProfile(){
     if(!p||typeof p.username!=="string")return null;
     if(["lasthope.mr@gmail.com","zxbrar1@gmail.com","ayushbhaktistudio@gmail.com"].includes(String(p.email||"").trim().toLowerCase())&&window.__echoAuthResolved===true){
       var authUser=window.echoAuth&&window.echoAuth.auth?window.echoAuth.auth.currentUser:null;
-      if(!authUser||String(authUser.email||"").trim().toLowerCase()!=="lasthope.mr@gmail.com" && String(authUser.email||"").trim().toLowerCase()!=="zxbrar1@gmail.com"){
+      if(!authUser||String(authUser.email||"").trim().toLowerCase()!=="lasthope.mr@gmail.com" && String(authUser.email||"").trim().toLowerCase()!=="zxbrar1@gmail.com" && String(authUser.email||"").trim().toLowerCase()!=="ayushbhaktistudio@gmail.com"){
         localStorage.removeItem(PROFILE_KEY);
         return null;
       }
