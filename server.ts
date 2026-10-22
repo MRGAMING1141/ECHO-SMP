@@ -123,9 +123,9 @@ app.post("/api/supabase-proxy", (req, res) => {
   // Strict staff authorization: only authorized staff Gmail accounts
   const staffEmailHeader = String(req.headers["x-staff-email"] || "").trim().toLowerCase();
   const isAuthorizedStaff =
-    ["GOOGLE_STAFF:lasthope.mr@gmail.com", "GOOGLE_STAFF:zxbrar1@gmail.com"].includes(token) ||
-    ["lasthope.mr@gmail.com", "zxbrar1@gmail.com"].includes(token.toLowerCase()) ||
-    ["lasthope.mr@gmail.com", "zxbrar1@gmail.com"].includes(staffEmailHeader);
+    ["GOOGLE_STAFF:lasthope.mr@gmail.com", "GOOGLE_STAFF:zxbrar1@gmail.com", "GOOGLE_STAFF:ayushbhaktistudio@gmail.com"].includes(token) ||
+    ["lasthope.mr@gmail.com", "zxbrar1@gmail.com", "ayushbhaktistudio@gmail.com"].includes(token.toLowerCase()) ||
+    ["lasthope.mr@gmail.com", "zxbrar1@gmail.com", "ayushbhaktistudio@gmail.com"].includes(staffEmailHeader);
 
   if (!isAuthorizedStaff) {
     return res.status(401).json({
