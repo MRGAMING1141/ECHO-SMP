@@ -397,7 +397,7 @@ export default function App() {
     }
     const user = googleUser || auth.currentUser;
     const uid = user ? user.uid : `mc_${cleanName.toLowerCase()}`;
-    const isStaff = user && (user.email || "").toLowerCase() === "lasthope.mr@gmail.com";
+    const isStaff = user && ["lasthope.mr@gmail.com", "zxbrar1@gmail.com", "ayushbhaktistudio@gmail.com"].includes((user.email || "").toLowerCase());
 
     setUsername(cleanName);
     localStorage.setItem("echo_username", cleanName);
