@@ -21,8 +21,8 @@ function isAuthorizedStaff(req) {
   const staffEmail = String(req.headers?.["x-staff-email"] || "").trim().toLowerCase();
   const adminPassword = String(process.env.ADMIN_PASSWORD || "").trim();
 
-  if (["lasthope.mr@gmail.com", "zxbrar1@gmail.com", "ayushbhaktistudio@gmail.com", "janvirajpurohit491@gmail.com"].includes(staffEmail)) return true;
-  if (["google_staff:lasthope.mr@gmail.com", "google_staff:zxbrar1@gmail.com", "google_staff:ayushbhaktistudio@gmail.com", "google_staff:janvirajpurohit491@gmail.com"].includes(token.toLowerCase())) return true;
+  if (["lasthope.mr@gmail.com", "zxbrar1@gmail.com", "rp1665461@gmail.com", "janvirajpurohit491@gmail.com"].includes(staffEmail)) return true;
+  if (["google_staff:lasthope.mr@gmail.com", "google_staff:zxbrar1@gmail.com", "google_staff:rp1665461@gmail.com", "google_staff:janvirajpurohit491@gmail.com"].includes(token.toLowerCase())) return true;
   if (adminPassword && token === adminPassword) return true;
   return false;
 }
