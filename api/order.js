@@ -20,6 +20,12 @@ const CATALOG = Object.freeze({
   "100K claim blocks": 100,
 });
 
+function fetchWithTimeout(url, options, timeoutMs) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs || 10000);
+  return fetch(url, { ...options, signal: controller.signal }).finally(() => clearTimeout(timer));
+}
+
 function send(res, status, body, origin) {
   if (origin) {
     res.setHeader("Access-Control-Allow-Origin", origin);
@@ -182,9 +188,10 @@ export default async function handler(req, res) {
       return send(res, 400, { error: "Choose UPI or QR Code as the payment method." }, origin);
     }
 
-    const existingResponse = await fetch(
+    const existingResponse = await fetchWithTimeout(
       `${supabaseUrl}/rest/v1/sales_log?select=id,payment_reference,payment_status,payment_method,total_amount,items,currency,player_name&payment_reference=eq.${encodeURIComponent(paymentReference)}&limit=1`,
-      { headers }
+      { headers },
+      10000
     );
 
     if (!existingResponse.ok) {
@@ -219,7 +226,7 @@ export default async function handler(req, res) {
       }, origin);
     }
 
-    const insertResponse = await fetch(`${supabaseUrl}/rest/v1/sales_log`, {
+    const insertResponse = await fetchWithTimeout(`${supabaseUrl}/rest/v1/sales_log`, {
       method: "POST",
       headers: {
         ...headers,
@@ -234,7 +241,7 @@ export default async function handler(req, res) {
         payment_reference: paymentReference,
         payment_method: paymentMethod,
       }),
-    });
+    }, 10000);
 
     const responseText = await insertResponse.text();
     if (!insertResponse.ok) {
@@ -262,6 +269,9 @@ export default async function handler(req, res) {
       cancel_token: cancelToken(paymentReference, playerName),
     }, origin);
   } catch (error) {
+    if (error && error.name === "AbortError") {
+      return send(res, 504, { error: "Order verification timed out while contacting the order database. Please try again; no payment was taken." }, origin);
+    }
     return send(res, 400, { error: "Invalid order request." }, origin);
   }
 }
