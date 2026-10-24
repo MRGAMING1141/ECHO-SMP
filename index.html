@@ -1516,15 +1516,24 @@ $("go").onclick=async function(){
   var method=selectedPaymentMethod(),button=$("go");
   button.disabled=true;button.textContent="Verifying total…";
   try{
-    await saveProfileName(cleanIgn,false);
+    // Local profile data is saved synchronously; optional Firebase sync must not block checkout.
+    saveProfileName(cleanIgn,false).catch(function(){});
     var saleId=sale||newId();
-    var response=await fetch("/api/order",{method:"POST",headers:{"Content-Type":"application/json"},cache:"no-store",body:JSON.stringify({
+    var orderController=new AbortController();
+    var orderTimeout=setTimeout(function(){orderController.abort()},15000);
+    var response;
+    try{
+      response=await fetch("/api/order",{method:"POST",headers:{"Content-Type":"application/json"},cache:"no-store",signal:orderController.signal,body:JSON.stringify({
       player_name:cleanIgn,
       discord_username:$("dc").value.trim(),
       items:items,
       payment_reference:saleId,
       payment_method:method
     })});
+    }catch(requestError){
+      if(requestError&&requestError.name==="AbortError")throw new Error("Order verification timed out. Check your connection and try again; no payment was taken.");
+      throw requestError;
+    }finally{clearTimeout(orderTimeout)}
     var data={};try{data=await response.json()}catch(e){}
     if(!response.ok||!data.ok)throw new Error(data.error||"Could not securely create your order.");
     var serverTotal=Number(data.total_amount);
