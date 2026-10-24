@@ -792,6 +792,7 @@ document.addEventListener("DOMContentLoaded", function(){
 <label for="dc">Discord username</label><input id="dc" autocomplete="off" maxlength="40" placeholder="e.g. player#1234">
 <label for="pn">Payment account holder name</label><input id="pn" autocomplete="off" maxlength="60" placeholder="Name shown on your UPI / bank app">
 <label style="display:flex;gap:8px;align-items:flex-start;font-weight:400;margin-top:14px;cursor:pointer"><input type="checkbox" id="agree" style="width:auto;margin-top:5px"><span>I agree to the <a href="#/terms" data-go="terms" style="color:var(--ac2)">terms and conditions</a>. No returns or refunds after delivery.</span></label>
+<div id="checkoutError" role="alert" aria-live="assertive" hidden style="margin:12px 0;padding:12px;border:1px solid #ef4444;border-radius:10px;background:rgba(239,68,68,.12);color:#fca5a5;font-size:.9rem;overflow-wrap:anywhere"></div>
 <div class="row"><button class="buy gh" id="x1" type="button">Close</button><button class="buy" id="go" type="button">Continue to pay</button></div>
 </div>
 <div id="v2" hidden="">
@@ -1513,7 +1514,8 @@ $("go").onclick=async function(){
   if(!$("pn").value.trim()){toast("Enter your payment account holder name");$("pn").focus();return}
   var items=[];for(var k in cart)items.push({name:k,qty:cart[k].q});
   if(!items.length){toast("Your cart is empty");return}
-  var method=selectedPaymentMethod(),button=$("go");
+  var method=selectedPaymentMethod(),button=$("go"),checkoutError=$("checkoutError");
+  if(checkoutError){checkoutError.hidden=true;checkoutError.textContent="";}
   button.disabled=true;button.textContent="Verifying total…";
   try{
     // Local profile data is saved synchronously; optional Firebase sync must not block checkout.
@@ -1564,7 +1566,12 @@ $("go").onclick=async function(){
     }catch(e){}
     drawMine();
     updateStats();
-  }catch(e){toast(e&&e.message?e.message:"Could not create order. Please try again.");}
+  }catch(e){
+    var message=e&&e.message?e.message:"Could not create order. Please try again.";
+    if(checkoutError){checkoutError.textContent=message;checkoutError.hidden=false;}
+    else toast(message);
+    console.error("[Echo SMP checkout]",e);
+  }
   finally{button.disabled=false;button.textContent="Continue to pay"}
 };
 
