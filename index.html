@@ -1547,7 +1547,7 @@ $("go").onclick=async function(){
     // Also mirror order to Firestore if available
     try{
       if(window.echoAuth&&window.echoAuth.db){
-        await window.echoAuth.setDoc(window.echoAuth.doc(window.echoAuth.db,"orders",paymentOrder.id),{
+        window.echoAuth.setDoc(window.echoAuth.doc(window.echoAuth.db,"orders",paymentOrder.id),{
           payment_reference:paymentOrder.id,
           player_name:cleanIgn,
           discord_username:$("dc").value.trim(),
@@ -1557,7 +1557,7 @@ $("go").onclick=async function(){
           payment_status:"pending",
           cancel_token:paymentOrder.cancel_token,
           created_at:new Date().toISOString()
-        });
+        }).catch(function(){});
       }
     }catch(e){}
     show("v2");
