@@ -1543,6 +1543,8 @@ $("go").onclick=async function(){
     $("sid").textContent=paymentOrder.id;
     $("tot2").textContent="Server-verified amount: ₹"+serverTotal;
     displayPaymentInstructions(paymentOrder.method);
+    // Reveal the verified payment panel immediately; persistence and optional sync follow.
+    show("v2");
     saveMine({id:paymentOrder.id,ign:cleanIgn,items:paymentOrder.items,total:serverTotal,cancel_token:paymentOrder.cancel_token,ts:Date.now(),method:paymentOrder.method});
     // Also mirror order to Firestore if available
     try{
@@ -1560,7 +1562,6 @@ $("go").onclick=async function(){
         }).catch(function(){});
       }
     }catch(e){}
-    show("v2");
     drawMine();
     updateStats();
   }catch(e){toast(e&&e.message?e.message:"Could not create order. Please try again.");}
