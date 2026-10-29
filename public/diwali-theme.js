@@ -3,13 +3,15 @@
    --------------------------------------------------------------------------
    VISUAL ONLY. This file never reads or changes cart, checkout, payment QR,
    orders, sales log, delivered/delete buttons, Supabase or Firebase calls.
-   It only appends a few pointer-events:none decorations to the page.
+   It only appends pointer-events:none decorations to the page.
 
    INSTALL   : <script src="/diwali-theme.js" defer></script>   (one line)
    SWITCH OFF: set DIWALI_ENABLED = false below, or delete the script line.
    EXPIRY    : automatic at the end of 12 Nov 2026, 23:59 IST (Diwali = 8 Nov).
 
    Crackers fire automatically in the background. No buttons, no sounds.
+   NOTE: the page has *{background-image:none!important}; gradients here use
+   !important so the glow, flames and marigolds actually render.
    ========================================================================== */
 (() => {
   "use strict";
@@ -22,7 +24,9 @@
   if (window.__echoDiwali) return; // never double-inject
   window.__echoDiwali = true;
 
-  const GOLD = ["#ffe9a8", "#ffd37a", "#ffb347", "#ff9a3c", "#fff6d8"];
+  const TAU = Math.PI * 2;
+  const GOLD = ["#fff6d8", "#ffe9a8", "#ffd37a", "#ffb347", "#ff9a3c"];
+  const FIERY = ["#fff6d8", "#ffe9a8", "#ffd37a", "#ffb347", "#ff9a3c", "#ff7a5c", "#ff5f8f"];
   const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
   let reduced = motionQuery.matches;
 
@@ -32,70 +36,112 @@
   style.textContent = `
     #ed-diwali,#ed-diwali *{box-sizing:border-box}
     #ed-diwali{position:fixed;inset:0;z-index:3;pointer-events:none;overflow:hidden;contain:layout style paint}
+
+    /* warm light: stronger at the top, pooling at the bottom corners */
     #ed-glow{position:fixed;inset:0;z-index:2;pointer-events:none;
       background:
-        radial-gradient(130% 60% at 50% -10%,rgba(255,170,58,.22),rgba(255,170,58,0) 66%),
-        radial-gradient(70% 46% at -8% 108%,rgba(255,122,36,.16),rgba(255,122,36,0) 72%),
-        radial-gradient(70% 46% at 108% 108%,rgba(255,122,36,.16),rgba(255,122,36,0) 72%);
+        radial-gradient(125% 58% at 50% -9%,rgba(255,170,58,.32),rgba(255,170,58,0) 67%),
+        radial-gradient(64% 48% at -6% 106%,rgba(255,116,30,.22),rgba(255,116,30,0) 72%),
+        radial-gradient(64% 48% at 106% 106%,rgba(255,116,30,.22),rgba(255,116,30,0) 72%),
+        radial-gradient(48% 34% at 50% 108%,rgba(255,196,100,.13),rgba(255,196,100,0) 72%)!important;
     }
-    #ed-frame{position:fixed;inset:7px;z-index:3;pointer-events:none;border:1px solid rgba(255,196,100,.28);
-      border-radius:18px;box-shadow:inset 0 0 0 1px rgba(255,140,40,.06),inset 0 0 80px rgba(255,150,50,.06)}
+    #ed-bokeh{position:fixed;inset:0;z-index:2;pointer-events:none;
+      background:
+        radial-gradient(circle at 11% 18%,rgba(255,186,80,.18),rgba(255,186,80,0) 11%),
+        radial-gradient(circle at 88% 12%,rgba(255,126,58,.15),rgba(255,126,58,0) 9%),
+        radial-gradient(circle at 74% 46%,rgba(255,206,120,.09),rgba(255,206,120,0) 13%),
+        radial-gradient(circle at 22% 62%,rgba(255,160,60,.11),rgba(255,160,60,0) 12%),
+        radial-gradient(circle at 52% 84%,rgba(255,190,90,.08),rgba(255,190,90,0) 10%),
+        radial-gradient(circle at 94% 78%,rgba(255,140,50,.11),rgba(255,140,50,0) 11%)!important;
+    }
+    #ed-frame{position:fixed;inset:8px;z-index:3;pointer-events:none;border:1px solid rgba(255,196,100,.34);
+      border-radius:18px;box-shadow:inset 0 0 0 1px rgba(255,140,40,.08),inset 0 0 110px rgba(255,150,50,.09)}
+    #ed-frame::before,#ed-frame::after{content:"";position:absolute;left:16%;right:16%;height:0;
+      border-top:1px solid rgba(255,214,140,.30)}
+    #ed-frame::before{top:7px}
+    #ed-frame::after{bottom:7px}
     #ed-diwali canvas{position:absolute;inset:0;display:block;width:100%;height:100%}
 
-    /* string lights, hanging just under the sticky nav */
-    .ed-garland{position:absolute;left:0;right:0;top:calc(env(safe-area-inset-top,0px) + var(--ed-nav,58px));height:42px}
-    .ed-wire{position:absolute;left:-2%;right:-2%;top:5px;height:18px;border-top:1.5px solid rgba(255,205,130,.42);border-radius:50%}
-    .ed-bulb{position:absolute;display:block;width:8px;height:12px;margin-left:-4px;border-radius:50% 50% 46% 46%;
-      background:#ffd37a;box-shadow:0 0 10px 3px rgba(255,168,60,.5),0 0 22px 8px rgba(255,140,40,.2);
+    /* marigold toran, hanging from the sticky nav */
+    .ed-toran{position:absolute;left:0;right:0;top:calc(env(safe-area-inset-top,0px) + var(--ed-nav,58px));height:58px}
+    .ed-wire{position:absolute;left:-2%;right:-2%;top:6px;height:18px;border-top:1.5px solid rgba(255,214,150,.46);border-radius:50%}
+    .ed-flower{position:absolute;display:block;width:16px;height:16px;border-radius:50%;
+      background-color:#ff9f2e;
+      background-image:repeating-conic-gradient(from 0deg,#ffe0a0 0 15deg,#ff9a2b 15deg 30deg)!important;
+      box-shadow:0 0 9px 2px rgba(255,150,40,.38),inset 0 0 4px rgba(120,40,0,.4);
+      transform:translate(-50%,-50%)}
+    .ed-flower::after{content:"";position:absolute;left:50%;top:50%;width:5px;height:5px;margin:-2.5px 0 0 -2.5px;
+      border-radius:50%;background-color:#fff3c4;box-shadow:0 0 6px rgba(255,235,170,.9)}
+    .ed-leaf{position:absolute;width:10px;height:6px;margin:-3px 0 0 -5px;border-radius:60% 10% 60% 10%;
+      background-color:#a9c96a;opacity:.82;transform:rotate(-26deg)}
+    .ed-tassel{position:absolute;width:1px;height:16px;background-color:rgba(255,210,130,.78);transform:translateX(-50%)}
+    .ed-tassel::after{content:"";position:absolute;left:50%;bottom:-4px;width:5px;height:5px;margin-left:-2.5px;
+      border-radius:50%;background-color:#ffd37a;box-shadow:0 0 8px 2px rgba(255,170,60,.65)}
+    .ed-bulb{position:absolute;display:block;width:7px;height:11px;margin-left:-3.5px;border-radius:50% 50% 46% 46%;
+      background-color:#ffd37a;box-shadow:0 0 8px 2px rgba(255,170,60,.5),0 0 18px 6px rgba(255,140,40,.18);
       animation:ed-bulb 2.8s ease-in-out infinite alternate}
-    .ed-bulb::before{content:"";position:absolute;left:2px;top:-4px;width:4px;height:5px;border-radius:1px;background:#c9a061}
-    .ed-bulb:nth-child(4n+1){background:#ffb15c;box-shadow:0 0 10px 3px rgba(255,120,40,.46),0 0 22px 8px rgba(255,90,20,.18)}
-    .ed-bulb:nth-child(4n+2){background:#ffe7a3}
-    .ed-bulb:nth-child(4n+3){background:#ff8f5c}
-    @keyframes ed-bulb{from{opacity:.62}to{opacity:1}}
+    .ed-bulb::before{content:"";position:absolute;left:2px;top:-4px;width:3px;height:5px;border-radius:1px;background-color:#c9a061}
+    .ed-bulb:nth-child(4n+1){background-color:#ffb15c;box-shadow:0 0 8px 2px rgba(255,120,40,.46),0 0 18px 6px rgba(255,90,20,.16)}
+    .ed-bulb:nth-child(4n+2){background-color:#ffe7a3}
+    .ed-bulb:nth-child(4n+3){background-color:#ff8f5c}
+    @keyframes ed-bulb{from{opacity:.65}to{opacity:1}}
+
+    /* rangoli quarters in the four corners */
+    .ed-rangoli{position:absolute;width:210px;height:210px;color:#ffc46a;opacity:.42;pointer-events:none;
+      animation:ed-spin 110s linear infinite;transform-origin:50% 50%}
+    .ed-rangoli svg{display:block;width:100%;height:100%;overflow:visible}
+    .ed-rangoli.tl{top:calc(env(safe-area-inset-top,0px) + var(--ed-nav,58px) + 34px);left:-72px}
+    .ed-rangoli.tr{top:calc(env(safe-area-inset-top,0px) + var(--ed-nav,58px) + 34px);right:-72px;animation-direction:reverse}
+    .ed-rangoli.bl{bottom:-76px;left:-72px}
+    .ed-rangoli.br{bottom:-76px;right:-72px;animation-direction:reverse}
+    @keyframes ed-spin{to{transform:rotate(360deg)}}
 
     /* glowing diyas: top corners always, bottom corners on wide screens */
-    .ed-diya{position:absolute;top:calc(env(safe-area-inset-top,0px) + var(--ed-nav,58px) + 22px);
-      display:block;width:62px;height:40px;filter:drop-shadow(0 8px 16px rgba(255,140,40,.4))}
-    .ed-diya.left{left:7px;transform-origin:top left}
-    .ed-diya.right{right:7px;transform:scaleX(-1);transform-origin:top right}
-    .ed-diya.bl,.ed-diya.br{display:none;top:auto;bottom:24px;transform:scale(.94)}
-    .ed-diya.bl{left:8px;transform-origin:bottom left}
-    .ed-diya.br{right:8px;transform:scaleX(-1) scale(.94);transform-origin:bottom right}
+    .ed-diya{position:absolute;display:block;width:68px;height:46px;filter:drop-shadow(0 8px 18px rgba(255,140,40,.4));
+      top:calc(env(safe-area-inset-top,0px) + var(--ed-nav,58px) + 52px)}
+    .ed-diya.left{left:4px}
+    .ed-diya.right{right:4px;transform:scaleX(-1)}
+    .ed-diya.bl,.ed-diya.br{display:none;top:auto;bottom:18px}
+    .ed-diya.bl{left:6px}
+    .ed-diya.br{right:6px;transform:scaleX(-1) scale(.94)}
     @media(min-width:900px){.ed-diya.bl,.ed-diya.br{display:block}}
-    .ed-bowl{position:absolute;left:3px;bottom:0;display:block;width:56px;height:22px;border-radius:6px 6px 28px 28px;
-      background:linear-gradient(90deg,#6f2f13,#e08133 42%,#b0521f 70%,#7c3517);
+    .ed-halo{position:absolute;left:50%;top:-16px;width:104px;height:104px;margin-left:-52px;border-radius:50%;pointer-events:none;
+      background-image:radial-gradient(circle,rgba(255,180,70,.32),rgba(255,140,40,.12) 44%,rgba(255,140,40,0) 70%)!important}
+    .ed-bowl{position:absolute;left:3px;bottom:0;display:block;width:62px;height:23px;border-radius:6px 6px 30px 30px;
+      background-color:#b0521f;
+      background-image:linear-gradient(90deg,#6f2f13,#e08133 42%,#b0521f 70%,#7c3517)!important;
       box-shadow:inset 0 -2px 0 rgba(255,214,140,.55),inset 0 3px 6px rgba(255,190,110,.24),0 4px 12px rgba(0,0,0,.35)}
-    .ed-bowl::after{content:"";position:absolute;left:9px;right:9px;bottom:5px;height:4px;border-radius:50%;background:rgba(255,210,120,.5)}
-    .ed-flame{position:absolute;left:25px;bottom:17px;display:block;width:13px;height:25px;
+    .ed-bowl::after{content:"";position:absolute;left:9px;right:9px;bottom:5px;height:4px;border-radius:50%;background-color:rgba(255,210,120,.5)}
+    .ed-flame{position:absolute;left:28px;bottom:18px;display:block;width:14px;height:27px;
       border-radius:50% 50% 50% 50%/62% 62% 38% 38%;
-      background:radial-gradient(ellipse at 50% 72%,#fffbe0 0%,#ffd166 38%,#ff8a2b 66%,rgba(255,90,10,0) 100%);
-      box-shadow:0 0 18px 7px rgba(255,150,50,.44);transform-origin:50% 90%;
-      animation:ed-flame 1.8s ease-in-out infinite alternate}
+      background-image:radial-gradient(ellipse at 50% 72%,#fffbe0 0%,#ffd166 36%,#ff8a2b 64%,rgba(255,90,10,0) 100%)!important;
+      box-shadow:0 0 18px 7px rgba(255,150,50,.42);transform-origin:50% 90%;
+      animation:ed-flame 1.7s ease-in-out infinite alternate}
     @keyframes ed-flame{from{transform:scale(.94) rotate(-2.5deg)}to{transform:scale(1.06) rotate(2.5deg)}}
 
-    /* greeting sign, hanging from the garland */
-    #ed-greeting{position:fixed;z-index:3;left:50%;transform:translateX(-50%);
-      top:calc(env(safe-area-inset-top,0px) + var(--ed-nav,58px) + 2px);max-width:calc(100vw - 20px);
-      padding:7px 15px;border-radius:999px;border:1px solid rgba(255,205,110,.55);
-      background:rgba(50,27,12,.92);color:#ffeec2;font:700 13px/1.2 Figtree,system-ui,-apple-system,sans-serif;
-      letter-spacing:.25px;text-align:center;white-space:nowrap;pointer-events:none;
-      box-shadow:0 8px 26px rgba(0,0,0,.34),0 0 26px rgba(255,150,40,.2),inset 0 1px 0 rgba(255,225,170,.25)}
+    /* greeting plaque, hanging from the toran */
+    #ed-greeting{position:fixed;z-index:4;left:50%;transform:translateX(-50%);
+      top:calc(env(safe-area-inset-top,0px) + var(--ed-nav,58px) + 4px);max-width:calc(100vw - 22px);
+      padding:7px 15px;border-radius:999px;border:1px solid rgba(255,214,140,.7);
+      background-color:rgba(48,25,10,.94);color:#fff0c9;
+      font:700 13px/1.2 Figtree,system-ui,-apple-system,sans-serif;letter-spacing:.2px;text-align:center;
+      white-space:nowrap;pointer-events:none;
+      box-shadow:0 8px 26px rgba(0,0,0,.4),0 0 26px rgba(255,150,40,.24),inset 0 1px 0 rgba(255,235,190,.22)}
 
-    .ed-flash{position:absolute;transform:translate(-50%,-50%);border-radius:50%;pointer-events:none;
-      background:radial-gradient(circle,rgba(255,224,150,.9),rgba(255,150,50,.32) 46%,rgba(255,120,30,0) 72%);
-      opacity:.9;animation:ed-flash .5s ease-out forwards}
-    @keyframes ed-flash{to{opacity:0;transform:translate(-50%,-50%) scale(1.18)}}
-
-    @media (max-width:420px){
-      #ed-greeting{font-size:11px;padding:6px 10px;letter-spacing:0}
-      .ed-diya.left,.ed-diya.right{transform:scale(.84)}
-      .ed-diya.right{transform:scaleX(-1) scale(.84)}
+    @media (max-width:600px){
+      .ed-toran{height:48px}
+      .ed-rangoli{width:150px;height:150px;opacity:.34}
+      .ed-rangoli.tl,.ed-rangoli.tr{top:calc(env(safe-area-inset-top,0px) + var(--ed-nav,58px) + 28px)}
+      .ed-rangoli.tl,.ed-rangoli.bl{left:-52px}
+      .ed-rangoli.tr,.ed-rangoli.br{right:-52px}
+      .ed-rangoli.bl,.ed-rangoli.br{bottom:-56px}
+      .ed-diya{top:calc(env(safe-area-inset-top,0px) + var(--ed-nav,58px) + 44px);transform:scale(.84);transform-origin:top left}
+      .ed-diya.right{transform:scaleX(-1) scale(.84);transform-origin:top right}
+      #ed-greeting{font-size:11px;padding:6px 11px;letter-spacing:0}
     }
     @media (prefers-reduced-motion:reduce){
-      .ed-bulb,.ed-flame{animation:none}
+      .ed-bulb,.ed-flame,.ed-rangoli{animation:none}
       #ed-diwali canvas{display:none}
-      .ed-flash{animation:none}
     }
   `;
   document.head.appendChild(style);
@@ -104,6 +150,10 @@
   const glow = document.createElement("div");
   glow.id = "ed-glow";
   glow.setAttribute("aria-hidden", "true");
+
+  const bokeh = document.createElement("div");
+  bokeh.id = "ed-bokeh";
+  bokeh.setAttribute("aria-hidden", "true");
 
   const frameEl = document.createElement("div");
   frameEl.id = "ed-frame";
@@ -118,24 +168,98 @@
   const c2d = canvas.getContext ? canvas.getContext("2d") : null;
   layer.appendChild(canvas);
 
-  const garland = document.createElement("div");
-  garland.className = "ed-garland";
-  garland.setAttribute("aria-hidden", "true");
+  /* ------------------------------------------------------------- marigolds */
+  const toran = document.createElement("div");
+  toran.className = "ed-toran";
+  toran.setAttribute("aria-hidden", "true");
+
   const wire = document.createElement("i");
   wire.className = "ed-wire";
-  garland.appendChild(wire);
-  for (let i = 0; i < 24; i++) {
+  toran.appendChild(wire);
+
+  const FLOWERS = 24;
+  for (let i = 0; i < FLOWERS; i++) {
+    const t = (i + 0.5) / FLOWERS;
+    const x = 1 + t * 98;
+    const lift = Math.sin(t * Math.PI) * 7;
+    const size = 13 + Math.random() * 5;
+
+    const flower = document.createElement("i");
+    flower.className = "ed-flower";
+    flower.style.left = x.toFixed(2) + "%";
+    flower.style.top = (12 + lift).toFixed(1) + "px";
+    flower.style.width = size.toFixed(1) + "px";
+    flower.style.height = size.toFixed(1) + "px";
+    flower.style.zIndex = "2";
+    toran.appendChild(flower);
+
+    if (i % 2 === 0 && i < FLOWERS - 1) {
+      const leaf = document.createElement("i");
+      leaf.className = "ed-leaf";
+      leaf.style.left = (x + 1.1).toFixed(2) + "%";
+      leaf.style.top = (14 + lift).toFixed(1) + "px";
+      leaf.style.transform = "rotate(" + (-48 + Math.random() * 26).toFixed(0) + "deg)";
+      toran.appendChild(leaf);
+    }
+
+    if (i % 4 === 1) {
+      const tassel = document.createElement("i");
+      tassel.className = "ed-tassel";
+      tassel.style.left = x.toFixed(2) + "%";
+      tassel.style.top = (23 + lift).toFixed(1) + "px";
+      tassel.style.zIndex = "1";
+      toran.appendChild(tassel);
+    }
+  }
+
+  const BULBS = 14;
+  for (let i = 0; i < BULBS; i++) {
+    const t = (i + 0.5) / BULBS;
+    const lift = Math.sin(t * Math.PI) * 4;
     const bulb = document.createElement("i");
     bulb.className = "ed-bulb";
-    const t = i / 23;
-    bulb.style.left = (2 + t * 96) + "%";
-    bulb.style.top = (5 + Math.sin(t * Math.PI) * 9) + "px";
+    bulb.style.left = (2 + t * 96).toFixed(2) + "%";
+    bulb.style.top = (33 + lift).toFixed(1) + "px";
     bulb.style.animationDelay = (Math.random() * 2.4).toFixed(2) + "s";
     bulb.style.animationDuration = (2.1 + Math.random() * 1.5).toFixed(2) + "s";
-    garland.appendChild(bulb);
+    toran.appendChild(bulb);
   }
-  layer.appendChild(garland);
+  layer.appendChild(toran);
 
+  /* -------------------------------------------------------------- rangoli */
+  function rangoliMarkup() {
+    let petals = "";
+    for (let i = 0; i < 16; i++) {
+      petals += '<ellipse cx="100" cy="47" rx="7" ry="21" transform="rotate(' + i * 22.5 + ' 100 100)"/>';
+    }
+    let dots = "";
+    for (let i = 0; i < 24; i++) {
+      const a = (i * TAU) / 24;
+      dots += '<circle cx="' + (100 + Math.cos(a) * 86).toFixed(1) + '" cy="' + (100 + Math.sin(a) * 86).toFixed(1) + '" r="1.5"/>';
+    }
+    return '<svg viewBox="0 0 200 200" role="presentation" focusable="false">' +
+      '<circle cx="100" cy="100" r="94" fill="currentColor" opacity=".05"/>' +
+      '<g fill="none" stroke="currentColor" stroke-width="1.25">' +
+        '<circle cx="100" cy="100" r="93" opacity=".4"/>' +
+        '<circle cx="100" cy="100" r="72" opacity=".55"/>' +
+        '<g opacity=".5">' + petals + '</g>' +
+        '<g opacity=".55">' + dots + '</g>' +
+        '<circle cx="100" cy="100" r="24" opacity=".65"/>' +
+        '<circle cx="100" cy="100" r="9" opacity=".8"/>' +
+      '</g>' +
+      '<circle cx="100" cy="100" r="4" fill="currentColor" opacity=".6"/>' +
+    '</svg>';
+  }
+  const RANGOLI = rangoliMarkup();
+  ["tl", "tr", "bl", "br"].forEach((pos) => {
+    const r = document.createElement("div");
+    r.className = "ed-rangoli " + pos;
+    r.setAttribute("aria-hidden", "true");
+    r.innerHTML = RANGOLI;
+    layer.appendChild(r);
+  });
+
+  /* ---------------------------------------------------------------- diyas */
   [
     ["left", "top"],
     ["right", "top"],
@@ -145,7 +269,7 @@
     const diya = document.createElement("div");
     diya.className = "ed-diya " + side;
     diya.setAttribute("aria-hidden", "true");
-    diya.innerHTML = '<i class="ed-flame"></i><i class="ed-bowl"></i>';
+    diya.innerHTML = '<i class="ed-halo"></i><i class="ed-flame"></i><i class="ed-bowl"></i>';
     layer.appendChild(diya);
   });
 
@@ -155,13 +279,15 @@
 
   const mount = () => {
     document.body.appendChild(glow);
+    document.body.appendChild(bokeh);
     document.body.appendChild(frameEl);
     document.body.appendChild(layer);
     document.body.appendChild(greeting);
+    syncNav();
+    resize();
+    startEffects();
+    bootShow();
   };
-  if (document.body) mount();
-  else document.addEventListener("DOMContentLoaded", mount, { once: true });
-
   /* --------------------------------------------------------------- layout */
   function syncNav() {
     const nav = document.querySelector("nav");
@@ -171,12 +297,12 @@
 
   let W = 0, H = 0;
   function resize() {
-    W = window.innerWidth;
-    H = window.innerHeight;
+    W = window.innerWidth || document.documentElement.clientWidth;
+    H = window.innerHeight || document.documentElement.clientHeight;
     if (!c2d) return;
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    canvas.width = Math.round(W * dpr);
-    canvas.height = Math.round(H * dpr);
+    const dpr = Math.min(window.devicePixelRatio || 1, W < 700 ? 1.75 : 2);
+    canvas.width = Math.max(1, Math.round(W * dpr));
+    canvas.height = Math.max(1, Math.round(H * dpr));
     canvas.style.width = W + "px";
     canvas.style.height = H + "px";
     c2d.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -187,7 +313,8 @@
   const rockets = [];
   const rings = [];
   const emitters = [];
-  const MAX_PARTS = 220;
+  const spinners = [];
+  const cap = () => (W < 640 ? 180 : 300);
   let running = false;
   let rafId = 0;
   let lastT = 0;
@@ -200,7 +327,7 @@
   }
 
   function spawn(x, y, vx, vy, life, size, color, opts) {
-    if (parts.length >= MAX_PARTS) return;
+    if (parts.length >= cap()) return;
     const p = {
       x: x, y: y, px: x, py: y, vx: vx, vy: vy, life: life, maxLife: life,
       size: size, color: color, grav: 0.035, drag: 0.992, trail: false
@@ -215,35 +342,46 @@
 
   function burst(x, y, opts) {
     const o = opts || {};
-    const count = Math.min(o.count || 40, MAX_PARTS - parts.length);
-    const palette = o.palette || GOLD;
-    const power = o.power || 3.6;
+    const palette = o.palette || FIERY;
+    const scale = W < 640 ? 0.6 : 1;
+    const count = Math.min(Math.round((o.count || 55) * scale), cap() - parts.length);
+    const power = (o.power || 4.2) * (W < 640 ? 0.9 : 1);
+    const pattern = o.pattern || "peony";
     for (let i = 0; i < count; i++) {
-      const a = Math.random() * Math.PI * 2;
-      const sp = power * (0.35 + Math.random() * 0.95);
+      let a, sp;
+      if (pattern === "ring") {
+        a = (i / count) * TAU;
+        sp = power * (0.92 + Math.random() * 0.12);
+      } else if (pattern === "willow") {
+        a = Math.random() * TAU;
+        sp = power * (0.28 + Math.random() * 0.62);
+      } else {
+        a = Math.random() * TAU;
+        sp = power * (0.32 + Math.random() * 0.98);
+      }
       spawn(
         x, y,
         Math.cos(a) * sp, Math.sin(a) * sp,
-        46 + Math.random() * 46,
-        1.1 + Math.random() * 1.7,
+        42 + Math.random() * 58,
+        1.05 + Math.random() * 1.6,
         palette[(Math.random() * palette.length) | 0],
-        { trail: Math.random() < 0.32 }
+        { trail: Math.random() < 0.38, grav: pattern === "willow" ? 0.055 : 0.038 }
       );
     }
-    rings.push({ x: x, y: y, r: 6, life: 1, color: "rgba(255,210,130,.55)" });
+    rings.push({ x: x, y: y, r: 6, life: 1, color: "rgba(255,214,140,.55)" });
     kick();
   }
 
   function spawnSparkle() {
-    if (parts.length >= MAX_PARTS - 10 || !W || !H) return;
+    if (parts.length >= cap() - 10 || !W || !H) return;
     const x = Math.random() * W;
-    const life = 300 + Math.random() * 260;
+    const life = 280 + Math.random() * 300;
     spawn(
       x, -12,
-      (Math.random() - 0.5) * 0.55, 0.5 + Math.random() * 1.15,
-      life, 1 + Math.random() * 1.5,
+      (Math.random() - 0.5) * 0.5, 0.45 + Math.random() * 1.05,
+      life, 1 + Math.random() * 1.6,
       GOLD[(Math.random() * GOLD.length) | 0],
-      { grav: 0.002, drag: 1 }
+      { grav: 0.0025, drag: 1 }
     );
     kick();
   }
@@ -253,23 +391,37 @@
     rockets.push({
       x: x != null ? x : W * (0.12 + Math.random() * 0.76),
       y: H + 12,
-      vy: -(5.3 + Math.random() * 2.2),
-      targetY: H * (0.14 + Math.random() * 0.34),
+      vy: -(5.2 + Math.random() * 2.2),
+      targetY: H * (0.12 + Math.random() * 0.3),
       trail: 0
     });
     kick();
   }
 
   function autoCracker() {
-    if (!active || reduced || document.hidden) return;
+    if (!active || reduced || document.hidden || !W || !H) return;
     const r = Math.random();
-    if (r < 0.58) {
+    if (r < 0.46) {
       launchRocket();
+    } else if (r < 0.64) {
+      const x = W * (0.08 + Math.random() * 0.84);
+      const y = H * 0.85;
+      emitters.push({ x: x, y: y, life: 44 + Math.random() * 20 });
+      rings.push({ x: x, y: y, r: 4, life: 0.9, color: "rgba(255,200,120,.5)" });
+      kick();
     } else if (r < 0.82) {
-      emitters.push({ x: W * (0.08 + Math.random() * 0.84), y: H * 0.84, life: 50 + Math.random() * 22 });
+      spinners.push({
+        x: W * (0.12 + Math.random() * 0.76),
+        y: H * (0.7 + Math.random() * 0.14),
+        life: 54 + Math.random() * 30,
+        angle: Math.random() * TAU,
+        spin: (Math.random() < 0.5 ? -1 : 1) * (0.18 + Math.random() * 0.14)
+      });
       kick();
     } else {
-      burst(W * (0.15 + Math.random() * 0.7), H * (0.18 + Math.random() * 0.26), { count: 74, power: 5.3 });
+      burst(W * (0.16 + Math.random() * 0.68), H * (0.16 + Math.random() * 0.26), {
+        count: 95, power: 5.4, pattern: Math.random() < 0.4 ? "ring" : "peony"
+      });
     }
   }
 
@@ -295,7 +447,7 @@
         spawn(r.x + (Math.random() - 0.5) * 2, r.y + 8, (Math.random() - 0.5) * 0.6, 1.1 + Math.random(), 16, 1.1, "#ffcf7a", { grav: 0.015, drag: 0.98 });
       }
       if (r.y <= r.targetY) {
-        burst(r.x, r.y, { count: 48, power: 4.5 });
+        burst(r.x, r.y, { count: 58, power: 4.8, pattern: Math.random() < 0.3 ? "ring" : "peony" });
         rockets.splice(i, 1);
       }
     }
@@ -307,12 +459,12 @@
     }
     for (let i = emitters.length - 1; i >= 0; i--) {
       const e = emitters[i];
-      const n = Math.max(1, Math.round(2 * k));
+      const n = Math.max(1, Math.round(2.2 * k));
       for (let j = 0; j < n; j++) {
         spawn(
-          e.x + (Math.random() - 0.5) * 8, e.y,
-          (Math.random() - 0.5) * 2.4, -(2.3 + Math.random() * 3.1),
-          30 + Math.random() * 26, 0.9 + Math.random() * 1.3,
+          e.x + (Math.random() - 0.5) * 10, e.y,
+          (Math.random() - 0.5) * 2.8, -(2.4 + Math.random() * 3.2),
+          28 + Math.random() * 26, 0.9 + Math.random() * 1.3,
           GOLD[(Math.random() * GOLD.length) | 0],
           { grav: 0.06, drag: 0.985 }
         );
@@ -320,12 +472,31 @@
       e.life -= k;
       if (e.life <= 0) emitters.splice(i, 1);
     }
+    for (let i = spinners.length - 1; i >= 0; i--) {
+      const s = spinners[i];
+      s.angle += s.spin * k;
+      for (let j = 0; j < 3; j++) {
+        const a = s.angle + (j * TAU) / 3;
+        const sx = s.x + Math.cos(a) * 4;
+        const sy = s.y + Math.sin(a) * 4;
+        spawn(
+          sx, sy,
+          -Math.sin(a) * s.spin * 12 + (Math.random() - 0.5) * 0.7,
+          Math.cos(a) * s.spin * 12 + (Math.random() - 0.5) * 0.7 - 0.25,
+          24 + Math.random() * 22, 0.8 + Math.random() * 1.1,
+          GOLD[(Math.random() * GOLD.length) | 0],
+          { grav: 0.02, drag: 0.98 }
+        );
+      }
+      s.life -= k;
+      if (s.life <= 0) spinners.splice(i, 1);
+    }
   }
 
   function draw() {
     if (!c2d) return;
     c2d.clearRect(0, 0, W, H);
-    if (!parts.length && !rockets.length && !rings.length) return;
+    if (!parts.length && !rockets.length && !rings.length && !emitters.length && !spinners.length) return;
     c2d.globalCompositeOperation = "lighter";
 
     for (let i = 0; i < parts.length; i++) {
@@ -342,7 +513,7 @@
         c2d.stroke();
       } else {
         c2d.beginPath();
-        c2d.arc(p.x, p.y, p.size * (0.45 + t * 0.55), 0, 6.2832);
+        c2d.arc(p.x, p.y, p.size * (0.45 + t * 0.55), 0, TAU);
         c2d.fill();
       }
     }
@@ -352,7 +523,7 @@
       c2d.globalAlpha = 0.85;
       c2d.fillStyle = "#ffe6a8";
       c2d.beginPath();
-      c2d.arc(r.x, r.y, 2, 0, 6.2832);
+      c2d.arc(r.x, r.y, 2, 0, TAU);
       c2d.fill();
       c2d.globalAlpha = 0.3;
       c2d.strokeStyle = "#ffb347";
@@ -365,11 +536,27 @@
 
     for (let i = 0; i < rings.length; i++) {
       const r = rings[i];
-      c2d.globalAlpha = Math.max(0, r.life) * 0.5;
+      c2d.globalAlpha = Math.max(0, r.life) * 0.55;
       c2d.strokeStyle = r.color;
       c2d.lineWidth = 1.6;
       c2d.beginPath();
-      c2d.arc(r.x, r.y, r.r, 0, 6.2832);
+      c2d.arc(r.x, r.y, r.r, 0, TAU);
+      c2d.stroke();
+    }
+
+    for (let i = 0; i < spinners.length; i++) {
+      const s = spinners[i];
+      const pulse = 0.7 + Math.sin(s.life * 0.35) * 0.25;
+      c2d.globalAlpha = 0.85;
+      c2d.fillStyle = "#fff3c4";
+      c2d.beginPath();
+      c2d.arc(s.x, s.y, 2.6, 0, TAU);
+      c2d.fill();
+      c2d.globalAlpha = 0.25 * pulse;
+      c2d.strokeStyle = "#ffb347";
+      c2d.lineWidth = 1.3;
+      c2d.beginPath();
+      c2d.arc(s.x, s.y, 9, 0, TAU);
       c2d.stroke();
     }
 
@@ -379,11 +566,16 @@
 
   function frame(now) {
     if (!running) return;
+    // Phones render at ~30fps; desktop stays smooth.
+    if (W < 700 && lastT && now - lastT < 30) {
+      rafId = requestAnimationFrame(frame);
+      return;
+    }
     const dt = lastT ? Math.min(50, now - lastT) : 16.7;
     lastT = now;
     update(dt / 16.667);
     draw();
-    if (parts.length || rockets.length || rings.length || emitters.length) {
+    if (parts.length || rockets.length || rings.length || emitters.length || spinners.length) {
       rafId = requestAnimationFrame(frame);
     } else {
       running = false;
@@ -395,23 +587,28 @@
   let sparkTimer = 0;
   let crackerTimer = 0;
   let active = false;
+  let booted = false;
 
   function scheduleSparkles() {
     if (!active) return;
     sparkTimer = setTimeout(() => {
       if (!active) return;
-      if (!document.hidden) spawnSparkle();
+      if (!document.hidden) {
+        spawnSparkle();
+        if (Math.random() < 0.35) spawnSparkle();
+      }
       scheduleSparkles();
-    }, 560 + Math.random() * 520);
+    }, 380 + Math.random() * 420);
   }
 
   function scheduleCrackers() {
     if (!active) return;
+    const delay = W < 700 ? 2200 + Math.random() * 2400 : 1450 + Math.random() * 2000;
     crackerTimer = setTimeout(() => {
       if (!active) return;
       autoCracker();
       scheduleCrackers();
-    }, 2400 + Math.random() * 2600);
+    }, delay);
   }
 
   function clearCanvas() {
@@ -429,6 +626,7 @@
     rockets.length = 0;
     rings.length = 0;
     emitters.length = 0;
+    spinners.length = 0;
     clearCanvas();
   }
 
@@ -439,37 +637,40 @@
     if (!crackerTimer) scheduleCrackers();
   }
 
+  function bootShow() {
+    if (booted) return;
+    booted = true;
+    setTimeout(() => { if (active) launchRocket(); }, 320);
+    setTimeout(() => { if (active) autoCracker(); }, 1050);
+    setTimeout(() => { if (active) autoCracker(); }, 1880);
+  }
+
   /* ---------------------------------------------------------------- wiring */
   const onResize = () => {
     syncNav();
     resize();
-    if (parts.length || rockets.length || rings.length || emitters.length) kick();
+    if (parts.length || rockets.length || rings.length || emitters.length || spinners.length) kick();
   };
   window.addEventListener("resize", onResize, { passive: true });
   window.addEventListener("orientationchange", onResize, { passive: true });
 
   function onVisibility() {
-    if (document.hidden) stopEffects();
-    else startEffects();
+    if (document.hidden) {
+      stopEffects();
+    } else {
+      resize();
+      startEffects();
+      if (active) setTimeout(() => { if (active) autoCracker(); }, 550);
+    }
   }
   document.addEventListener("visibilitychange", onVisibility);
 
-  if (motionQuery.addEventListener) {
-    motionQuery.addEventListener("change", (e) => {
-      reduced = e.matches;
-      if (reduced) stopEffects();
-      else startEffects();
-    });
+  function onMotion(e) {
+    reduced = e.matches;
+    if (reduced) stopEffects();
+    else startEffects();
   }
-
-  /* ------------------------------------------------------------------ boot */
-  syncNav();
-  resize();
-  startEffects();
-
-  // A couple of crackers right away so the theme is visible immediately.
-  setTimeout(() => { if (active) launchRocket(); }, 350);
-  setTimeout(() => { if (active) autoCracker(); }, 1500);
+  if (motionQuery.addEventListener) motionQuery.addEventListener("change", onMotion);
 
   /* ---------------------------------------------------------------- expiry */
   function teardown() {
@@ -478,8 +679,10 @@
     window.removeEventListener("resize", onResize);
     window.removeEventListener("orientationchange", onResize);
     document.removeEventListener("visibilitychange", onVisibility);
+    if (motionQuery.removeEventListener) motionQuery.removeEventListener("change", onMotion);
     layer.remove();
     glow.remove();
+    bokeh.remove();
     frameEl.remove();
     greeting.remove();
     style.remove();
@@ -487,6 +690,10 @@
     window.__echoDiwali = false;
   }
   const expiryTimer = setTimeout(teardown, Math.min(Math.max(0, EXPIRES_AT - Date.now()), 2147483647));
+
+  /* ------------------------------------------------------------------ boot */
+  if (document.body) mount();
+  else document.addEventListener("DOMContentLoaded", mount, { once: true });
 
   console.info("[Echo SMP] Diwali decorations active until 12 Nov 2026.");
 })();
