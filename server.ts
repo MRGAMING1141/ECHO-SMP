@@ -5,6 +5,14 @@ import fs from "fs";
 import dotenv from "dotenv";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
+import "./sale-config.js";
+
+const SALE_CONFIG = (globalThis as any).ECHO_DIWALI_CONFIG || { DIWALI_SALE: false, DIWALI_DISCOUNT: 0 };
+function getSalePrice(originalPrice: number): number {
+  if (!SALE_CONFIG.DIWALI_SALE) return originalPrice;
+  const discount = Math.max(0, Math.min(100, Number(SALE_CONFIG.DIWALI_DISCOUNT) || 0));
+  return Math.round(originalPrice * (100 - discount) / 100);
+}
 
 dotenv.config();
 
@@ -228,7 +236,7 @@ app.post("/api/order", (req, res) => {
   const verifiedItems = items.map((item: any) => {
     const name = item.name || item.n || "Item";
     const qty = Math.max(1, Number(item.qty || item.q || 1));
-    const unitPrice = productPrices[name] || 50;
+    const unitPrice = getSalePrice(productPrices[name] || 50);
     calculatedTotal += unitPrice * qty;
     return {
       name,

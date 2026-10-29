@@ -1,5 +1,13 @@
 // Vercel serverless endpoint for creating pending ECHO SMP orders.
 import crypto from "crypto";
+import "../sale-config.js";
+
+const SALE_CONFIG = globalThis.ECHO_DIWALI_CONFIG || { DIWALI_SALE: false, DIWALI_DISCOUNT: 0 };
+function getSalePrice(originalPrice) {
+  if (!SALE_CONFIG.DIWALI_SALE) return originalPrice;
+  const discount = Math.max(0, Math.min(100, Number(SALE_CONFIG.DIWALI_DISCOUNT) || 0));
+  return Math.round(originalPrice * (100 - discount) / 100);
+}
 
 const CATALOG = Object.freeze({
   "Master": 69,
@@ -76,7 +84,7 @@ function calculateOrder(items) {
     }
 
     seen.add(name);
-    const unitPrice = CATALOG[name];
+    const unitPrice = getSalePrice(CATALOG[name]);
     total += unitPrice * qty;
     normalized.push({ name, qty, unit_price: unitPrice });
   }
