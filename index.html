@@ -455,6 +455,17 @@ body::before{
   #admin #adminTable tbody td small{overflow-wrap:anywhere}
   #admin #adminTable tbody td button{min-height:42px}
 }
+/* Diwali sale pricing */
+.sale-banner{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin:0 0 16px;padding:12px 16px;border:1px solid rgba(255,190,90,.58);border-radius:12px;background:rgba(100,48,12,.32);color:#ffe6b0;text-align:center;box-shadow:0 0 22px rgba(255,157,54,.12)}
+.sale-banner strong{font-family:Unbounded,sans-serif;font-size:.88rem;letter-spacing:.04em;color:#ffd27a}
+.sale-banner span{font-weight:700;font-size:.88rem}
+.sale-product-badge{color:#3a2108!important;background:#ffd27a!important;border-color:#e9a63d!important}
+.card .p .sale-original{display:inline-block;margin-right:7px;font:500 .82rem Figtree,sans-serif;color:var(--mu);text-decoration:line-through;text-shadow:none}
+.card .p .sale-current{font:inherit;color:#ffd27a;text-shadow:0 0 14px rgba(255,177,71,.18)}
+.card .p .sale-off{display:inline-block;margin-left:7px;padding:3px 6px;border:1px solid rgba(255,190,90,.48);border-radius:5px;color:#ffd27a;font:700 .68rem Figtree,sans-serif;text-shadow:none;vertical-align:middle}
+.sale-price-original{color:var(--mu);text-decoration:line-through;margin-right:7px;font-size:.86rem}
+.sale-price-current{color:#ffd27a;font-weight:800}
+.sale-price-badge{color:#ffd27a;font-size:.72rem;font-weight:800;margin-left:7px}
 </style>
 </head>
 <body data-v="shop" data-auth="no" data-staff="no">
@@ -544,6 +555,7 @@ body::before{
 </section>
 
 <section class="v-shop" style="padding-top:24px">
+  <div id="diwaliSaleBanner" class="sale-banner" hidden><strong>🪔 DIWALI SPECIAL</strong><span>50% OFF EVERY SHOP ITEM</span></div>
   <div id="shopAccountBanner" class="flash" style="margin-top:0">
     <div id="shopBannerText">
       <strong>⚡ Welcome to Echo SMP Store!</strong> Sign in with Google or link your Minecraft IGN for faster checkout and order tracking.
@@ -826,7 +838,14 @@ document.addEventListener("DOMContentLoaded", function(){
 <p class="sub" style="margin:10px 0 0"><b>Reminder:</b> you can only cancel before the sales team accepts your payment. Once accepted, the order cannot be cancelled.</p>
 <div class="row"><button class="buy gh" id="xno" type="button">Keep order</button><button class="buy dg" id="xyes" type="button">Cancel order</button></div></dialog>
 <div id="toast" role="status" class=""></div>
+<script src="/sale-config.js"></script>
 <script>
+var DIWALI_CONFIG=window.ECHO_DIWALI_CONFIG||{DIWALI_SALE:false,DIWALI_DISCOUNT:50};
+var DIWALI_SALE=DIWALI_CONFIG.DIWALI_SALE===true;
+var DIWALI_DISCOUNT=Math.max(0,Math.min(100,Number(DIWALI_CONFIG.DIWALI_DISCOUNT)||0));
+function echoSalePrice(originalPrice){var price=Number(originalPrice)||0;return DIWALI_SALE?Math.round(price*(100-DIWALI_DISCOUNT)/100):price;}
+var saleBanner=document.getElementById("diwaliSaleBanner");
+if(saleBanner&&DIWALI_SALE){saleBanner.hidden=false;saleBanner.querySelector("span").textContent=DIWALI_DISCOUNT+"% OFF EVERY SHOP ITEM";}
 var QR_IMAGE="/IMG_20261024_130428.jpg";
 var QR_FALLBACK=QR_IMAGE;
 var DATA={
@@ -909,16 +928,17 @@ function getMinecraftSvgIcon(name){
 }
 function card(name,price,unit,desc,cls,perks){
  var cat=cls&&cls.indexOf("rank")>=0?"ranks":cls&&cls.indexOf("key")>=0?"keys":cls&&cls.indexOf("claim")>=0?"claims":"product";
+ var finalPrice=echoSalePrice(price);
  var symbol=getMinecraftSvgIcon(name);
  var hot=POP.indexOf(name)>=0?"best":"";
  var perkPreview=Array.isArray(perks)&&perks.length?'<ul class="perk-list">'+perks.slice(0,3).map(function(p){return'<li>'+esc(p)+'</li>'}).join("")+'</ul>':'';
- return '<div class="card productCard '+(cls||'')+'" data-cat="'+cat+'" data-price="'+price+'" data-title="'+esc(name)+'" data-name="'+esc(name.toLowerCase())+'" data-desc="'+esc((desc+" "+(perks||[]).join(" ")).toLowerCase())+'">'+
- '<div class="badges">'+(hot?'<span class="badge '+hot+'">★ POPULAR</span>':'')+(VAL.indexOf(name)>=0?'<span class="badge hot">BEST VALUE</span>':'')+'<span class="badge">'+cat.toUpperCase()+'</span><span class="badge in-cart" data-cart-badge="'+esc(name)+'" style="display:none">0 in cart</span></div>'+
+ return '<div class="card productCard '+(cls||'')+'" data-cat="'+cat+'" data-price="'+finalPrice+'" data-title="'+esc(name)+'" data-name="'+esc(name.toLowerCase())+'" data-desc="'+esc((desc+" "+(perks||[]).join(" ")).toLowerCase())+'">'+
+ '<div class="badges">'+(hot?'<span class="badge '+hot+'">★ POPULAR</span>':'')+(VAL.indexOf(name)>=0?'<span class="badge hot">BEST VALUE</span>':'')+(DIWALI_SALE?'<span class="badge sale-product-badge">'+DIWALI_DISCOUNT+'% OFF</span>':'')+'<span class="badge">'+cat.toUpperCase()+'</span><span class="badge in-cart" data-cart-badge="'+esc(name)+'" style="display:none">0 in cart</span></div>'+
  '<div class="t"><div class="product-heading"><span class="product-icon" aria-hidden="true">'+symbol+'</span><div class="n">'+esc(name)+'</div></div><div class="d">'+esc(desc)+'</div>'+perkPreview+'</div>'+
- '<div class="p">₹'+price+(unit?' <span>'+esc(unit)+'</span>':'')+'</div>'+
+ '<div class="p">' +(DIWALI_SALE?'<span class="sale-original">₹'+price+'</span><strong class="sale-current">₹'+finalPrice+'</strong><span class="sale-off">'+DIWALI_DISCOUNT+'% OFF</span>':'₹'+price)+(unit?' <span>'+esc(unit)+'</span>':'')+'</div>'+
  '<div class="actions"><button class="wish" type="button" data-wish="'+esc(name)+'" title="Save to favorites" aria-label="Favorite '+esc(name)+'">♡</button>'+
  '<button class="info-btn" type="button" data-info="'+esc(name)+'" title="View perks & details">Perks</button>'+
- '<button class="buy" type="button" data-n="'+esc(name)+'" data-p="'+price+'">Add to cart</button></div></div>';
+ '<button class="buy" type="button" data-n="'+esc(name)+'" data-p="'+finalPrice+'">Add to cart</button></div></div>';
 }
 function renderShopCatalog(){
  var sortMode=$("sortSelect")?$("sortSelect").value:"featured";
@@ -1359,7 +1379,7 @@ document.addEventListener("click",function(e){
       activePerkItem=prod;
       if($("perkIcon"))$("perkIcon").innerHTML=getMinecraftSvgIcon(prod.name);
       $("perkTitle").textContent=prod.name;
-      $("perkPrice").innerHTML="₹"+prod.price+(prod.unit?' <span style="font-size:.85rem;color:var(--mu)">'+esc(prod.unit)+'</span>':'');
+      $("perkPrice").innerHTML=(DIWALI_SALE?'<span class="sale-price-original">₹'+prod.price+'</span><strong class="sale-price-current">₹'+echoSalePrice(prod.price)+'</strong><span class="sale-price-badge">'+DIWALI_DISCOUNT+'% OFF</span>':'₹'+prod.price)+(prod.unit?' <span style="font-size:.85rem;color:var(--mu)">'+esc(prod.unit)+'</span>':'');
       $("perkDesc").textContent=prod.desc;
       $("perkBullets").innerHTML=(prod.perks||[]).map(function(p){return"<li>"+esc(p)+"</li>"}).join("");
       $("perkDlg").showModal();
@@ -1384,7 +1404,7 @@ if($("perkClose"))$("perkClose").onclick=function(){$("perkDlg").close()};
 if($("perkAddBtn"))$("perkAddBtn").onclick=function(){
   if(activePerkItem){
     var n=activePerkItem.name;
-    cart[n]=cart[n]||{p:+activePerkItem.price,q:0};
+    cart[n]=cart[n]||{p:echoSalePrice(activePerkItem.price),q:0};
     cart[n].q++;
     render();
     toast(n+" added to cart!");
