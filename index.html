@@ -1358,10 +1358,15 @@ function render(){
   syncCartBadges();
   var l="";
   for(var k in cart){
-    l+='<div style="align-items:center"><span style="display:flex;align-items:center;gap:10px"><img src="'+esc(getItemImageSrc(k))+'" alt="" style="width:38px;height:38px;border-radius:9px;object-fit:cover;border:1px solid rgba(255,255,255,.16);flex-shrink:0" referrerpolicy="no-referrer"><span><b>'+esc(k)+'</b><br><small>₹'+cart[k].p+' each · Subtotal ₹'+(cart[k].p*cart[k].q)+'</small></span></span><span style="display:flex;align-items:center;gap:6px"><button class="st" type="button" data-dec="'+esc(k)+'" aria-label="Less">−</button><b>'+cart[k].q+'</b><button class="st" type="button" data-inc="'+esc(k)+'" aria-label="More">+</button><button class="st dg" type="button" data-r="'+esc(k)+'" aria-label="Remove '+esc(k)+'">Remove</button></span></div>';
+    var originalItem=PRODUCT_MAP[k],originalPrice=originalItem?Number(originalItem.price):Number(cart[k].p);
+    var itemPrice=Number(cart[k].p),itemSubtotal=itemPrice*cart[k].q;
+    var itemPriceHtml=DIWALI_SALE
+      ?'<span class="sale-price-original">₹'+originalPrice+'</span> <strong class="sale-price-current">₹'+itemPrice+'</strong> <span class="sale-price-badge">'+DIWALI_DISCOUNT+'% OFF</span><br><small>Subtotal ₹'+itemSubtotal+'</small>'
+      :'₹'+itemPrice+' each · Subtotal ₹'+itemSubtotal;
+    l+='<div style="align-items:center"><span style="display:flex;align-items:center;gap:10px;min-width:0"><img src="'+esc(getItemImageSrc(k))+'" alt="" style="width:38px;height:38px;border-radius:9px;object-fit:cover;border:1px solid rgba(255,255,255,.16);flex-shrink:0" referrerpolicy="no-referrer"><span><b>'+esc(k)+'</b><br><small>'+itemPriceHtml+'</small></span></span><span style="display:flex;align-items:center;gap:6px;flex-shrink:0"><button class="st" type="button" data-dec="'+esc(k)+'" aria-label="Less">−</button><b>'+cart[k].q+'</b><button class="st" type="button" data-inc="'+esc(k)+'" aria-label="More">+</button><button class="st dg" type="button" data-r="'+esc(k)+'" aria-label="Remove '+esc(k)+'">Remove</button></span></div>';
   }
   $("lines").innerHTML=l||'<div class="sub">Your cart is empty.</div>';
-  $("tot").textContent="Total ₹"+s[0];
+  $("tot").innerHTML='Total ₹'+s[0]+(DIWALI_SALE?' <span class="sale-price-badge">🪔 DIWALI SPECIAL · '+DIWALI_DISCOUNT+'% OFF</span>':'');
   $("tot2").textContent="Amount to pay: ₹"+s[0];
   if(!s[1]&&$("dlg").open)$("dlg").close();
 }
