@@ -1505,7 +1505,14 @@ $("profileIgn").addEventListener("keydown",function(e){if(e.key==="Enter"){e.pre
 $("ign").addEventListener("input",function(){normalizeMinecraftInput(this)});
 $("ign").addEventListener("change",function(){var name=normalizeMinecraftName($("ign").value).trim();$("ign").value=name;if(validMinecraftName(name))saveProfileName(name,false)});
 $("x1").onclick=function(){$("dlg").close()};
-$("back").onclick=function(){if(paymentOrder){toast("Payment method and amount are locked for this order. Close checkout or continue with this order.");return}show("v1")};
+$("back").onclick=function(){
+  if(paymentOrder){
+    $("dlg").close();
+    toast("Checkout closed. Your pending order is saved in My Orders.");
+    return;
+  }
+  show("v1");
+};
 $("go").onclick=async function(){
   if(!$("agree").checked){toast("Please agree to the terms to continue");return}
   var cleanIgn=normalizeMinecraftName($("ign").value).trim();

@@ -54,17 +54,13 @@
         radial-gradient(circle at 52% 84%,rgba(255,190,90,.08),rgba(255,190,90,0) 10%),
         radial-gradient(circle at 94% 78%,rgba(255,140,50,.11),rgba(255,140,50,0) 11%)!important;
     }
-    #ed-frame{position:fixed;inset:8px;z-index:3;pointer-events:none;border:1px solid rgba(255,196,100,.34);
-      border-radius:18px;box-shadow:inset 0 0 0 1px rgba(255,140,40,.08),inset 0 0 110px rgba(255,150,50,.09)}
-    #ed-frame::before,#ed-frame::after{content:"";position:absolute;left:16%;right:16%;height:0;
-      border-top:1px solid rgba(255,214,140,.30)}
-    #ed-frame::before{top:7px}
-    #ed-frame::after{bottom:7px}
+    #ed-frame{position:fixed;inset:8px;z-index:3;pointer-events:none;border:1px solid rgba(255,196,100,.30);
+      border-radius:18px;box-shadow:inset 0 0 0 1px rgba(255,140,40,.06),inset 0 0 110px rgba(255,150,50,.09)}
     #ed-diwali canvas{position:absolute;inset:0;display:block;width:100%;height:100%}
 
     /* marigold toran, hanging from the sticky nav */
     .ed-toran{position:absolute;left:0;right:0;top:calc(env(safe-area-inset-top,0px) + var(--ed-nav,58px));height:58px}
-    .ed-wire{position:absolute;left:-2%;right:-2%;top:6px;height:18px;border-top:1.5px solid rgba(255,214,150,.46);border-radius:50%}
+    .ed-wire{position:absolute;left:0;right:0;top:6px;height:18px;border-top:1px solid rgba(255,214,150,.46);border-radius:50%}
     .ed-flower{position:absolute;display:block;width:16px;height:16px;border-radius:50%;
       background-color:#ff9f2e;
       background-image:repeating-conic-gradient(from 0deg,#ffe0a0 0 15deg,#ff9a2b 15deg 30deg)!important;
@@ -129,6 +125,7 @@
       box-shadow:0 8px 26px rgba(0,0,0,.4),0 0 26px rgba(255,150,40,.24),inset 0 1px 0 rgba(255,235,190,.22)}
 
     @media (max-width:600px){
+      #ed-frame{inset:6px;border-radius:14px;border-color:rgba(255,196,100,.26)}
       .ed-toran{height:48px}
       .ed-rangoli{width:150px;height:150px;opacity:.34}
       .ed-rangoli.tl,.ed-rangoli.tr{top:calc(env(safe-area-inset-top,0px) + var(--ed-nav,58px) + 28px)}
