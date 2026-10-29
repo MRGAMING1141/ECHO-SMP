@@ -4,9 +4,12 @@
  */
 (() => {
   "use strict";
+  const ENABLED = true; // Master switch: set false to disable the temporary theme.
   const today = new Date();
-  const expiry = new Date(2026, 10, 13, 0, 0, 0); // inclusive through 12 Nov
-  if (today >= expiry || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const expiry = new Date(2026, 10, 13, 0, 0, 0); // active through 12 Nov 2026
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (!ENABLED || today >= expiry || window.__echoDiwaliThemeLoaded) return;
+  window.__echoDiwaliThemeLoaded = true;
 
   const style = document.createElement("style");
   style.textContent = `
@@ -22,14 +25,15 @@
     .ed-bowl{position:absolute;bottom:0;left:3px;width:46px;height:19px;border-radius:5px 5px 24px 24px;background:linear-gradient(90deg,#9e421c,#e88b35 48%,#8d361c);border-bottom:2px solid #ffd07b}
     .ed-spark{position:absolute;top:-15px;color:#ffd27a;text-shadow:0 0 9px #ff9f43;animation:edFall linear forwards}
     #echo-diwali-greeting{position:fixed;z-index:6;top:38px;left:50%;transform:translateX(-50%);max-width:calc(100vw - 24px);padding:8px 14px;border:1px solid rgba(255,196,100,.35);border-radius:999px;background:rgba(34,22,16,.78);backdrop-filter:blur(10px);color:#ffe4ae;font:600 12px/1.25 system-ui,sans-serif;letter-spacing:.25px;text-align:center;white-space:nowrap;pointer-events:none;box-shadow:0 5px 22px rgba(0,0,0,.18)}
-    #echo-diwali-action{position:fixed;z-index:7;right:14px;bottom:18px;border:1px solid rgba(255,196,100,.48);border-radius:999px;padding:10px 14px;background:rgba(53,30,18,.92);color:#ffe4b0;font:600 12px system-ui,sans-serif;box-shadow:0 5px 20px rgba(0,0,0,.22);cursor:pointer;pointer-events:auto}
+    #echo-diwali-action{position:fixed;z-index:7;right:14px;bottom:calc(94px + env(safe-area-inset-bottom,0px));border:1px solid rgba(255,196,100,.48);border-radius:999px;padding:10px 14px;background:rgba(53,30,18,.92);color:#ffe4b0;font:600 12px system-ui,sans-serif;box-shadow:0 5px 20px rgba(0,0,0,.22);cursor:pointer;pointer-events:auto}
     #echo-diwali-action:active{transform:scale(.96)}
     .ed-burst{position:absolute;width:5px;height:5px;border-radius:50%;background:#ffd27a;box-shadow:0 0 8px 2px #ff9f43;animation:edBurst .8s ease-out forwards}
     @keyframes edGlow{from{opacity:.55;filter:brightness(.8)}to{opacity:1;filter:brightness(1.35)}}
     @keyframes edFlame{from{transform:rotate(38deg) scale(.9)}to{transform:rotate(52deg) scale(1.08)}}
     @keyframes edFall{to{transform:translate3d(18px,105vh,0) rotate(240deg);opacity:0}}
     @keyframes edBurst{to{transform:translate(var(--dx),var(--dy)) scale(.1);opacity:0}}
-    @media(max-width:600px){#echo-diwali-greeting{top:34px;font-size:11px;padding:7px 11px}.ed-diya{transform:scale(.82);transform-origin:bottom left}.ed-diya.right{transform:scaleX(-1) scale(.82)}#echo-diwali-action{right:10px;bottom:12px;padding:9px 12px}}
+    @media(max-width:600px){#echo-diwali-greeting{top:34px;font-size:11px;padding:7px 11px}.ed-diya{transform:scale(.82);transform-origin:bottom left}.ed-diya.right{transform:scaleX(-1) scale(.82)}#echo-diwali-action{right:10px;bottom:calc(94px + env(safe-area-inset-bottom,0px));padding:9px 12px}}
+    @media(prefers-reduced-motion:reduce){.ed-bulb,.ed-flame,.ed-spark,.ed-burst{animation:none!important}.ed-spark{display:none}}
   `;
   document.head.appendChild(style);
 
@@ -94,7 +98,7 @@
     }catch(_){}
   });
   function start(){
-    if(sparkTimer||paused)return;
+    if(reduceMotion||sparkTimer||paused)return;
     sparkTimer=setInterval(sparkle,850);
     fireTimer=setInterval(autoFirework,8500);
   }
