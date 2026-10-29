@@ -838,11 +838,11 @@ document.addEventListener("DOMContentLoaded", function(){
 <p class="sub" style="margin:10px 0 0"><b>Reminder:</b> you can only cancel before the sales team accepts your payment. Once accepted, the order cannot be cancelled.</p>
 <div class="row"><button class="buy gh" id="xno" type="button">Keep order</button><button class="buy dg" id="xyes" type="button">Cancel order</button></div></dialog>
 <div id="toast" role="status" class=""></div>
-<script src="/sale-config.js"></script>
 <script>
-var DIWALI_CONFIG=window.ECHO_DIWALI_CONFIG||{DIWALI_SALE:false,DIWALI_DISCOUNT:50};
-var DIWALI_SALE=DIWALI_CONFIG.DIWALI_SALE===true;
-var DIWALI_DISCOUNT=Math.max(0,Math.min(100,Number(DIWALI_CONFIG.DIWALI_DISCOUNT)||0));
+/* Frontend sale switch: keep this explicit so the offer never silently falls back off. */
+var DIWALI_SALE=true;
+var DIWALI_DISCOUNT=50;
+window.ECHO_DIWALI_CONFIG=Object.freeze({DIWALI_SALE:DIWALI_SALE,DIWALI_DISCOUNT:DIWALI_DISCOUNT});
 function echoSalePrice(originalPrice){var price=Number(originalPrice)||0;return DIWALI_SALE?Math.round(price*(100-DIWALI_DISCOUNT)/100):price;}
 var saleBanner=document.getElementById("diwaliSaleBanner");
 if(saleBanner&&DIWALI_SALE){saleBanner.hidden=false;saleBanner.querySelector("span").textContent=DIWALI_DISCOUNT+"% OFF EVERY SHOP ITEM";}
